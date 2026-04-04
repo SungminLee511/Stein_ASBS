@@ -195,7 +195,7 @@ Key metric: **mode coverage fraction** (not W2). KSD-ASBS should find more modes
 
 ### 5.1 Create `evaluate_all.py`
 
-- [x] Master eval script — loads all checkpoints, generates 2000 samples × 5 eval seeds ✅ (file exists)
+- [x] Master eval script — `evaluation/evaluate_all.py` ✅ (file exists)
 - [ ] Metrics computed:
   - `energy_w2`, `dist_w2`, `eq_w2` (molecular benchmarks)
   - `ksd_squared`, `mean_energy`, `std_energy`, `min_energy`, `max_energy`
@@ -209,7 +209,7 @@ Key metric: **mode coverage fraction** (not W2). KSD-ASBS should find more modes
 
 ### 5.3 Run Evaluation
 
-- [ ] `python evaluate_all.py --outputs_root outputs --results_dir results --n_samples 2000 --n_eval_seeds 5`
+- [ ] `python evaluation/evaluate_all.py --outputs_root outputs --results_dir results --n_samples 2000 --n_eval_seeds 5`
 
 ### 5.4 LJ38 Funnel Classification
 
@@ -223,14 +223,14 @@ Key metric: **mode coverage fraction** (not W2). KSD-ASBS should find more modes
 
 ### 6.1 Create `generate_results.py`
 
-- [x] Reads `results/*.json`, generates `RESULTS.md` ✅ (file exists)
+- [x] `evaluation/generate_results.py` — reads results, generates RESULTS.md ✅ (file exists)
 - [ ] Tables: per-benchmark comparison (baseline vs KSD), λ ablation, mode coverage
 - [ ] Figures: energy histograms, λ ablation curves, mode coverage bar chart, Müller-Brown landscape
 - [ ] Chunking timing table
 
 ### 6.2 Generate Final Report
 
-- [ ] `python generate_results.py --results_dir results --output RESULTS.md`
+- [ ] `python evaluation/generate_results.py --results_dir results --output evaluation/RESULTS.md`
 - [ ] Review, interpret, write conclusions
 
 ---

@@ -98,11 +98,15 @@ Stein_ASBS/
 │   ├── run_phase4b_cvunknown.sh  # NEW — Müller-Brown experiments (Phase 4b)
 │   ├── run_phase4c_nonmolecular.sh # NEW — BLogReg experiments (Phase 4c)
 │   └── run_phase5_evaluate.sh    # NEW — full evaluation + report (Phase 5)
-├── evaluate_comparison.py        # DW4 baseline vs KSD comparison (early eval)
-├── evaluate_all.py               # NEW — master evaluation script (Phase 5)
-├── generate_results.py           # NEW — auto-generate RESULTS.md (Phase 6)
+├── evaluation/                   # All evaluation-related files
+│   ├── evaluate_comparison.py    # DW4 baseline vs KSD comparison (early eval)
+│   ├── evaluate_all.py           # Master evaluation script (Phase 5)
+│   ├── generate_results.py       # Auto-generate RESULTS.md (Phase 6)
+│   ├── run_phase5_evaluate.sh    # Evaluation run script
+│   ├── RESULTS.md                # Results (auto-generated + manually edited)
+│   ├── eval_results_dw4.json     # DW4 eval metrics
+│   └── eval_comparison_log.txt   # DW4 comparison log
 ├── PLAN.md                       # Experiment execution plan
-├── RESULTS.md                    # Results (auto-generated + manually edited)
 ├── environment.yml               # Conda environment spec
 ├── LICENSE.md                    # Meta license
 └── CONTRIBUTING.md
