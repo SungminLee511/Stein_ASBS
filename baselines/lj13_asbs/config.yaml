@@ -1,0 +1,111 @@
+project: adjoint_sampler
+train_itr_per_epoch: 100
+init_stage: adjoint
+seed: 0
+clip_grad_norm: false
+checkpoint: null
+save_freq: 100
+timesteps:
+  t0: 0.0
+  t1: 1.0
+  steps: ${nfe}
+  rescale_t: ${rescale_t}
+resample_batch_size: 512
+train_batch_size: 512
+eval_batch_size: 2000
+num_eval_samples: ${eval_batch_size}
+dim: 39
+n_particles: 13
+spatial_dim: 3
+energy:
+  _target_: adjoint_samplers.energies.lennard_jones_energy.LennardJonesEnergy
+  dim: ${dim}
+  n_particles: ${n_particles}
+evaluator:
+  _target_: adjoint_samplers.components.evaluator.SyntheticEenergyEvaluator
+  ref_samples_path: data/test_split_LJ13-1000.npy
+source:
+  _target_: adjoint_samplers.utils.dist_utils.CenteredParticlesHarmonic
+  n_particles: ${n_particles}
+  spatial_dim: ${spatial_dim}
+  scale: ${scale}
+ref_sde:
+  _target_: adjoint_samplers.components.sde.GraphVESDE
+  n_particles: ${n_particles}
+  spatial_dim: ${spatial_dim}
+  sigma_max: ${sigma_max}
+  sigma_min: ${sigma_min}
+controller:
+  _target_: adjoint_samplers.components.model.EGNN_dynamics
+  n_particles: ${n_particles}
+  spatial_dim: ${spatial_dim}
+  hidden_nf: 128
+  n_layers: 5
+  act_fn:
+    _target_: torch.nn.SiLU
+  recurrent: true
+  tanh: true
+  attention: true
+  condition_time: true
+  agg: sum
+state_cost:
+  _target_: adjoint_samplers.components.state_cost.ZeroGradStateCost
+term_cost:
+  _target_: adjoint_samplers.components.term_cost.GraphCorrectorGradTermCost
+  max_grad_E_norm: ${max_grad_E_norm}
+adjoint_matcher:
+  _target_: adjoint_samplers.components.matcher.AdjointVEMatcher
+  grad_state_cost:
+    _target_: adjoint_samplers.components.state_cost.ZeroGradStateCost
+  buffer:
+    _target_: adjoint_samplers.components.buffer.BatchBuffer
+    buffer_size: ${adjoint_matcher.buffer_size}
+  buffer_size: 10000
+  duplicates: 25
+  resample_size: 1000
+  num_epochs_per_stage: ${adj_num_epochs_per_stage}
+  optim:
+    lr: 0.0001
+    weight_decay: 0
+corrector:
+  _target_: adjoint_samplers.components.model.EGNN_dynamics
+  n_particles: ${n_particles}
+  spatial_dim: ${spatial_dim}
+  hidden_nf: 128
+  n_layers: 5
+  act_fn:
+    _target_: torch.nn.SiLU
+  recurrent: true
+  tanh: true
+  attention: true
+  condition_time: true
+  agg: sum
+corrector_matcher:
+  _target_: adjoint_samplers.components.matcher.CorrectorMatcher
+  buffer:
+    _target_: adjoint_samplers.components.buffer.BatchBuffer
+    buffer_size: ${adjoint_matcher.buffer_size}
+  buffer_size: 10000
+  duplicates: 25
+  resample_size: 1000
+  num_epochs_per_stage: ${ctr_num_epochs_per_stage}
+  optim:
+    lr: 0.0001
+    weight_decay: 0
+exp_name: lj13_asbs
+scale: 2
+nfe: 1000
+sigma_max: 1
+sigma_min: 0.001
+rescale_t: null
+num_epochs: 5000
+max_grad_E_norm: 100
+adj_num_epochs_per_stage: 300
+ctr_num_epochs_per_stage: 20
+use_wandb: false
+eval_freq: 50
+shared_dir: /checkpoint
+distributed: false
+rank: 0
+world_size: 1
+
