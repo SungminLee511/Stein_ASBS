@@ -1315,6 +1315,230 @@ Document everything. Negative results are informative:
 - If KSD-ASBS performs **worse** → the detached Hessian approximation may be too crude, or λ needs tuning
 - If KSD-ASBS helps on DW4 but not LJ55 → kernel scaling limitation (publishable observation)
 
+### 9.5 Visualization Strategy for Mode Coverage
+
+Mode coverage is the primary claim. The following visualizations measure and show it concretely. The two most important are **(1) Energy histograms** and **(2) Interatomic distance histograms** — they are easy to implement (just histograms of quantities already computed), visually compelling, and directly show whether modes are being covered or missed.
+
+**Color convention:** Reference samples in **gray**, baseline ASBS in **blue** (`#1f77b4`), KSD-ASBS in **orange** (`#ff7f0e`). All histograms use transparency (`alpha=0.5`) for overlay.
+
+#### 9.5.1 Energy Histogram Overlay (Most Informative Single Plot)
+
+Plot the energy distribution of generated samples vs reference samples as overlapping histograms. If ASBS is mode-collapsing, the energy histogram will be narrower (concentrated around one mode's energy basin). KSD-ASBS should produce a histogram that better matches the reference's shape, including secondary peaks.
+
+```python
+def plot_energy_histograms(
+    ref_energies: np.ndarray,
+    baseline_energies: np.ndarray,
+    ksd_energies: np.ndarray,
+    experiment: str,
+    output_path: Path,
+    n_bins: int = 80,
+):
+    """Overlapping energy histograms: reference vs baseline vs KSD-ASBS.
+
+    Args:
+        ref_energies: (N_ref,) energies of reference test samples
+        baseline_energies: (N_gen,) energies of baseline-generated samples
+        ksd_energies: (N_gen,) energies of KSD-generated samples
+        experiment: e.g. 'dw4', 'lj13'
+        output_path: where to save the figure
+        n_bins: histogram bin count
+    """
+    fig, ax = plt.subplots(figsize=(8, 5))
+
+    # Compute shared bin edges from reference range (with padding)
+    lo = min(ref_energies.min(), baseline_energies.min(), ksd_energies.min())
+    hi = max(ref_energies.max(), baseline_energies.max(), ksd_energies.max())
+    # Clip extreme outliers for cleaner visualization
+    lo = max(lo, np.percentile(np.concatenate([ref_energies, baseline_energies, ksd_energies]), 1))
+    hi = min(hi, np.percentile(np.concatenate([ref_energies, baseline_energies, ksd_energies]), 99))
+    bins = np.linspace(lo, hi, n_bins)
+
+    ax.hist(ref_energies, bins=bins, density=True, alpha=0.5,
+            color='gray', edgecolor='gray', linewidth=0.5, label='Reference')
+    ax.hist(baseline_energies, bins=bins, density=True, alpha=0.5,
+            color='#1f77b4', edgecolor='#1f77b4', linewidth=0.5, label='Baseline ASBS')
+    ax.hist(ksd_energies, bins=bins, density=True, alpha=0.5,
+            color='#ff7f0e', edgecolor='#ff7f0e', linewidth=0.5, label='KSD-ASBS')
+
+    ax.set_xlabel('Energy E(x)', fontsize=12)
+    ax.set_ylabel('Density', fontsize=12)
+    ax.set_title(f'{experiment.upper()} — Energy Distribution', fontsize=14)
+    ax.legend(fontsize=11)
+    ax.grid(axis='y', alpha=0.3)
+
+    fig.tight_layout()
+    fig.savefig(output_path, dpi=150)
+    plt.close(fig)
+```
+
+**What to look for:** If baseline histogram is narrower than reference (missing secondary peaks), but KSD-ASBS histogram matches the reference shape — that's the mode coverage signal.
+
+#### 9.5.2 Interatomic Distance Distribution
+
+For particle systems, different modes correspond to different geometric configurations with different interatomic distance distributions. Compute all pairwise distances for each sample, flatten into one big array, and plot the histogram. Mode collapse shows as missing peaks in the distance distribution.
+
+This is already computed in the evaluator (`interatomic_dist` in `eval_utils.py`). Just plot the histograms for baseline vs KSD vs reference.
+
+```python
+def plot_interatomic_distance_histograms(
+    ref_dists: np.ndarray,
+    baseline_dists: np.ndarray,
+    ksd_dists: np.ndarray,
+    experiment: str,
+    output_path: Path,
+    n_bins: int = 100,
+):
+    """Overlapping interatomic distance histograms.
+
+    Args:
+        ref_dists: (N_ref * n_pairs,) flattened pairwise distances from reference
+        baseline_dists: (N_gen * n_pairs,) from baseline
+        ksd_dists: (N_gen * n_pairs,) from KSD-ASBS
+        experiment: e.g. 'dw4', 'lj13'
+        output_path: where to save
+        n_bins: histogram bin count
+    """
+    fig, ax = plt.subplots(figsize=(8, 5))
+
+    lo = 0
+    hi = np.percentile(np.concatenate([ref_dists, baseline_dists, ksd_dists]), 99)
+    bins = np.linspace(lo, hi, n_bins)
+
+    ax.hist(ref_dists, bins=bins, density=True, alpha=0.5,
+            color='gray', edgecolor='gray', linewidth=0.5, label='Reference')
+    ax.hist(baseline_dists, bins=bins, density=True, alpha=0.5,
+            color='#1f77b4', edgecolor='#1f77b4', linewidth=0.5, label='Baseline ASBS')
+    ax.hist(ksd_dists, bins=bins, density=True, alpha=0.5,
+            color='#ff7f0e', edgecolor='#ff7f0e', linewidth=0.5, label='KSD-ASBS')
+
+    ax.set_xlabel('Interatomic Distance', fontsize=12)
+    ax.set_ylabel('Density', fontsize=12)
+    ax.set_title(f'{experiment.upper()} — Interatomic Distance Distribution', fontsize=14)
+    ax.legend(fontsize=11)
+    ax.grid(axis='y', alpha=0.3)
+
+    fig.tight_layout()
+    fig.savefig(output_path, dpi=150)
+    plt.close(fig)
+```
+
+**What to look for:** Missing peaks in the baseline histogram that are present in reference and recovered by KSD-ASBS.
+
+#### 9.5.3 Mode Counting via Energy Clustering
+
+A direct mode count: bin the terminal samples by energy into intervals, then count how many distinct energy basins are occupied. For DW4 specifically, the double-well potential has well-defined modes — you can threshold by energy to count which modes are populated.
+
+```python
+def count_energy_modes(
+    energies: np.ndarray,
+    n_bins: int = 50,
+    min_occupancy: int = 5,
+) -> int:
+    """Count number of occupied energy basins.
+
+    Args:
+        energies: (N,) energy values
+        n_bins: number of energy bins
+        min_occupancy: minimum samples in a bin to count it as "occupied"
+
+    Returns:
+        Number of occupied bins
+    """
+    counts, _ = np.histogram(energies, bins=n_bins)
+    return int((counts >= min_occupancy).sum())
+```
+
+**Usage:** If baseline has 3 non-empty bins but KSD has 7, that's a clear mode coverage improvement. Report as a table: `| Method | Occupied Bins | Total Bins |`.
+
+#### 9.5.4 Pairwise Distance Matrix Heatmap
+
+Compute the cost matrix `M[i,j] = ‖gen_i - ref_j‖` (the same matrix already computed for `eq_w2` in the evaluator). Visualize as a heatmap. If the generator covers all modes, the matrix should have low-cost entries spread across all reference samples. If it mode-collapses, there will be rows/columns with uniformly high cost (reference samples from uncovered modes have no nearby generated samples).
+
+```python
+def plot_cost_matrix_heatmap(
+    cost_matrix: np.ndarray,
+    title: str,
+    output_path: Path,
+    max_samples: int = 200,
+):
+    """Heatmap of pairwise cost matrix between generated and reference samples.
+
+    Args:
+        cost_matrix: (N_gen, N_ref) cost matrix
+        title: plot title
+        output_path: where to save
+        max_samples: subsample to this many for readability
+    """
+    # Subsample for visualization
+    M, N = cost_matrix.shape
+    if M > max_samples:
+        idx_m = np.random.choice(M, max_samples, replace=False)
+        cost_matrix = cost_matrix[idx_m]
+    if N > max_samples:
+        idx_n = np.random.choice(N, max_samples, replace=False)
+        cost_matrix = cost_matrix[:, idx_n]
+
+    fig, ax = plt.subplots(figsize=(8, 7))
+    im = ax.imshow(cost_matrix, aspect='auto', cmap='viridis')
+    ax.set_xlabel('Reference Samples', fontsize=12)
+    ax.set_ylabel('Generated Samples', fontsize=12)
+    ax.set_title(title, fontsize=14)
+    fig.colorbar(im, ax=ax, label='Distance')
+
+    fig.tight_layout()
+    fig.savefig(output_path, dpi=150)
+    plt.close(fig)
+```
+
+**What to look for:** Columns of uniformly high cost = reference modes with no nearby generated samples (mode collapse). KSD-ASBS heatmap should have more uniform low-cost coverage.
+
+#### 9.5.5 KSD² During Training Curve
+
+Plot KSD² vs training epoch for both methods. Baseline ASBS should plateau at some nonzero KSD. KSD-ASBS should achieve lower KSD, and the gap should widen as training progresses. This directly shows the KSD correction is working over time, not just at the final checkpoint.
+
+This requires logging KSD during training (Task 4 already adds `_last_ksd` logging). If using wandb, plot from wandb logs. Otherwise, parse from stdout logs.
+
+```python
+def plot_ksd_training_curve(
+    baseline_ksd_per_epoch: np.ndarray,
+    ksd_ksd_per_epoch: np.ndarray,
+    output_path: Path,
+):
+    """KSD² vs epoch for baseline and KSD-ASBS."""
+    fig, ax = plt.subplots(figsize=(8, 5))
+
+    ax.plot(baseline_ksd_per_epoch, color='#1f77b4', label='Baseline ASBS', alpha=0.8)
+    ax.plot(ksd_ksd_per_epoch, color='#ff7f0e', label='KSD-ASBS', alpha=0.8)
+
+    ax.set_xlabel('Epoch', fontsize=12)
+    ax.set_ylabel('KSD²', fontsize=12)
+    ax.set_title('KSD² During Training', fontsize=14)
+    ax.legend(fontsize=11)
+    ax.grid(alpha=0.3)
+    ax.set_yscale('log')
+
+    fig.tight_layout()
+    fig.savefig(output_path, dpi=150)
+    plt.close(fig)
+```
+
+**What to look for:** KSD-ASBS curve drops below baseline and stays there. The gap widening over training epochs demonstrates the self-annealing effect described in Section 7 of the math spec.
+
+#### 9.5.6 Integration into `evaluate_comparison.py` and `generate_results.py`
+
+The evaluation script should:
+1. Compute `energy.eval(samples)` for baseline, KSD, and reference → save raw energy arrays to `.npy` files
+2. Compute `interatomic_dist(samples, n_particles, spatial_dim)` for all three → save raw distance arrays
+3. Save these alongside `comparison.json`
+
+The results generation script should:
+1. Load the saved `.npy` arrays
+2. Call `plot_energy_histograms()` and `plot_interatomic_distance_histograms()` — one figure per benchmark
+3. Embed the figures in `RESULTS.md`
+
+**Priority:** Energy histograms and interatomic distance histograms are mandatory. Mode counting, cost matrix heatmaps, and training curves are nice-to-have.
+
 -----
 
 ## Important Notes for Claude Code
