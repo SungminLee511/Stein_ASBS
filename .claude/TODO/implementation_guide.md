@@ -21,7 +21,35 @@ This guide covers **every experiment** needed to evaluate KSD-Augmented ASBS com
 |5    |Comprehensive evaluation|All above                |All checkpoints                               |
 |6    |Results report          |—                        |Generate RESULTS.md                           |
 
+**NOTE: Single seed (seed=0) for all training. Multiple seeds only at evaluation.**
+
 **Total training runs: ~110.** On a single GPU, DW4 trains in ~1 hour, LJ13 in ~4 hours, LJ38 in ~8 hours, LJ55 in ~12 hours, Müller-Brown in ~10 min, Bayesian LogReg in ~20 min, synthetics in ~20 min each. Total estimated GPU time: ~250–300 hours. Parallelizable across seeds.
+
+### Execution Status Tracker
+
+| Experiment | Method | Seed | Epochs | Status | Notes |
+|------------|--------|------|--------|--------|-------|
+| DW4 | Baseline ASBS | 0 | 5000 | COMPLETED | Pre-existing |
+| DW4 | KSD-ASBS | 0 | 5000 | COMPLETED | ep=4999, loss=4.81 |
+| LJ13 | Baseline ASBS | 0 | 5000 | COMPLETED | Pre-existing |
+| LJ13 | KSD-ASBS | 0 | 5000 | RUNNING | ep~810/5000 |
+| Muller | Baseline ASBS | 0 | 2000 | COMPLETED | ep=1999, loss=0.30 |
+| Muller | KSD-ASBS | 1 | 2000 | COMPLETED | ep=1999, loss=0.31 |
+| RotGMM10 | Baseline ASBS | 0 | 3000 | COMPLETED | ep~2600/3000, converged & killed |
+| RotGMM10 | KSD-ASBS | 0 | 3000 | COMPLETED | ep~2580/3000, converged & killed |
+| RotGMM30 | Baseline ASBS | 0 | 3000 | RUNNING | PID 3225487, just launched |
+| RotGMM30 | KSD-ASBS | 0 | 3000 | RUNNING | PID 3225605, just launched |
+| RotGMM50 | Baseline ASBS | 0 | 3000 | PENDING | |
+| RotGMM50 | KSD-ASBS | 0 | 3000 | PENDING | |
+| RotGMM100 | Baseline ASBS | 0 | 3000 | PENDING | |
+| RotGMM100 | KSD-ASBS | 0 | 3000 | PENDING | |
+| LJ38 | Baseline ASBS | 0 | — | PENDING | |
+| LJ38 | KSD-ASBS | 0 | — | PENDING | |
+| LJ55 | KSD-ASBS | 0 | — | PENDING | |
+| BLogReg-AU | Baseline ASBS | 0 | — | PENDING | |
+| BLogReg-AU | KSD-ASBS | 0 | — | PENDING | |
+| BLogReg-GE | Baseline ASBS | 0 | — | PENDING | |
+| BLogReg-GE | KSD-ASBS | 0 | — | PENDING | |
 
 ### Benchmark Summary
 

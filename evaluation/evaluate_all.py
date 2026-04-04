@@ -60,11 +60,12 @@ def compute_all_metrics(
     metrics['max_energy'] = gen_E.max().item()
 
     # --- KSD ---
-    # Need scores: compute via autograd
-    samples_req = samples.detach().requires_grad_(True)
-    E = energy.eval(samples_req)
-    scores = -torch.autograd.grad(E.sum(), samples_req)[0]  # score = -∇E
-    samples_req = samples_req.detach()
+    # Need scores: compute via autograd (must enable grad inside no_grad context)
+    with torch.enable_grad():
+        samples_req = samples.detach().requires_grad_(True)
+        E = energy.eval(samples_req)
+        scores = -torch.autograd.grad(E.sum(), samples_req)[0]  # score = -∇E
+        samples_req = samples_req.detach()
 
     ell = median_bandwidth(samples)
     N_ksd = min(N, 2000)
