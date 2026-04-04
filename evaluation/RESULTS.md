@@ -254,6 +254,16 @@ Tests mode coverage on energy functions where **collective variables are unknown
 - **KSD² is higher for KSD-ASBS:** This is expected — covering 3 different modes means samples are more spread out, increasing the kernel discrepancy relative to a single-mode cluster. The KSD² metric needs interpretation in context of coverage.
 - **Neither method covers all 8 modes:** Both methods are still far from full coverage. This may indicate that 3000 epochs is insufficient, λ needs further tuning, or the RBF kernel bandwidth doesn't match the mode separation well.
 
+#### Figures
+
+**Mode Occupation Bar Chart** — Baseline dumps all 2000 samples into Mode 4. KSD-ASBS distributes across Modes 5, 6, and 7. Reference (gray) shows uniform coverage across all 8 modes.
+
+![RotGMM d=10 Mode Occupation](figures/rotgmm10_mode_occupation.png)
+
+**PCA 2D Scatter** — Samples projected onto the top 2 principal components (fit on reference). Each color = nearest mode assignment. Baseline collapses to a single cluster; KSD-ASBS finds 3 distinct clusters in the rotated space.
+
+![RotGMM d=10 PCA Scatter](figures/rotgmm10_pca_scatter.png)
+
 ### 5.2 Mode Coverage vs Dimension (Summary)
 
 | Dimension | Method | Modes Covered (of 8) | Coverage (%) | energy_W2 |
