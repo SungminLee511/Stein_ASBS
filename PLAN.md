@@ -108,7 +108,7 @@ Train all baselines with 3 training seeds each. **~50 GPU-hours total.**
 
 ### 2.2 Visualization Benchmark
 
-- [ ] **Müller-Brown baseline** (3 seeds × ~10 min) — `experiment=muller_asbs seed=0,1,2` 🔄 RUNNING seed=0
+- [ ] **Müller-Brown baseline** (3 seeds × ~10 min) — `experiment=muller_asbs seed=0,1,2` ⚠️ NaN errors — retry later
 
 ### 2.3 Non-Molecular Benchmarks
 
@@ -159,7 +159,7 @@ Only if DW4/LJ13/LJ38 show improvement.
 
 ### 3.5 Müller-Brown KSD (3 seeds, ~30 min)
 
-- [ ] **λ=1.0, seed=0,1,2**
+- [ ] **λ=1.0, seed=0,1,2** ⚠️ NaN errors — retry later
 
 ### 3.6 Bayesian LogReg KSD (2 datasets × 3 seeds = 6 runs, ~2 hrs)
 
@@ -188,6 +188,15 @@ Only if DW4/LJ13/LJ38 show improvement.
 - [ ] **d=100** — baseline + KSD, seed=0,1,2
 
 Key metric: **mode coverage fraction** (not W2). KSD-ASBS should find more modes.
+
+### 4.2 WT-ASBS vs KSD-ASBS on RotGMM (direct comparison)
+
+Port WT-ASBS's well-tempered metadynamics bias to our RotGMM setup. Give WT-ASBS the **correct CVs** (or a subset), while KSD-ASBS gets **no CVs**. This is the fairest head-to-head comparison — same problem, same architecture, different bias mechanisms.
+
+- [ ] Implement WT metadynamics bias for RotGMM in our codebase
+- [ ] **d=10** — WT-ASBS (with correct CVs) vs KSD-ASBS (CV-free), seed=0
+- [ ] **d=30** — same comparison
+- [ ] Argument: *"KSD-ASBS matches or beats WT-ASBS without requiring CV knowledge"*
 
 ---
 
@@ -225,8 +234,15 @@ Key metric: **mode coverage fraction** (not W2). KSD-ASBS should find more modes
 
 - [x] `evaluation/generate_results.py` — reads results, generates RESULTS.md ✅ (file exists)
 - [ ] Tables: per-benchmark comparison (baseline vs KSD), λ ablation, mode coverage
-- [ ] Figures: energy histograms, λ ablation curves, mode coverage bar chart, Müller-Brown landscape
 - [ ] Chunking timing table
+- [ ] **Visualization ideas for modality comparison:**
+  - **RotGMM mode occupation bar chart** — X=mode index, Y=fraction of samples per mode. Vanilla ASBS has missing bars (mode collapse), KSD-ASBS fills them all. If WT-ASBS comparison done, overlay its bars too.
+  - **RotGMM 2D scatter** (d=10, project onto top 2 PCs) — color by assigned mode. Vanilla misses clusters, KSD covers all.
+  - **LJ13/LJ38 energy histogram** — Vanilla clusters in one basin, KSD shows bimodal distribution matching reference. Especially powerful for LJ38 double funnel.
+  - **LJ13/LJ38 pairwise distance distribution** — shows structural diversity of generated samples.
+  - **Müller-Brown 2D density contour** — overlay generated sample density on energy landscape. Vanilla misses a well, KSD covers all three. (Prettiest figure — if NaN fixed.)
+  - **KSD vs training epoch** — convergence plot showing KSD-ASBS reaches lower discrepancy faster than vanilla.
+  - **Free energy surface comparison** — -kT ln(p) along principal components, comparing vanilla vs KSD vs reference.
 
 ### 6.2 Generate Final Report
 

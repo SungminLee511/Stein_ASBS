@@ -12,12 +12,12 @@ defaults:
 exp_name: muller_asbs
 
 # === source ===
-scale: 2
+scale: 0.5
 
 # === sde ===
 nfe: 100
-sigma_max: 3
-sigma_min: 0.01
+sigma_max: 1
+sigma_min: 0.001
 rescale_t: null
 
 # === training ===
@@ -30,7 +30,7 @@ adjoint_matcher:
   resample_size: 1000
   num_epochs_per_stage: ${num_epochs}
   optim:
-    lr: 1e-3
+    lr: 1e-4
     weight_decay: 0
 
 # === eval & logging ===

@@ -1,0 +1,84 @@
+Error while loading conda entry point: conda-libmamba-solver (module 'libmambapy' has no attribute 'QueryFormat')
+Error while loading conda entry point: conda-libmamba-solver (module 'libmambapy' has no attribute 'QueryFormat')
+Error while loading conda entry point: conda-libmamba-solver (module 'libmambapy' has no attribute 'QueryFormat')
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.Gauss'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.Gauss'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+
+Device: cuda
+
+============================================================
+Evaluating: muller_asbs
+============================================================
+
+  --- muller_asbs / seed 0 ---
+    energy_W2: nan ± nan
+    KSD²: nan
+    modes_covered: 0.0/3
+    mean_raw_energy: nan
+
+  --- muller_asbs / seed 1 ---
+    energy_W2: nan ± nan
+    KSD²: nan
+    modes_covered: 0.0/3
+    mean_raw_energy: nan
+
+  --- muller_asbs / seed 2 ---
+    energy_W2: nan ± nan
+    KSD²: nan
+    modes_covered: 0.0/3
+    mean_raw_energy: nan
+
+============================================================
+Evaluating: muller_ksd_asbs
+============================================================
+
+  --- muller_ksd_asbs / seed 0 ---
+    energy_W2: nan ± nan
+    KSD²: nan
+    modes_covered: 0.0/3
+    mean_raw_energy: nan
+
+  --- muller_ksd_asbs / seed 1 ---
+    energy_W2: nan ± nan
+    KSD²: nan
+    modes_covered: 0.0/3
+    mean_raw_energy: nan
+
+  --- muller_ksd_asbs / seed 2 ---
+    energy_W2: nan ± nan
+    KSD²: nan
+    modes_covered: 0.0/3
+    mean_raw_energy: nan
+
+============================================================
+Aggregate Results (across training seeds)
+============================================================
+
+  muller_asbs:
+    mean_energy: nan ± nan
+    std_energy: nan ± nan
+    min_energy: nan ± nan
+    mean_raw_energy: nan ± nan
+    min_raw_energy: nan ± nan
+    ksd_squared: nan ± nan
+    energy_w2: nan ± nan
+    modes_covered: 0.0000 ± 0.0000
+
+  muller_ksd_asbs:
+    mean_energy: nan ± nan
+    std_energy: nan ± nan
+    min_energy: nan ± nan
+    mean_raw_energy: nan ± nan
+    min_raw_energy: nan ± nan
+    ksd_squared: nan ± nan
+    energy_w2: nan ± nan
+    modes_covered: 0.0000 ± 0.0000
+
+Saved JSON: /home/RESEARCH/Stein_ASBS/evaluation/muller_results.json
+  Saved visualization: /home/RESEARCH/Stein_ASBS/evaluation/figures/muller_comparison.png
+  Saved all-seeds plot: /home/RESEARCH/Stein_ASBS/evaluation/figures/muller_all_seeds.png
+
+=== Müller-Brown evaluation complete! ===
+
