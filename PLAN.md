@@ -11,102 +11,70 @@ All new source files, energy functions, evaluators, and Hydra configs needed bef
 
 ### 1.1 Core KSD Modules
 
-- [ ] **Create `adjoint_samplers/components/stein_kernel.py`**
-  - Functions: `median_bandwidth()`, `compute_stein_kernel_matrix()`, `compute_ksd_squared()`, `compute_stein_kernel_gradient()`, `compute_stein_kernel_gradient_efficient()`
-  - Hessian-free (detached) approximation: O(N²d), no JVPs
-  - **Already exists** — verify unit test: `python -m adjoint_samplers.components.stein_kernel`
-
-- [ ] **Create `adjoint_samplers/components/ksd_matcher.py`**
-  - `KSDAdjointVEMatcher(AdjointVEMatcher)` — overrides `populate_buffer`, adds KSD correction to adjoint terminal condition
-  - `KSDAdjointVPMatcher(AdjointVPMatcher)` — same for VP-SDE
-  - Key method: `_apply_ksd_correction(x1, adjoint1)`
-  - **Already exists** — verify import works
+- [x] **Create `adjoint_samplers/components/stein_kernel.py`** ✅
+- [x] **Create `adjoint_samplers/components/ksd_matcher.py`** ✅
 
 ### 1.2 New Energy Functions
 
-- [ ] **Create `adjoint_samplers/energies/rotated_gmm_energy.py`** — `RotatedGMMEnergy`
-  - Random orthogonal rotation R makes no axis-aligned CV work
-  - `eval(x)`, `get_ref_samples()`, `count_modes_covered(samples)`
-  - Params: `dim`, `n_modes=8`, `mode_sep=5.0`, `mode_std=0.5`, `seed=42`
-
-- [ ] **Create `adjoint_samplers/energies/muller_brown_energy.py`** — `MullerBrownEnergy`
-  - 2D energy landscape, 3 minima, ideal for visualization
-  - `eval(x)`, `get_ref_samples()`, `plot_landscape(samples, samples_ksd, save_path)`
-  - Param: `temperature=1000.0` (scales raw potential)
-
-- [ ] **Create `adjoint_samplers/energies/bayesian_logreg_energy.py`** — `BayesianLogRegEnergy`
-  - Non-molecular benchmark: posterior over logistic regression weights
-  - Datasets: `'australian'` (d=15), `'german'` (d=25)
-  - HMC-generated reference samples
+- [x] **Create `adjoint_samplers/energies/rotated_gmm_energy.py`** — `RotatedGMMEnergy` ✅
+- [x] **Create `adjoint_samplers/energies/muller_brown_energy.py`** — `MullerBrownEnergy` ✅
+- [x] **Create `adjoint_samplers/energies/bayesian_logreg_energy.py`** — `BayesianLogRegEnergy` ✅
+  - HMC reference generation is now **lazy** (runs on first `get_ref_samples()` call, not at init)
 
 ### 1.3 New Evaluators
 
-- [ ] **Create `RotatedGMMEvaluator`** (new class, in evaluator.py or separate file)
-  - Computes: `n_modes_covered`, `coverage_fraction`, `energy_w2`, `per_mode_counts`
+- [x] **Create `RotatedGMMEvaluator`** in `generic_evaluator.py` ✅
 
 ### 1.4 Hydra Configs — Matchers
 
-- [ ] **Create `configs/matcher/ksd_adjoint_ve.yaml`** — points to `KSDAdjointVEMatcher`
-  - **Already exists** — verify correct `_target_`
+- [x] **`configs/matcher/ksd_adjoint_ve.yaml`** ✅
 
 ### 1.5 Hydra Configs — Problems
 
-- [ ] Verify existing: `configs/problem/dw4.yaml`, `lj13.yaml`, `lj55.yaml`
-- [ ] **Create `configs/problem/lj38.yaml`** — 38 particles, dim=114, `LennardJonesEnergy`, ref: `data/test_split_LJ38-1000.npy`
-- [ ] **Create `configs/problem/muller.yaml`** — dim=2, `MullerBrownEnergy`, temperature=1000
-- [ ] **Create `configs/problem/blogreg_au.yaml`** — dim=15, `BayesianLogRegEnergy`, dataset=australian
-- [ ] **Create `configs/problem/blogreg_ge.yaml`** — dim=25, `BayesianLogRegEnergy`, dataset=german
-- [ ] **Create `configs/problem/rotgmm10.yaml`** — dim=10, `RotatedGMMEnergy`
-- [ ] **Create `configs/problem/rotgmm30.yaml`** — dim=30
-- [ ] **Create `configs/problem/rotgmm50.yaml`** — dim=50
-- [ ] **Create `configs/problem/rotgmm100.yaml`** — dim=100
+- [x] `configs/problem/dw4.yaml`, `lj13.yaml`, `lj55.yaml` ✅
+- [x] `configs/problem/lj38.yaml` ✅
+- [x] `configs/problem/muller.yaml` ✅
+- [x] `configs/problem/blogreg_au.yaml`, `blogreg_ge.yaml` ✅
+- [x] `configs/problem/rotgmm10.yaml`, `rotgmm30.yaml`, `rotgmm50.yaml`, `rotgmm100.yaml` ✅
 
 ### 1.6 Hydra Configs — Experiments (Baseline)
 
-- [ ] Verify existing: `configs/experiment/dw4_asbs.yaml`, `lj13_asbs.yaml`, `lj55_asbs.yaml`
-- [ ] **Create `configs/experiment/lj38_asbs.yaml`** — GraphVE + EGNN + corrector, nfe=500, 5000 epochs
-- [ ] **Create `configs/experiment/muller_asbs.yaml`** — VE + FourierMLP, nfe=100, 2000 epochs
-- [ ] **Create `configs/experiment/blogreg_au_asbs.yaml`** — VE + FourierMLP, nfe=100, 2000 epochs
-- [ ] **Create `configs/experiment/blogreg_ge_asbs.yaml`** — same, dim=25
-- [ ] **Create `configs/experiment/rotgmm10_asbs.yaml`** — VE + FourierMLP, nfe=100, 3000 epochs
-- [ ] **Create `configs/experiment/rotgmm30_asbs.yaml`** — nfe=200, sigma_max=8
-- [ ] **Create `configs/experiment/rotgmm50_asbs.yaml`** — nfe=300, sigma_max=10
-- [ ] **Create `configs/experiment/rotgmm100_asbs.yaml`** — nfe=500, sigma_max=15
+- [x] `configs/experiment/dw4_asbs.yaml`, `lj13_asbs.yaml`, `lj55_asbs.yaml` ✅
+- [x] `configs/experiment/lj38_asbs.yaml` ✅
+- [x] `configs/experiment/muller_asbs.yaml` ✅
+- [x] `configs/experiment/blogreg_au_asbs.yaml`, `blogreg_ge_asbs.yaml` ✅
+- [x] `configs/experiment/rotgmm10_asbs.yaml`, `rotgmm30_asbs.yaml`, `rotgmm50_asbs.yaml`, `rotgmm100_asbs.yaml` ✅
 
 ### 1.7 Hydra Configs — Experiments (KSD-ASBS)
 
-- [ ] Verify existing: `configs/experiment/dw4_ksd_asbs.yaml`
-- [ ] **Create `configs/experiment/lj13_ksd_asbs.yaml`** — copy lj13_asbs, swap matcher to `ksd_adjoint_ve`, add `ksd_lambda: 1.0`
-- [ ] **Create `configs/experiment/lj38_ksd_asbs.yaml`** — copy lj38_asbs, swap matcher
-- [ ] **Create `configs/experiment/lj55_ksd_asbs.yaml`** — copy lj55_asbs, swap matcher
-- [ ] **Create `configs/experiment/muller_ksd_asbs.yaml`** — copy muller_asbs, swap matcher
-- [ ] **Create `configs/experiment/blogreg_au_ksd_asbs.yaml`** — swap matcher
-- [ ] **Create `configs/experiment/blogreg_ge_ksd_asbs.yaml`** — swap matcher
-- [ ] **Create `configs/experiment/rotgmm10_ksd_asbs.yaml`** — swap matcher
-- [ ] **Create `configs/experiment/rotgmm30_ksd_asbs.yaml`**
-- [ ] **Create `configs/experiment/rotgmm50_ksd_asbs.yaml`**
-- [ ] **Create `configs/experiment/rotgmm100_ksd_asbs.yaml`**
+- [x] `configs/experiment/dw4_ksd_asbs.yaml` ✅
+- [x] `configs/experiment/lj13_ksd_asbs.yaml` ✅
+- [x] `configs/experiment/lj38_ksd_asbs.yaml` ✅
+- [x] `configs/experiment/lj55_ksd_asbs.yaml` ✅
+- [x] `configs/experiment/muller_ksd_asbs.yaml` ✅
+- [x] `configs/experiment/blogreg_au_ksd_asbs.yaml`, `blogreg_ge_ksd_asbs.yaml` ✅
+- [x] `configs/experiment/rotgmm10_ksd_asbs.yaml`, `rotgmm30_ksd_asbs.yaml`, `rotgmm50_ksd_asbs.yaml`, `rotgmm100_ksd_asbs.yaml` ✅
 
 ### 1.8 Misc Configs
 
-- [ ] Verify `configs/sde/ve.yaml` exists (non-graph VE-SDE for RotGMM/Müller/BLogReg)
-- [ ] Verify `configs/term_cost/term_cost.yaml` exists (non-graph `GradEnergy` for non-particle systems)
-- [ ] Verify `configs/source/gauss.yaml` exists (standard Gaussian source)
+- [x] `configs/sde/ve.yaml` ✅
+- [x] `configs/term_cost/score_term_cost.yaml` ✅
+- [x] `configs/source/gauss.yaml` ✅
 
 ### 1.9 LJ38 Reference Data
 
-- [ ] **Generate or download `data/test_split_LJ38-1000.npy`**
-  - Option A: Cambridge Cluster Database known minima (icosahedral + FCC funnels)
-  - Option B: Long parallel-tempering MCMC / MD
-  - Option C: Very long vanilla ASBS run (50k+ epochs)
+- [ ] **Generate `data/test_split_LJ38-1000.npy`** ⚠️ STILL MISSING — no public download exists
+  - Must self-generate via parallel-tempering MCMC or long MD at target temperature
   - Need ~500 samples from each funnel (icosahedral: E≈-173.93, FCC: E≈-173.25)
+  - **Deferred** — do this before LJ38 evaluation (Phase 5), not blocking other experiments
 
 ### 1.10 Validation
 
-- [ ] Run `python -m adjoint_samplers.components.stein_kernel` → "All tests passed"
+- [x] Verify RotGMM energy: forward pass ✅
+- [x] Verify Müller-Brown energy: forward pass ✅
+- [x] Verify BayesianLogReg energy: forward pass ✅ (lazy HMC fix applied)
+- [x] Run `python -m adjoint_samplers.components.stein_kernel` → "All Stein kernel tests passed!" ✅
 - [ ] Verify Hydra config resolution: `python train.py experiment=dw4_ksd_asbs --cfg job` (dry run)
-- [ ] Verify RotGMM energy: quick forward pass test
-- [ ] Verify Müller-Brown energy: quick forward pass + plot test
 
 ---
 
@@ -140,7 +108,7 @@ Train all baselines with 3 training seeds each. **~50 GPU-hours total.**
 
 ### 2.2 Visualization Benchmark
 
-- [ ] **Müller-Brown baseline** (3 seeds × ~10 min) — `experiment=muller_asbs seed=0,1,2`
+- [ ] **Müller-Brown baseline** (3 seeds × ~10 min) — `experiment=muller_asbs seed=0,1,2` 🔄 RUNNING seed=0
 
 ### 2.3 Non-Molecular Benchmarks
 
@@ -227,7 +195,7 @@ Key metric: **mode coverage fraction** (not W2). KSD-ASBS should find more modes
 
 ### 5.1 Create `evaluate_all.py`
 
-- [ ] Master eval script — loads all checkpoints, generates 2000 samples × 5 eval seeds
+- [x] Master eval script — loads all checkpoints, generates 2000 samples × 5 eval seeds ✅ (file exists)
 - [ ] Metrics computed:
   - `energy_w2`, `dist_w2`, `eq_w2` (molecular benchmarks)
   - `ksd_squared`, `mean_energy`, `std_energy`, `min_energy`, `max_energy`
@@ -255,7 +223,7 @@ Key metric: **mode coverage fraction** (not W2). KSD-ASBS should find more modes
 
 ### 6.1 Create `generate_results.py`
 
-- [ ] Reads `results/*.json`, generates `RESULTS.md`
+- [x] Reads `results/*.json`, generates `RESULTS.md` ✅ (file exists)
 - [ ] Tables: per-benchmark comparison (baseline vs KSD), λ ablation, mode coverage
 - [ ] Figures: energy histograms, λ ablation curves, mode coverage bar chart, Müller-Brown landscape
 - [ ] Chunking timing table

@@ -18,29 +18,31 @@ Y₁ⁱ = -(1/N)∇Φ₀(X₁ⁱ) - (λ/N²) Σⱼ ∇ₓ kₚ(X₁ⁱ, X₁ʲ)
 Stein_ASBS/
 ├── .claude/
 │   ├── skills/
-│   │   ├── SKILL.md              # This file — project conventions & architecture
-│   │   └── math_specs.md         # Full math derivation (Stein kernel, KSD, adjoint eqs)
+│   │   └── SKILL.md              # This file — project conventions & architecture
 │   └── TODO/
-│       ├── TODO.md               # Open tasks & known issues
 │       └── implementation_guide.md  # Step-by-step build plan with full code
-├── train.py                      # Entry point — Hydra-based training script
+├── train.py                      # Entry point — Hydra-based training script (DO NOT MODIFY)
 ├── adjoint_samplers/             # Main package
-│   ├── train_loop.py             # Training loop logic
+│   ├── train_loop.py             # Training loop logic (DO NOT MODIFY)
 │   ├── components/
 │   │   ├── matcher.py            # EXISTING — AdjointVEMatcher, AdjointVPMatcher (DO NOT MODIFY)
 │   │   ├── buffer.py             # EXISTING — BatchBuffer for trajectory data
 │   │   ├── evaluator.py          # EXISTING — SyntheticEnergyEvaluator
+│   │   ├── generic_evaluator.py  # NEW — GenericEnergyEvaluator, RotatedGMMEvaluator
 │   │   ├── model.py              # EXISTING — FourierMLP, EGNN architectures
 │   │   ├── sde.py                # EXISTING — SDE definitions, sdeint, ControlledSDE
 │   │   ├── state_cost.py         # EXISTING — ZeroGradStateCost
 │   │   ├── term_cost.py          # EXISTING — terminal cost (score/corrector)
-│   │   ├── stein_kernel.py       # NEW (to create) — KSD computation, Stein kernel gradient
-│   │   └── ksd_matcher.py        # NEW (to create) — KSDAdjointVE/VPMatcher
+│   │   ├── stein_kernel.py       # NEW — KSD computation, Stein kernel gradient
+│   │   └── ksd_matcher.py        # NEW — KSDAdjointVE/VPMatcher
 │   ├── energies/
 │   │   ├── base_energy.py        # Abstract energy interface
 │   │   ├── double_well_energy.py # DW4 benchmark (8D, 4 particles × 2D)
-│   │   ├── lennard_jones_energy.py # LJ13 (39D) and LJ55 (165D) benchmarks
-│   │   └── dist_energy.py        # Distribution-based energy
+│   │   ├── lennard_jones_energy.py # LJ13/LJ38/LJ55 benchmarks
+│   │   ├── dist_energy.py        # Distribution-based energy
+│   │   ├── rotated_gmm_energy.py # NEW — RotatedGMMEnergy (synthetic CV-unknown)
+│   │   ├── muller_brown_energy.py # NEW — MullerBrownEnergy (2D visualization)
+│   │   └── bayesian_logreg_energy.py # NEW — BayesianLogRegEnergy (non-molecular)
 │   └── utils/
 │       ├── train_utils.py        # get_timesteps, training helpers
 │       ├── eval_utils.py         # interatomic_dist, dist_point_clouds
@@ -51,37 +53,56 @@ Stein_ASBS/
 │   ├── train.yaml                # Top-level training config
 │   ├── experiment/
 │   │   ├── dw4_asbs.yaml         # EXISTING — DW4 baseline
-│   │   ├── dw4_as.yaml           # EXISTING — DW4 without corrector
+│   │   ├── dw4_ksd_asbs.yaml     # NEW — DW4 + KSD
 │   │   ├── lj13_asbs.yaml        # EXISTING — LJ13 baseline
-│   │   ├── lj13_as.yaml          # EXISTING — LJ13 without corrector
+│   │   ├── lj13_ksd_asbs.yaml    # NEW — LJ13 + KSD
+│   │   ├── lj38_asbs.yaml        # NEW — LJ38 baseline (double-funnel)
+│   │   ├── lj38_ksd_asbs.yaml    # NEW — LJ38 + KSD
 │   │   ├── lj55_asbs.yaml        # EXISTING — LJ55 baseline
-│   │   ├── lj55_as.yaml          # EXISTING — LJ55 without corrector
-│   │   ├── demo_asbs.yaml        # EXISTING — demo config
-│   │   ├── demo_memoryless_soc.yaml
-│   │   ├── demo_nonmemoryless_soc.yaml
-│   │   ├── dw4_ksd_asbs.yaml     # NEW (to create) — DW4 + KSD
-│   │   ├── lj13_ksd_asbs.yaml    # NEW (to create) — LJ13 + KSD
-│   │   └── lj55_ksd_asbs.yaml    # NEW (to create) — LJ55 + KSD
+│   │   ├── lj55_ksd_asbs.yaml    # NEW — LJ55 + KSD
+│   │   ├── muller_asbs.yaml      # NEW — Müller-Brown baseline
+│   │   ├── muller_ksd_asbs.yaml  # NEW — Müller-Brown + KSD
+│   │   ├── blogreg_au_asbs.yaml  # NEW — Bayesian LogReg Australian baseline
+│   │   ├── blogreg_au_ksd_asbs.yaml # NEW — Australian + KSD
+│   │   ├── blogreg_ge_asbs.yaml  # NEW — Bayesian LogReg German baseline
+│   │   ├── blogreg_ge_ksd_asbs.yaml # NEW — German + KSD
+│   │   ├── rotgmm10_asbs.yaml    # NEW — RotGMM d=10 baseline
+│   │   ├── rotgmm10_ksd_asbs.yaml # NEW — RotGMM d=10 + KSD
+│   │   ├── rotgmm30_asbs.yaml    # NEW — RotGMM d=30 baseline
+│   │   ├── rotgmm30_ksd_asbs.yaml
+│   │   ├── rotgmm50_asbs.yaml    # NEW — RotGMM d=50 baseline
+│   │   ├── rotgmm50_ksd_asbs.yaml
+│   │   ├── rotgmm100_asbs.yaml   # NEW — RotGMM d=100 baseline
+│   │   └── rotgmm100_ksd_asbs.yaml
 │   ├── matcher/
 │   │   ├── adjoint_ve.yaml       # EXISTING — VE adjoint matcher
 │   │   ├── adjoint_vp.yaml       # EXISTING — VP adjoint matcher
 │   │   ├── corrector.yaml        # EXISTING — corrector matcher
-│   │   └── ksd_adjoint_ve.yaml   # NEW (to create) — KSD VE matcher
+│   │   └── ksd_adjoint_ve.yaml   # NEW — KSD VE matcher
 │   ├── sde/                      # ve.yaml, vp.yaml, graph_ve.yaml, etc.
-│   ├── problem/                  # dw4.yaml, lj13.yaml, lj55.yaml, demo.yaml
+│   ├── problem/                  # dw4, lj13, lj38, lj55, muller, blogreg_*, rotgmm*
 │   ├── source/                   # gauss.yaml, harmonic.yaml, delta.yaml, meanfree.yaml
 │   ├── model/                    # fouriermlp.yaml, egnn.yaml
 │   ├── state_cost/               # zero.yaml
 │   ├── term_cost/                # score_term_cost.yaml, corrector_term_cost.yaml, graph_*
 │   └── lancher/                  # Slurm launcher config
 ├── scripts/
-│   ├── dw4.sh                    # DW4 training script
-│   ├── lj13.sh                   # LJ13 training script
-│   ├── lj55.sh                   # LJ55 training script
-│   ├── demo.sh                   # Demo script
-│   └── download.sh               # Download reference test samples
-├── evaluate_comparison.py        # NEW (to create) — head-to-head eval script
-├── generate_results.py           # NEW (to create) — auto-generate RESULTS.md
+│   ├── dw4.sh                    # DW4 training script (original)
+│   ├── lj13.sh                   # LJ13 training script (original)
+│   ├── lj55.sh                   # LJ55 training script (original)
+│   ├── demo.sh                   # Demo script (original)
+│   ├── download.sh               # Download reference test samples
+│   ├── run_phase2_baselines.sh   # NEW — all baseline training (Phase 2)
+│   ├── run_phase3_ksd.sh         # NEW — KSD training + λ ablation (Phase 3)
+│   ├── run_phase4_synthetic.sh   # NEW — RotGMM experiments (Phase 4)
+│   ├── run_phase4b_cvunknown.sh  # NEW — Müller-Brown experiments (Phase 4b)
+│   ├── run_phase4c_nonmolecular.sh # NEW — BLogReg experiments (Phase 4c)
+│   └── run_phase5_evaluate.sh    # NEW — full evaluation + report (Phase 5)
+├── evaluate_comparison.py        # DW4 baseline vs KSD comparison (early eval)
+├── evaluate_all.py               # NEW — master evaluation script (Phase 5)
+├── generate_results.py           # NEW — auto-generate RESULTS.md (Phase 6)
+├── PLAN.md                       # Experiment execution plan
+├── RESULTS.md                    # Results (auto-generated + manually edited)
 ├── environment.yml               # Conda environment spec
 ├── LICENSE.md                    # Meta license
 └── CONTRIBUTING.md
@@ -116,6 +137,11 @@ Stein_ASBS/
 | `BatchBuffer` | `components/buffer.py` | Stores trajectory samples for AM regression |
 | `EGNN` | `components/model.py` | Equivariant GNN for graph problems (DW4/LJ) |
 | `FourierMLP` | `components/model.py` | MLP with Fourier time embedding (demo) |
+| `GenericEnergyEvaluator` | `components/generic_evaluator.py` | **NEW** — energy W2 eval for non-particle systems |
+| `RotatedGMMEvaluator` | `components/generic_evaluator.py` | **NEW** — adds mode coverage to GenericEnergyEvaluator |
+| `RotatedGMMEnergy` | `energies/rotated_gmm_energy.py` | **NEW** — synthetic CV-unknown benchmark |
+| `MullerBrownEnergy` | `energies/muller_brown_energy.py` | **NEW** — 2D visualization benchmark |
+| `BayesianLogRegEnergy` | `energies/bayesian_logreg_energy.py` | **NEW** — non-molecular posterior sampling |
 
 ### Benchmarks
 
@@ -135,8 +161,8 @@ Stein_ASBS/
 | `ksd_efficient_threshold` | 1024 | Use chunked computation above this |
 
 ## Conventions
-- Conda env: `SML_env`
-- Run scripts: `conda run -n SML_env python -u <script>.py`
+- Conda env: **`Sampling_env`** (NOT `SML_env` — this project needs bgflow + einops)
+- Run scripts: `conda run -n Sampling_env python -u <script>.py`
 - Hydra outputs: `outputs/EXPERIMENT_NAME/SEED/` (config.yaml + checkpoints/)
 - Reference data: downloaded via `scripts/download.sh`
 - Config override: `python train.py experiment=dw4_ksd_asbs ksd_lambda=0.5 seed=0`

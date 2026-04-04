@@ -5,7 +5,7 @@ defaults:
 shared_dir: /checkpoint
 hydra:
   run:
-    dir: ./results/local/${now:%Y.%m.%d}/${now:%H%M%S}
+    dir: ./results/${exp_name}/seed_${seed}
   sweep:
     dir: ./results/${now:%Y.%m.%d}/${now:%H%M%S}
     subdir: ${hydra.job.num}
