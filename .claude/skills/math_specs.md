@@ -63,7 +63,7 @@ $$\sum_{i=1}^N \sum_{j=1}^N c_i c_j k(x_i, x_j) \geq 0$$
 
 **Definition 1.4** (RKHS). The reproducing kernel Hilbert space $\mathcal{H}_k$ associated with a positive definite kernel $k$ is the closure of:
 
-$$\left{\sum_{i=1}^N c_i k(\cdot, x_i) : N \geq 1, c_i \in \mathbb{R}, x_i \in \mathbb{R}^d\right}$$
+$$\left{\sum_{i=1}^N c_i k(\cdot, x_i) : N \geq 1, c_i \in \mathbb{R}, x_i \in \mathbb{R}^d}\right$$
 
 under the inner product $\langle k(\cdot, x), k(\cdot, y)\rangle_{\mathcal{H}_k} = k(x, y)$.
 
