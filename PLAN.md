@@ -166,13 +166,48 @@ Only if DW4/LJ13/LJ38 show improvement.
 - [ ] **Australian, λ=1.0, seed=0,1,2**
 - [ ] **German, λ=1.0, seed=0,1,2**
 
-### 3.7 Ablation: Chunking (DW4, λ=1.0, seed=0)
+### 3.7 Ablation: Bandwidth ℓ (DW4, λ=1.0, seed=0)
+
+The RBF bandwidth ℓ is currently set by the **median heuristic** (ℓ = median pairwise distance). In high dimensions, pairwise distances concentrate around σ√D, making the kernel nearly flat. This ablation tests whether a better ℓ improves results.
+
+- [ ] **ℓ = 0.1 × median** — sharper kernel, more local repulsion
+- [ ] **ℓ = 0.5 × median** — moderate sharpening
+- [ ] **ℓ = 1.0 × median** — current default (baseline for ablation)
+- [ ] **ℓ = 2.0 × median** — smoother kernel
+- [ ] **ℓ = 5.0 × median** — very smooth, long-range repulsion
+
+**Motivation:** The median heuristic is a one-size-fits-all default. If a non-median ℓ improves DW4 results, that suggests per-benchmark tuning of ℓ (or a better adaptive rule) is worthwhile.
+
+**Implementation:** Add `ksd_bandwidth_scale` config parameter to `ksd_matcher.py`. When set, multiply the median bandwidth by this factor. Default = 1.0 (no change).
+
+### 3.8 Ablation: IMQ Kernel vs RBF (RotGMM d=10, d=30, d=50)
+
+The **Inverse Multi-Quadric (IMQ)** kernel k(x,y) = (c² + ‖x-y‖²)^{-1/2} has heavier tails than RBF, meaning it doesn't vanish as fast when points are far apart. This is theoretically better in high-D where pairwise distances concentrate (Gorham & Mackey, 2017).
+
+- [ ] **Implement IMQ kernel** in `stein_kernel.py`: Stein kernel + gradient (closed-form, similar structure to RBF)
+- [ ] **Add `ksd_kernel` config option** to `ksd_matcher.py`: `"rbf"` (default) or `"imq"`
+- [ ] **RotGMM d=10** — IMQ KSD-ASBS, λ=1.0, seed=0
+- [ ] **RotGMM d=30** — IMQ KSD-ASBS, λ=1.0, seed=0
+- [ ] **RotGMM d=50** — IMQ KSD-ASBS, λ=1.0, seed=0
+- [ ] **Compare:** mode coverage + energy_W2 for RBF vs IMQ at each dimension
+
+**Hypothesis:** IMQ should maintain mode-resolving power at d=30–50 where RBF degrades. If confirmed, IMQ becomes the recommended kernel for high-D applications.
+
+**IMQ Stein kernel math:**
+```
+k(x,x') = (c² + ‖x-x'‖²)^{-1/2}
+∇ₓ k = (c² + r²)^{-3/2} · (x'-x)
+∇²ₓ k = (c² + r²)^{-3/2} · [D - 3r²/(c² + r²)]
+Stein kernel: kₚ(x,x') = k · [s^T s' + s^T ∇ₓ' k / k + ∇ₓ k^T s' / k + ∇²ₓₓ' k / k]
+```
+
+### 3.9 Ablation: Chunking (DW4, λ=1.0, seed=0)
 
 - [ ] Full computation (ksd_efficient_threshold=99999)
 - [ ] Chunked (ksd_efficient_threshold=0)
 - Verify: identical loss curves, measure wall-clock overhead
 
-### 3.8 Ablation: Batch Size (DW4, λ=1.0, seed=0)
+### 3.10 Ablation: Batch Size (DW4, λ=1.0, seed=0)
 
 - [ ] resample_batch_size ∈ {64, 128, 256, 512, 1024}
 
@@ -256,14 +291,16 @@ Port WT-ASBS's well-tempered metadynamics bias to our RotGMM setup. Give WT-ASBS
 | Priority | Experiment | Est. Time | Why |
 |----------|-----------|-----------|-----|
 | 1 | DW4 baseline + KSD | ~3 hrs | ✅ **DONE** — proves concept |
-| 2 | Müller-Brown baseline + KSD | ~30 min | Best visualization figure |
-| 3 | RotGMM d=10,30 | ~2 hrs | Proves CV-unknown advantage |
-| 4 | DW4 λ ablation | ~5 hrs | Finds optimal hyperparameter |
-| 5 | LJ38 baseline + KSD | ~24 hrs | Headline real-system result (double funnel) |
-| 6 | Bayesian LogReg | ~2 hrs | Proves generality beyond molecular |
-| 7 | LJ13 baseline + KSD | ~24 hrs | Medium-scale molecular |
-| 8 | RotGMM d=50,100 | ~2 hrs | Dimension scaling |
-| 9 | LJ55 baseline + KSD | ~72 hrs | Only if LJ38 works |
+| 2 | Müller-Brown baseline + KSD | ~30 min | ✅ **DONE** — 2D visualization |
+| 3 | RotGMM d=10,30 | ~2 hrs | ✅ **DONE** — proves CV-unknown advantage |
+| 4 | RotGMM d=50,100 | ~2 hrs | ✅ **DONE (d=50)**, d=100 training — dimension scaling |
+| 5 | **IMQ kernel on RotGMM d=10,30,50** | ~3 hrs | **High-D fix — could recover mode coverage at d=30–50** |
+| 6 | **DW4 ℓ ablation** | ~5 hrs | Bandwidth sensitivity — informs optimal kernel tuning |
+| 7 | DW4 λ ablation | ~5 hrs | Finds optimal hyperparameter |
+| 8 | LJ38 baseline + KSD | ~24 hrs | Headline real-system result (double funnel) |
+| 9 | Bayesian LogReg | ~2 hrs | Proves generality beyond molecular |
+| 10 | LJ13 baseline + KSD | ~24 hrs | Medium-scale molecular |
+| 11 | LJ55 baseline + KSD | ~72 hrs | Only if LJ38 works |
 
 **Total estimated GPU time: ~250–300 hours (parallelizable across seeds).**
 
