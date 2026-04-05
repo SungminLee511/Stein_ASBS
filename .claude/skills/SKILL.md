@@ -78,7 +78,8 @@ Stein_ASBS/
 │   │   ├── adjoint_ve.yaml       # EXISTING — VE adjoint matcher
 │   │   ├── adjoint_vp.yaml       # EXISTING — VP adjoint matcher
 │   │   ├── corrector.yaml        # EXISTING — corrector matcher
-│   │   └── ksd_adjoint_ve.yaml   # NEW — KSD VE matcher
+│   │   ├── ksd_adjoint_ve.yaml   # NEW — KSD VE matcher (RBF kernel)
+│   │   └── ksd_imq_adjoint_ve.yaml # NEW — KSD VE matcher (IMQ kernel)
 │   ├── sde/                      # ve.yaml, vp.yaml, graph_ve.yaml, etc.
 │   ├── problem/                  # dw4, lj13, lj38, lj55, muller, blogreg_*, rotgmm*
 │   ├── source/                   # gauss.yaml, harmonic.yaml, delta.yaml, meanfree.yaml
@@ -160,9 +161,10 @@ Stein_ASBS/
 | Parameter | Default | Notes |
 |-----------|---------|-------|
 | `ksd_lambda` | 1.0 | KSD penalty weight. Ablate over {0.1, 0.5, 1.0, 5.0, 10.0} |
-| `ksd_bandwidth` | null (median heuristic) | RBF bandwidth ℓ. null = auto from data |
+| `ksd_bandwidth` | null (median heuristic) | Kernel bandwidth/scale. null = auto from data |
 | `ksd_max_particles` | 2048 | Subsample if N exceeds this |
 | `ksd_efficient_threshold` | 1024 | Use chunked computation above this |
+| `ksd_kernel` | "rbf" | Kernel type: "rbf" (Gaussian) or "imq" (Inverse Multi-Quadric) |
 
 ## Conventions
 - Conda env: **`Sampling_env`** (NOT `SML_env` — this project needs bgflow + einops)
@@ -172,8 +174,9 @@ Stein_ASBS/
 - Config override: `python train.py experiment=dw4_ksd_asbs ksd_lambda=0.5 seed=0`
 
 ## Math Reference (see `math_specs.md` for full proofs)
-- **Stein kernel**: kₚ(x,x') = K·[s^Ts' + s^Tδ/ℓ² - s'^Tδ/ℓ² + d/ℓ² - r²/ℓ⁴]
-- **Detached gradient**: ∇ₓkₚ ≈ K·[-δ/ℓ²·Γ + (s-s')/ℓ² - 2δ/ℓ⁴] (no Hessian)
+- **RBF Stein kernel**: kₚ(x,x') = K·[s^Ts' + s^Tδ/ℓ² - s'^Tδ/ℓ² + d/ℓ² - r²/ℓ⁴], K=exp(-r²/2ℓ²)
+- **IMQ Stein kernel**: Uses k(x,x')=(c²+r²)^{-1/2} with polynomial tails — better in high-D where RBF goes flat
+- **Detached gradient**: ∇ₓkₚ computed without Hessian (no ∇s terms), O(N²D) cost
 - **Self-annealing**: KSD term vanishes at convergence (ρ=p → KSD²=0)
 - **SVGD connection**: KSD gradient = SVGD update direction
 

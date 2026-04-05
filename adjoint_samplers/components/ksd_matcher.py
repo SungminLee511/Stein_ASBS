@@ -37,6 +37,7 @@ class KSDAdjointVEMatcher(AdjointVEMatcher):
         ksd_bandwidth: float | None = None,
         ksd_max_particles: int = 2048,
         ksd_efficient_threshold: int = 1024,
+        ksd_kernel: str = "rbf",
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -44,6 +45,7 @@ class KSDAdjointVEMatcher(AdjointVEMatcher):
         self.ksd_bandwidth = ksd_bandwidth
         self.ksd_max_particles = ksd_max_particles
         self.ksd_efficient_threshold = ksd_efficient_threshold
+        self.ksd_kernel = ksd_kernel
 
         # Logging
         self._last_ksd = 0.0
@@ -126,16 +128,20 @@ class KSDAdjointVEMatcher(AdjointVEMatcher):
         # Compute Stein kernel gradient sum
         if N_sub > self.ksd_efficient_threshold:
             grad_sum = compute_stein_kernel_gradient_efficient(
-                x1_sub, scores, ell, chunk_size=256
+                x1_sub, scores, ell, chunk_size=256, kernel=self.ksd_kernel
             )
         else:
-            grad_sum = compute_stein_kernel_gradient(x1_sub, scores, ell)
+            grad_sum = compute_stein_kernel_gradient(
+                x1_sub, scores, ell, kernel=self.ksd_kernel
+            )
 
         # KSD correction: (λ / N²) * Σⱼ ∇ₓkₚ(xᵢ, xⱼ)
         ksd_correction = (self.ksd_lambda / (N_sub ** 2)) * grad_sum
 
         # Logging
-        self._last_ksd = compute_ksd_squared(x1_sub, scores, ell).item()
+        self._last_ksd = compute_ksd_squared(
+            x1_sub, scores, ell, kernel=self.ksd_kernel
+        ).item()
         self._last_ksd_grad_norm = ksd_correction.norm(dim=-1).mean().item()
 
         # If we subsampled, only correct the subset
@@ -157,6 +163,7 @@ class KSDAdjointVPMatcher(AdjointVPMatcher):
         ksd_bandwidth: float | None = None,
         ksd_max_particles: int = 2048,
         ksd_efficient_threshold: int = 1024,
+        ksd_kernel: str = "rbf",
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -164,6 +171,7 @@ class KSDAdjointVPMatcher(AdjointVPMatcher):
         self.ksd_bandwidth = ksd_bandwidth
         self.ksd_max_particles = ksd_max_particles
         self.ksd_efficient_threshold = ksd_efficient_threshold
+        self.ksd_kernel = ksd_kernel
         self._last_ksd = 0.0
         self._last_ksd_grad_norm = 0.0
 
