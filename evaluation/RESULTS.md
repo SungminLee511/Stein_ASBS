@@ -201,7 +201,7 @@ Effect of resample_batch_size (N particles per buffer refresh) on KSD correction
 - **KSD-ASBS improves energy_W2 by ~4%** and **KSD² by ~29%** — the KSD penalty noticeably improves distributional quality even at the small λ=0.01.
 - **Note on λ:** λ=1.0 and λ=0.1 both caused NaN/divergence for Müller. The sharp potential gradients near minima amplify the KSD correction, requiring a much smaller λ than molecular benchmarks. This suggests **λ should be tuned per-benchmark**.
 
-*Figures: `evaluation/figures/muller_comparison.png`, `evaluation/figures/muller_all_seeds.png`*
+*Figures: `figures/muller_comparison.png`, `figures/muller_all_seeds.png`*
 
 ---
 
