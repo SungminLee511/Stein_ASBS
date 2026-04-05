@@ -72,6 +72,10 @@ Stein_ASBS/
 │   │   ├── rotgmm30_ksd_asbs.yaml
 │   │   ├── rotgmm50_asbs.yaml    # NEW — RotGMM d=50 baseline
 │   │   ├── rotgmm50_ksd_asbs.yaml
+│   │   ├── rotgmm10_imq_asbs.yaml # NEW — RotGMM d=10 + KSD (IMQ kernel)
+│   │   ├── rotgmm30_imq_asbs.yaml # NEW — RotGMM d=30 + KSD (IMQ kernel)
+│   │   ├── rotgmm50_imq_asbs.yaml # NEW — RotGMM d=50 + KSD (IMQ kernel)
+│   │   ├── rotgmm100_imq_asbs.yaml # NEW — RotGMM d=100 + KSD (IMQ kernel)
 │   │   ├── rotgmm100_asbs.yaml   # NEW — RotGMM d=100 baseline
 │   │   └── rotgmm100_ksd_asbs.yaml
 │   ├── matcher/
@@ -105,7 +109,10 @@ Stein_ASBS/
 │   ├── generate_results.py       # Auto-generate RESULTS.md (Phase 6)
 │   ├── run_phase5_evaluate.sh    # Evaluation run script
 │   ├── RESULTS.md                # Results (auto-generated + manually edited)
+│   ├── eval_imq_ablation.py      # NEW — Evaluate all 4 IMQ experiments (d=10,30,50,100)
+│   ├── plot_imq_ablation.py      # NEW — 3-way comparison figures (Baseline/RBF/IMQ)
 │   ├── eval_results_dw4.json     # DW4 eval metrics
+│   ├── imq_ablation_results.json # Combined IMQ eval results
 │   └── eval_comparison_log.txt   # DW4 comparison log
 ├── PLAN.md                       # Experiment execution plan
 ├── environment.yml               # Conda environment spec

@@ -1,0 +1,124 @@
+
+============================================================
+Evaluating: rotgmm10_imq_asbs (d=10)
+  run_dir: /home/RESEARCH/Stein_ASBS/results/rotgmm10_imq_asbs/seed_0
+============================================================
+  Seed 0...
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.Gauss'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+    energy_w2=0.2448, ksd²=0.0683, modes=2/8
+    nearest_counts=[983, 1017, 0, 0, 0, 0, 0, 0]
+  Seed 1...
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.Gauss'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+    energy_w2=0.1254, ksd²=0.0524, modes=2/8
+    nearest_counts=[1035, 965, 0, 0, 0, 0, 0, 0]
+  Seed 2...
+    energy_w2=0.1639, ksd²=0.0767, modes=2/8
+    nearest_counts=[1049, 951, 0, 0, 0, 0, 0, 0]
+  Seed 3...
+    energy_w2=0.1266, ksd²=0.0601, modes=2/8
+    nearest_counts=[1022, 978, 0, 0, 0, 0, 0, 0]
+  Seed 4...
+    energy_w2=0.1729, ksd²=0.0350, modes=2/8
+    nearest_counts=[1013, 987, 0, 0, 0, 0, 0, 0]
+
+  Summary for rotgmm10_imq_asbs:
+    mean_energy: 5.0533 ± 0.0235
+    energy_w2: 0.1667 ± 0.0435
+    ksd_squared: 0.0585 ± 0.0143
+    n_modes_nearest: 2.0000 ± 0.0000
+  Updated /home/RESEARCH/Stein_ASBS/evaluation/results_rotgmm10/rotgmm10_results.json
+
+============================================================
+Evaluating: rotgmm30_imq_asbs (d=30)
+  run_dir: /home/RESEARCH/Stein_ASBS/results/rotgmm30_imq_asbs/seed_0
+============================================================
+  Seed 0...
+    energy_w2=3.4445, ksd²=1.9816, modes=2/8
+    nearest_counts=[0, 0, 0, 0, 0, 0, 1245, 755]
+  Seed 1...
+    energy_w2=2.6695, ksd²=2.0079, modes=2/8
+    nearest_counts=[0, 0, 0, 0, 0, 0, 1263, 737]
+  Seed 2...
+    energy_w2=2.9233, ksd²=2.0072, modes=2/8
+    nearest_counts=[0, 0, 0, 0, 0, 0, 1289, 711]
+  Seed 3...
+    energy_w2=2.9864, ksd²=2.0033, modes=2/8
+    nearest_counts=[0, 0, 0, 0, 0, 0, 1287, 713]
+  Seed 4...
+    energy_w2=3.1122, ksd²=1.9593, modes=2/8
+    nearest_counts=[0, 0, 0, 0, 0, 0, 1298, 702]
+
+  Summary for rotgmm30_imq_asbs:
+    mean_energy: 17.1783 ± 0.1075
+    energy_w2: 3.0272 ± 0.2537
+    ksd_squared: 1.9918 ± 0.0189
+    n_modes_nearest: 2.0000 ± 0.0000
+  Updated /home/RESEARCH/Stein_ASBS/evaluation/results_rotgmm30/rotgmm30_results.json
+
+============================================================
+Evaluating: rotgmm50_imq_asbs (d=50)
+  run_dir: /home/RESEARCH/Stein_ASBS/results/rotgmm50_imq_asbs/seed_0
+============================================================
+  Seed 0...
+    energy_w2=32.4634, ksd²=30.0133, modes=7/8
+    nearest_counts=[0, 214, 10, 33, 183, 469, 28, 1063]
+  Seed 1...
+    energy_w2=57.9010, ksd²=28.3811, modes=7/8
+    nearest_counts=[0, 207, 17, 33, 164, 478, 31, 1070]
+  Seed 2...
+    energy_w2=41.0726, ksd²=28.4076, modes=7/8
+    nearest_counts=[0, 214, 12, 33, 156, 465, 27, 1093]
+  Seed 3...
+    energy_w2=28.5928, ksd²=27.5492, modes=7/8
+    nearest_counts=[0, 236, 19, 38, 150, 469, 25, 1063]
+  Seed 4...
+    energy_w2=29.4916, ksd²=27.1510, modes=7/8
+    nearest_counts=[0, 226, 13, 23, 164, 438, 29, 1107]
+
+  Summary for rotgmm50_imq_asbs:
+    mean_energy: 41.9327 ± 0.6457
+    energy_w2: 37.9043 ± 10.9269
+    ksd_squared: 28.3004 ± 0.9836
+    n_modes_nearest: 7.0000 ± 0.0000
+  Updated /home/RESEARCH/Stein_ASBS/evaluation/results_rotgmm50/rotgmm50_results.json
+
+============================================================
+Evaluating: rotgmm100_imq_asbs (d=100)
+  run_dir: /home/RESEARCH/Stein_ASBS/results/rotgmm100_imq_asbs/seed_0
+============================================================
+  Seed 0...
+    energy_w2=523252.7675, ksd²=2399378.5000, modes=2/8
+    nearest_counts=[35, 0, 0, 0, 0, 0, 1965, 0]
+  Seed 1...
+    energy_w2=522885.3019, ksd²=2396735.0000, modes=2/8
+    nearest_counts=[37, 0, 0, 0, 0, 0, 1963, 0]
+  Seed 2...
+    energy_w2=525450.1523, ksd²=2409701.2500, modes=3/8
+    nearest_counts=[34, 0, 0, 0, 0, 0, 1965, 1]
+  Seed 3...
+    energy_w2=524732.2126, ksd²=2405430.2500, modes=2/8
+    nearest_counts=[35, 0, 0, 0, 0, 0, 1965, 0]
+  Seed 4...
+    energy_w2=524480.7830, ksd²=2404627.5000, modes=2/8
+    nearest_counts=[35, 0, 0, 0, 0, 0, 1965, 0]
+
+  Summary for rotgmm100_imq_asbs:
+    mean_energy: 522902.7438 ± 940.1271
+    energy_w2: 524160.2435 ± 953.1786
+    ksd_squared: 2403174.5000 ± 4597.2787
+    n_modes_nearest: 2.2000 ± 0.4000
+  Updated /home/RESEARCH/Stein_ASBS/evaluation/results_rotgmm100/rotgmm100_results.json
+
+Saved combined IMQ results to /home/RESEARCH/Stein_ASBS/evaluation/imq_ablation_results.json
+
+======================================================================
+IMQ ABLATION SUMMARY
+======================================================================
+Experiment                     |          energy_W2 |               KSD² |  Modes
+------------------------------------------------------------------------------
+rotgmm10_imq_asbs              |   0.1667±0.0435   |   0.0585±0.0143   |  2.0/8
+rotgmm30_imq_asbs              |   3.0272±0.2537   |   1.9918±0.0189   |  2.0/8
+rotgmm50_imq_asbs              |  37.9043±10.9269  |  28.3004±0.9836   |  7.0/8
+rotgmm100_imq_asbs             | 524160.2435±953.1786 | 2403174.5000±4597.2787 |  2.2/8

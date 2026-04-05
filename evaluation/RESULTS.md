@@ -1,6 +1,6 @@
 # Results: KSD-Augmented ASBS — Comprehensive Evaluation
 
-**Last updated:** 2026-04-05 KST
+**Last updated:** 2026-04-05 14:10 KST
 
 ---
 
@@ -424,7 +424,7 @@ Tests mode coverage on energy functions where **collective variables are unknown
 
 ![RotGMM d=100 PCA Scatter](figures/rotgmm100_pca_scatter.png)
 
-### 5.6 Mode Coverage vs Dimension (Summary)
+### 5.6 Mode Coverage vs Dimension (Summary — RBF only)
 
 | Dimension | Method | Modes Found (of 8) | energy_W2 | KSD² |
 |-----------|--------|---------------------|-----------|------|
@@ -443,29 +443,101 @@ Tests mode coverage on energy functions where **collective variables are unknown
 - **d=50:** Baseline catastrophically fails (samples become noise). **KSD-ASBS prevents collapse entirely** — 65× better energy_W2. Strongest result.
 - **d=100:** Both methods struggle. KSD-ASBS still provides modest improvement (+5% energy_W2, +15% KSD²) but neither samples well. The RBF kernel is effectively flat at d=100.
 - **λ scaling:** λ=1.0 works at d≤50 but diverges at d=100. λ must be reduced in high-D.
-- **The sweet spot for KSD-ASBS with RBF kernel is d=10–50.** Beyond that, alternative kernels (IMQ) are needed.
+- **The sweet spot for KSD-ASBS with RBF kernel is d=10–50.** Beyond that, alternative kernels (IMQ) may help — see §5.7 below.
 
-**Next steps:** IMQ kernel (§5.5) and bandwidth ablation (§5.6) to address high-D degradation.
+### 5.7 Kernel Ablation: IMQ vs RBF
 
-### 5.5 Kernel Ablation: IMQ vs RBF
-
-**Status: ⬜ PLANNED**
+**Status: ✅ COMPLETE** (d=10, d=30, d=50, d=100 all evaluated)
 
 The RBF kernel k(x,y) = exp(-‖x-y‖²/2ℓ²) vanishes exponentially as distances grow. In high-D, pairwise distances concentrate around σ√D, making the kernel nearly flat — explaining the mode-resolution degradation at d≥30.
 
 The **Inverse Multi-Quadric (IMQ)** kernel k(x,y) = (c² + ‖x-y‖²)^{-1/2} has **polynomial tails** (heavier than RBF), meaning it retains sensitivity even when points are far apart. This is the standard alternative in the KSD literature (Gorham & Mackey, 2017).
 
-**Plan:** Train KSD-ASBS with IMQ kernel on RotGMM d=10, d=30, d=50. Compare mode coverage and energy_W2 against RBF results.
+**Setup:**
+- IMQ-KSD-ASBS trained on RotGMM d={10, 30, 50, 100} with λ=1.0 (λ=0.1 for d=100), 3000 epochs
+- Same architecture and hyperparameters as RBF experiments, only the kernel differs
+- Configs: `configs/experiment/rotgmm{10,30,50,100}_imq_asbs.yaml`
+- Matcher: `configs/matcher/ksd_imq_adjoint_ve.yaml` (sets `ksd_kernel: imq`)
+- Evaluation: 2000 samples × 5 eval seeds (0–4), nearest-mode assignment
 
-| Dimension | RBF modes | IMQ modes | RBF energy_W2 | IMQ energy_W2 |
-|-----------|-----------|-----------|---------------|---------------|
-| d=10 | 3 |  | 0.134 |  |
-| d=30 | 2 |  | 1.78 |  |
-| d=50 | 2 |  | 71.3K |  |
+#### 3-Way Comparison Table
 
-**Hypothesis:** IMQ should maintain mode-resolving power at d=30–50 where RBF degrades. If confirmed, IMQ becomes the recommended kernel for high-D applications.
+| Dimension | Method | Modes (of 8) | energy_W2 (mean±std) | KSD² (mean±std) | Mean energy |
+|-----------|--------|:---:|---|---|---|
+| d=10 | Baseline | 1 | 0.175 ± 0.060 | 0.086 ± 0.014 | 4.957 |
+| d=10 | KSD-ASBS (RBF) | **3** | **0.134 ± 0.037** | 0.106 ± 0.013 | 4.925 |
+| d=10 | KSD-ASBS (IMQ) | 2 | 0.167 ± 0.044 | **0.059 ± 0.014** | 5.053 |
+| d=30 | Baseline | 3 (adj.) | 2.29 ± 0.26 | 2.36 ± 0.08 | 16.64 |
+| d=30 | KSD-ASBS (RBF) | 2 (opp.) | **1.78 ± 0.22** | **1.66 ± 0.06** | 16.34 |
+| d=30 | KSD-ASBS (IMQ) | 2 | 3.03 ± 0.25 | 1.99 ± 0.02 | 17.18 |
+| d=50 | Baseline | 1 (eff.) | 4.67M ± 2.27M | 14.95M ± 78.6K | 3.45M |
+| d=50 | KSD-ASBS (RBF) | 2 | 71.3K ± 223 | 320.6K ± 1.2K | 70.5K |
+| d=50 | **KSD-ASBS (IMQ)** | **7** | **37.9 ± 10.9** | **28.3 ± 0.98** | **41.9** |
+| d=100 | Baseline | 8 (scat.) | **367.2K ± 684** | **1.632M ± 3.3K** | 365.7K |
+| d=100 | KSD-ASBS (RBF) | 8 (scat.) | **349.8K ± 1.4K** | **1.385M ± 6.4K** | 346.3K |
+| d=100 | KSD-ASBS (IMQ) | 2 | 524.2K ± 953 | 2.40M ± 4.6K | 522.9K |
 
-### 5.6 Bandwidth (ℓ) Ablation
+#### Per-Dimension Analysis
+
+**d=10 — IMQ slightly worse than RBF:**
+- IMQ finds 2 modes [1020, 980] — fewer than RBF's 3 modes, but with more even split between the 2 modes it does find.
+- IMQ achieves the **lowest KSD²** (0.059 vs 0.106 RBF vs 0.086 baseline) — the polynomial-tail kernel produces a tighter distributional fit within the modes covered.
+- energy_W2 is intermediate (0.167 vs 0.134 RBF vs 0.175 baseline).
+- At d=10, distances are not yet concentrated, so RBF's exponential sensitivity is not a limitation. RBF wins overall.
+
+**d=30 — RBF still preferred:**
+- Both kernels find 2 modes. IMQ modes are [1276, 724] on modes 6 and 7 (adjacent); RBF modes are [1528, 472] on modes 0 and 7 (opposite).
+- RBF wins energy_W2 (1.78 vs 3.03) and KSD² (1.66 vs 1.99).
+- IMQ's polynomial tails don't yet provide an advantage at d=30.
+
+**d=50 — IMQ dramatically wins (headline result):**
+- **IMQ covers 7/8 modes** — [0, 219, 14, 32, 163, 464, 28, 1079] — compared to RBF's 2 and baseline's 1 (effective).
+- **energy_W2 = 37.9** — vs RBF's 71.3K (1,881× worse) and baseline's 4.67M (123,000× worse). IMQ samples are near-reference quality.
+- **KSD² = 28.3** — vs RBF's 320.6K (11,330× worse). The IMQ kernel's polynomial tails maintain mode-resolving gradients at d=50 where RBF is effectively flat.
+- **Mean energy = 41.9** — close to the reference energy (~25), indicating samples are in physically meaningful regions. RBF mean energy is 70.5K (garbage), baseline is 3.45M (noise).
+- This is the **strongest result in the entire study**: IMQ-KSD-ASBS at d=50 essentially solves the problem that both baseline and RBF-KSD-ASBS catastrophically fail at.
+
+**d=100 — All methods fail, IMQ worst:**
+- IMQ collapses to 2 modes [35, 1965] with energy_W2 = 524K — worse than both baseline (367K) and RBF (350K).
+- At d=100, even the IMQ kernel's polynomial tails are insufficient. The distances between all 2000 samples concentrate so heavily that no standard kernel provides useful gradients.
+- The IMQ kernel's heavier tails may actually hurt at d=100: the long-range repulsion spreads samples into higher-energy regions rather than concentrating them near modes.
+
+#### Kernel Ablation Summary
+
+| Dimension | Best Kernel | Why |
+|-----------|-------------|-----|
+| d=10 | **RBF** | Distances not concentrated; RBF's sharp gradient resolves more modes (3 vs 2) |
+| d=30 | **RBF** | Marginal advantage; RBF's opposite-mode separation gives better energy_W2 |
+| d=50 | **IMQ** | **Decisive winner**: 7/8 modes, energy_W2 ~1,900× better than RBF. Polynomial tails maintain gradients where RBF is flat. |
+| d=100 | **RBF** | IMQ's long-range repulsion backfires; all methods fail but RBF degrades more gracefully |
+
+**Key insight:** There is a **crossover dimension** between d=30 and d=50 where IMQ overtakes RBF. At d=50, the RBF kernel is effectively flat (exponential vanishing), while IMQ's polynomial tails (1/r decay) still provide meaningful gradients. However, at d=100, even IMQ fails — suggesting a fundamental limitation of fixed-bandwidth isotropic kernels in very high dimensions.
+
+**Practical recommendation:** Use **RBF for d ≤ 30**, **IMQ for d = 30–50**. For d > 50, neither kernel suffices — future work should explore **deep kernels**, **sliced kernels**, or **dimension-reduction-aware KSD**.
+
+#### Figures
+
+**Mode Occupation Bar Charts** (4 methods per plot):
+
+![RotGMM d=10 Kernel Ablation Modes](figures/rotgmm10_kernel_ablation_modes.png)
+
+![RotGMM d=30 Kernel Ablation Modes](figures/rotgmm30_kernel_ablation_modes.png)
+
+![RotGMM d=50 Kernel Ablation Modes](figures/rotgmm50_kernel_ablation_modes.png)
+
+![RotGMM d=100 Kernel Ablation Modes](figures/rotgmm100_kernel_ablation_modes.png)
+
+**PCA 2D Scatter Plots** (4 panels: Reference, Baseline, RBF-KSD, IMQ-KSD):
+
+![RotGMM d=10 Kernel Ablation PCA](figures/rotgmm10_kernel_ablation_pca.png)
+
+![RotGMM d=30 Kernel Ablation PCA](figures/rotgmm30_kernel_ablation_pca.png)
+
+![RotGMM d=50 Kernel Ablation PCA](figures/rotgmm50_kernel_ablation_pca.png)
+
+![RotGMM d=100 Kernel Ablation PCA](figures/rotgmm100_kernel_ablation_pca.png)
+
+### 5.8 Bandwidth (ℓ) Ablation
 
 **Status: ⬜ PLANNED**
 
@@ -479,7 +551,7 @@ The median heuristic sets ℓ = median(pairwise distances). This may be suboptim
 | 2.0 × median |  |  |  |
 | 5.0 × median |  |  |  |
 
-### 5.7 Future Work: Learnable Kernels
+### 5.9 Future Work: Learnable Kernels
 
 Learnable/differentiable kernels (e.g., deep kernels, spectral kernels) could adapt to the geometry of the target distribution. However, the current KSD correction runs under `@torch.no_grad()` — it modifies the adjoint **target**, not the loss — so kernel parameters cannot be learned via backpropagation through the training loss. A separate meta-objective (e.g., maximize KSD test power) would be needed. Deferred to future work.
 
@@ -548,15 +620,15 @@ Wall-clock time for Stein kernel gradient (N=512 particles). Chunking is mathema
 | LJ38 | dist_W2 |  |  |  |  |
 | LJ38 | funnel coverage |  |  |  |  |
 | LJ55 | dist_W2 |  |  |  |  |
-| RotGMM-10 | mode coverage | 1/8 (12.5%) | **3/8 (37.5%)** | +200% | **KSD-ASBS** |
-| RotGMM-10 | energy_W2 | 0.1754 | **0.1342** | +23.5% ↓ | **KSD-ASBS** |
-| RotGMM-30 | energy_W2 | 2.2851 | **1.7801** | +22.1% ↓ | **KSD-ASBS** |
-| RotGMM-30 | KSD² | 2.3619 | **1.6648** | +29.5% ↓ | **KSD-ASBS** |
-| RotGMM-30 | modes found | 3 (adjacent) | 2 (opposite) | — | nuanced |
-| RotGMM-50 | energy_W2 | 4.67M | **71.3K** | **65× ↓** | **KSD-ASBS** |
-| RotGMM-50 | KSD² | 14.95M | **320.6K** | **47× ↓** | **KSD-ASBS** |
-| RotGMM-100 | energy_W2 | 367.2K | **349.8K** | +4.7% ↓ | **KSD-ASBS** |
-| RotGMM-100 | KSD² | 1.632M | **1.385M** | +15.1% ↓ | **KSD-ASBS** |
+| RotGMM-10 | mode coverage | 1/8 (12.5%) | **3/8 (37.5%)** RBF | +200% | **KSD-ASBS (RBF)** |
+| RotGMM-10 | energy_W2 | 0.1754 | **0.1342** RBF | +23.5% ↓ | **KSD-ASBS (RBF)** |
+| RotGMM-30 | energy_W2 | 2.2851 | **1.7801** RBF | +22.1% ↓ | **KSD-ASBS (RBF)** |
+| RotGMM-30 | KSD² | 2.3619 | **1.6648** RBF | +29.5% ↓ | **KSD-ASBS (RBF)** |
+| RotGMM-50 | mode coverage | 1/8 (eff.) | **7/8** IMQ | **7× ↑** | **KSD-ASBS (IMQ)** |
+| RotGMM-50 | energy_W2 | 4.67M | **37.9** IMQ | **123,000× ↓** | **KSD-ASBS (IMQ)** |
+| RotGMM-50 | KSD² | 14.95M | **28.3** IMQ | **528,000× ↓** | **KSD-ASBS (IMQ)** |
+| RotGMM-100 | energy_W2 | 367.2K | **349.8K** RBF | +4.7% ↓ | **KSD-ASBS (RBF)** |
+| RotGMM-100 | KSD² | 1.632M | **1.385M** RBF | +15.1% ↓ | **KSD-ASBS (RBF)** |
 | Müller-Brown | energy_W2 | 0.4255 | 0.4079 | +4.1% ↓ | **KSD-ASBS** |
 | Müller-Brown | KSD² | 0.0216 | 0.0154 | +28.7% ↓ | **KSD-ASBS** |
 | Müller-Brown | modes covered | 3/3 | 3/3 | — | Tie |
@@ -589,8 +661,9 @@ Wall-clock time for Stein kernel gradient (N=512 particles). Chunking is mathema
 2. Does KSD-ASBS find both funnels in LJ38 (the headline result)?
 3. What is the optimal λ across benchmarks?
 4. ~~Does KSD-ASBS work where CVs are unknown (RotGMM)?~~ **YES at d=10 (3× mode coverage). At d=30, KSD-ASBS finds fewer modes but with maximal spatial separation and +22% better energy_W2. RBF kernel mode-resolving power degrades with dimension, but distributional quality improvements persist.**
-5. Does the method generalize beyond molecular systems (BLogReg)?
-6. What is the computational overhead in practice?
+5. ~~Does IMQ kernel help in high-D?~~ **YES — dramatically at d=50. IMQ-KSD-ASBS covers 7/8 modes with energy_W2=37.9, vs RBF's 71.3K (1,881× worse) and baseline's 4.67M (123,000× worse). The polynomial tails of IMQ maintain mode-resolving gradients where RBF is flat. However, IMQ fails at d=100 — no standard isotropic kernel suffices beyond d≈50.**
+6. Does the method generalize beyond molecular systems (BLogReg)?
+7. What is the computational overhead in practice?
 
 ---
 

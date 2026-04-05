@@ -137,6 +137,8 @@ def main(cfg):
         evaluator = hydra.utils.instantiate(cfg.evaluator, energy=energy)
 
 
+        best_eval_metric = float('inf')  # track best for checkpoint_best.pt
+
         print(f"Starting from {start_epoch}/{cfg.num_epochs} epochs...")
         for epoch in range(start_epoch, cfg.num_epochs):
             stage = train_utils.determine_stage(epoch, cfg)
@@ -208,6 +210,35 @@ def main(cfg):
                         eval_dict["hist_img"].save(eval_dir / "gen.png")
 
                     writer.log(eval_dict, step=epoch)
+
+                    # --- Best checkpoint saving ---
+                    # Use energy_W2 if available, else use negative log_Z_lb (lower is better)
+                    eval_metric = None
+                    if "energy_W2" in eval_dict:
+                        eval_metric = eval_dict["energy_W2"]
+                    elif "log_Z_lb" in eval_dict:
+                        eval_metric = -eval_dict["log_Z_lb"]  # higher log_Z_lb is better
+
+                    if eval_metric is not None and eval_metric < best_eval_metric:
+                        best_eval_metric = eval_metric
+                        metric_name = "energy_W2" if "energy_W2" in eval_dict else "log_Z_lb"
+                        print(f"New best {metric_name}: {eval_metric:.4f} @ epoch {epoch} — saving checkpoint_best.pt")
+                        ckpt_dir = Path("checkpoints")
+                        ckpt_dir.mkdir(exist_ok=True)
+                        def _get_sd(module):
+                            if cfg.distributed and hasattr(module, "module"):
+                                return module.module.state_dict()
+                            return module.state_dict()
+                        best_state = {
+                            "epoch": epoch,
+                            "cfg": cfg,
+                            "optimizer": optimizer.state_dict(),
+                            "controller": _get_sd(controller),
+                            "best_eval_metric": float(eval_metric),
+                        }
+                        if corrector is not None:
+                            best_state["corrector"] = _get_sd(corrector)
+                        torch.save(best_state, ckpt_dir / "checkpoint_best.pt")
 
                 print("Saving checkpoint ... ")
                 train_utils.save(
