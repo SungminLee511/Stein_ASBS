@@ -215,19 +215,17 @@ def plot_marginal_evolution(
 
     fig, axes = plt.subplots(1, n_snapshots, figsize=(5 * n_snapshots, 5.5))
 
+    color = '#d62728' if method_name == 'ASBS' else '#ff7f0e'
+
     for panel_idx, state_idx in enumerate(indices):
         ax = axes[panel_idx]
         t_val = ts[state_idx].item()
         samples = states[state_idx].cpu().numpy()
 
-        # Background: target density contours
-        plot_density_contours(ax, energy, xlim, ylim)
+        # Scatter samples only (no ground truth overlay)
+        ax.scatter(samples[:, 0], samples[:, 1], s=4, c=color, alpha=0.4, zorder=5)
 
-        # Scatter samples
-        ax.scatter(samples[:, 0], samples[:, 1], s=4, c='#d62728' if 'ASBS' == method_name else '#ff7f0e',
-                   alpha=0.4, zorder=5)
-
-        # Mode centers
+        # Mode centers for reference
         c = centers.cpu().numpy()
         ax.scatter(c[:, 0], c[:, 1], marker='*', s=80, c='black',
                    zorder=10, edgecolors='white', linewidths=0.5)
@@ -235,6 +233,7 @@ def plot_marginal_evolution(
         ax.set_xlim(xlim)
         ax.set_ylim(ylim)
         ax.set_aspect('equal')
+        ax.set_facecolor('#f7f7f7')
         ax.set_title(f't = {t_val:.2f}', fontsize=13, fontweight='bold')
 
     fig.suptitle(f'{benchmark_name}: {method_name} — Marginal Evolution', fontsize=16, y=1.02)
