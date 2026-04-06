@@ -1,6 +1,6 @@
 # 2D Visualization Benchmark Results
 
-Generated: 2026-04-07 08:23:18 KST
+Generated: 2026-04-07 08:27:00 KST
 
 ---
 
@@ -124,9 +124,9 @@ Generated: 2026-04-07 08:23:18 KST
 | Metric | ASBS (Baseline) | KSD-ASBS (lambda=0.1) |
 |---|---|---|
 | Modes covered (of 2) | 2 | 0 |
-| Mean energy | 1.0420 | 2.3656 |
-| Std energy | 1.3289 | 1.1847 |
-| Per-mode counts | [15, 47] | [0, 0] |
+| Mean energy | 1.0235 | 164350.9531 |
+| Std energy | 1.1465 | 16040.8242 |
+| Per-mode counts | [15, 71] | [0, 0] |
 
 ### Terminal Distribution
 

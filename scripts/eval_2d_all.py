@@ -293,7 +293,6 @@ BENCHMARKS = {
         'xlim': (-8, 8), 'ylim': (-8, 8),
         'baseline': RESULTS_DIR / 'nested_rings_asbs' / 'seed_0',
         'ksd': RESULTS_DIR / 'nested_rings_ksd_asbs' / 'seed_0',
-        'ksd_ckpt': str(RESULTS_DIR / 'nested_rings_ksd_asbs' / 'seed_0' / 'checkpoints' / 'checkpoint_700.pt'),
         'ksd_lambda': 0.1,
     },
 }
