@@ -1,6 +1,6 @@
 # 2D Visualization Benchmark Results
 
-Generated: 2026-04-07 08:27:00 KST
+Generated: 2026-04-07 08:29:33 KST
 
 ---
 
@@ -47,29 +47,6 @@ Generated: 2026-04-07 08:27:00 KST
 ### Marginal Evolution: KSD-ASBS
 
 ![two_moons marginal ksd](figures_2d/two_moons_marginal_ksd.png)
-
----
-
-## Pinwheel (5-arm)
-
-| Metric | ASBS (Baseline) | KSD-ASBS (lambda=0.1) |
-|---|---|---|
-| Modes covered (of 5) | 5 | 4 |
-| Mean energy | 1.0253 | 1.1125 |
-| Std energy | 1.0745 | 1.2859 |
-| Per-mode counts | [300, 586, 481, 313, 313] | [1069, 408, 0, 212, 297] |
-
-### Terminal Distribution
-
-![pinwheel terminal](figures_2d/pinwheel_terminal.png)
-
-### Marginal Evolution: ASBS
-
-![pinwheel marginal asbs](figures_2d/pinwheel_marginal_asbs.png)
-
-### Marginal Evolution: KSD-ASBS
-
-![pinwheel marginal ksd](figures_2d/pinwheel_marginal_ksd.png)
 
 ---
 
@@ -124,9 +101,9 @@ Generated: 2026-04-07 08:27:00 KST
 | Metric | ASBS (Baseline) | KSD-ASBS (lambda=0.1) |
 |---|---|---|
 | Modes covered (of 2) | 2 | 0 |
-| Mean energy | 1.0235 | 164350.9531 |
-| Std energy | 1.1465 | 16040.8242 |
-| Per-mode counts | [15, 71] | [0, 0] |
+| Mean energy | 0.9022 | 2.3656 |
+| Std energy | 0.9165 | 1.1847 |
+| Per-mode counts | [26, 72] | [0, 0] |
 
 ### Terminal Distribution
 

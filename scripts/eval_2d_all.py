@@ -267,13 +267,6 @@ BENCHMARKS = {
         'ksd': RESULTS_DIR / 'two_moons_ksd_asbs' / 'seed_0',
         'ksd_lambda': 0.01,
     },
-    'pinwheel': {
-        'name': 'Pinwheel (5-arm)',
-        'xlim': (-4, 4), 'ylim': (-4, 4),
-        'baseline': RESULTS_DIR / 'pinwheel_asbs' / 'seed_0',
-        'ksd': RESULTS_DIR / 'pinwheel_ksd_asbs' / 'seed_0',
-        'ksd_lambda': 0.1,
-    },
     'checkerboard': {
         'name': 'Checkerboard (4x4)',
         'xlim': (-5, 5), 'ylim': (-5, 5),
@@ -293,6 +286,7 @@ BENCHMARKS = {
         'xlim': (-8, 8), 'ylim': (-8, 8),
         'baseline': RESULTS_DIR / 'nested_rings_asbs' / 'seed_0',
         'ksd': RESULTS_DIR / 'nested_rings_ksd_asbs' / 'seed_0',
+        'ksd_ckpt': str(RESULTS_DIR / 'nested_rings_ksd_asbs' / 'seed_0' / 'checkpoints' / 'checkpoint_700.pt'),
         'ksd_lambda': 0.1,
     },
 }
