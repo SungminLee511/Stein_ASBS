@@ -1,0 +1,15 @@
+# @package _global_
+
+dim: 2
+n_particles: 1
+spatial_dim: 2
+
+energy:
+  _target_: adjoint_samplers.energies.viz_energies.Ring8Energy
+  dim: ${dim}
+  radius: 5.0
+  std: 0.3
+  n_modes: 8
+
+evaluator:
+  _target_: adjoint_samplers.components.generic_evaluator.GenericEnergyEvaluator

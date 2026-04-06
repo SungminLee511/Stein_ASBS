@@ -42,7 +42,8 @@ Stein_ASBS/
 │   │   ├── dist_energy.py        # Distribution-based energy
 │   │   ├── rotated_gmm_energy.py # NEW — RotatedGMMEnergy (synthetic CV-unknown)
 │   │   ├── muller_brown_energy.py # NEW — MullerBrownEnergy (2D visualization)
-│   │   └── bayesian_logreg_energy.py # NEW — BayesianLogRegEnergy (non-molecular)
+│   │   ├── bayesian_logreg_energy.py # NEW — BayesianLogRegEnergy (non-molecular)
+│   │   └── viz_energies.py       # NEW — GMM9Energy, Ring8Energy, BananaEnergy (2D viz benchmarks)
 │   └── utils/
 │       ├── train_utils.py        # get_timesteps, training helpers
 │       ├── eval_utils.py         # interatomic_dist, dist_point_clouds
@@ -78,7 +79,13 @@ Stein_ASBS/
 │   │   ├── rotgmm50_imq_asbs.yaml # NEW — RotGMM d=50 + KSD (IMQ kernel)
 │   │   ├── rotgmm100_imq_asbs.yaml # NEW — RotGMM d=100 + KSD (IMQ kernel)
 │   │   ├── rotgmm100_asbs.yaml   # NEW — RotGMM d=100 baseline
-│   │   └── rotgmm100_ksd_asbs.yaml
+│   │   ├── rotgmm100_ksd_asbs.yaml
+│   │   ├── gmm9_asbs.yaml        # NEW — 2D GMM9 baseline
+│   │   ├── gmm9_ksd_asbs.yaml    # NEW — 2D GMM9 + KSD
+│   │   ├── ring8_asbs.yaml       # NEW — 2D Ring8 baseline
+│   │   ├── ring8_ksd_asbs.yaml   # NEW — 2D Ring8 + KSD
+│   │   ├── banana_asbs.yaml      # NEW — 2D Banana baseline
+│   │   └── banana_ksd_asbs.yaml  # NEW — 2D Banana + KSD
 │   ├── matcher/
 │   │   ├── adjoint_ve.yaml       # EXISTING — VE adjoint matcher
 │   │   ├── adjoint_vp.yaml       # EXISTING — VP adjoint matcher
@@ -86,7 +93,7 @@ Stein_ASBS/
 │   │   ├── ksd_adjoint_ve.yaml   # NEW — KSD VE matcher (RBF kernel)
 │   │   └── ksd_imq_adjoint_ve.yaml # NEW — KSD VE matcher (IMQ kernel)
 │   ├── sde/                      # ve.yaml, vp.yaml, graph_ve.yaml, etc.
-│   ├── problem/                  # dw4, lj13, lj38, lj55, muller, blogreg_*, rotgmm*
+│   ├── problem/                  # dw4, lj13, lj38, lj55, muller, blogreg_*, rotgmm*, gmm9, ring8, banana
 │   ├── source/                   # gauss.yaml, harmonic.yaml, delta.yaml, meanfree.yaml
 │   ├── model/                    # fouriermlp.yaml, egnn.yaml
 │   ├── state_cost/               # zero.yaml
@@ -104,7 +111,8 @@ Stein_ASBS/
 │   ├── run_phase4_synthetic.sh   # NEW — RotGMM experiments (Phase 4)
 │   ├── run_phase4b_cvunknown.sh  # NEW — Müller-Brown experiments (Phase 4b)
 │   ├── run_phase4c_nonmolecular.sh # NEW — BLogReg experiments (Phase 4c)
-│   └── run_phase5_evaluate.sh    # NEW — full evaluation + report (Phase 5)
+│   ├── run_phase5_evaluate.sh    # NEW — full evaluation + report (Phase 5)
+│   └── eval_2d_viz.py            # NEW — 2D viz eval + figure generation (terminal dist + trajectories)
 ├── evaluation/                   # All evaluation-related files
 │   ├── evaluate_comparison.py    # DW4 baseline vs KSD comparison (early eval)
 │   ├── evaluate_all.py           # Master evaluation script (Phase 5)
