@@ -259,6 +259,43 @@ BENCHMARKS = {
         'ksd': RESULTS_DIR / 'gmm9_ksd_nowarmup' / 'seed_0',
         'ksd_lambda': 0.01,
     },
+    'two_moons': {
+        'name': 'Two Moons',
+        'xlim': (-2, 3), 'ylim': (-2, 2),
+        'baseline': RESULTS_DIR / 'two_moons_asbs' / 'seed_0',
+        'baseline_ckpt': str(RESULTS_DIR / 'two_moons_asbs' / 'seed_0' / 'checkpoints' / 'checkpoint_700.pt'),
+        'ksd': RESULTS_DIR / 'two_moons_ksd_asbs' / 'seed_0',
+        'ksd_lambda': 0.01,
+    },
+    'pinwheel': {
+        'name': 'Pinwheel (5-arm)',
+        'xlim': (-4, 4), 'ylim': (-4, 4),
+        'baseline': RESULTS_DIR / 'pinwheel_asbs' / 'seed_0',
+        'ksd': RESULTS_DIR / 'pinwheel_ksd_asbs' / 'seed_0',
+        'ksd_lambda': 0.1,
+    },
+    'checkerboard': {
+        'name': 'Checkerboard (4x4)',
+        'xlim': (-5, 5), 'ylim': (-5, 5),
+        'baseline': RESULTS_DIR / 'checkerboard_asbs' / 'seed_0',
+        'ksd': RESULTS_DIR / 'checkerboard_ksd_asbs' / 'seed_0',
+        'ksd_lambda': 0.1,
+    },
+    'spiral': {
+        'name': 'Spiral',
+        'xlim': (-5, 5), 'ylim': (-5, 5),
+        'baseline': RESULTS_DIR / 'spiral_asbs' / 'seed_0',
+        'ksd': RESULTS_DIR / 'spiral_ksd_asbs' / 'seed_0',
+        'ksd_lambda': 0.01,
+    },
+    'nested_rings': {
+        'name': 'Nested Rings',
+        'xlim': (-8, 8), 'ylim': (-8, 8),
+        'baseline': RESULTS_DIR / 'nested_rings_asbs' / 'seed_0',
+        'ksd': RESULTS_DIR / 'nested_rings_ksd_asbs' / 'seed_0',
+        'ksd_ckpt': str(RESULTS_DIR / 'nested_rings_ksd_asbs' / 'seed_0' / 'checkpoints' / 'checkpoint_700.pt'),
+        'ksd_lambda': 0.1,
+    },
 }
 
 
@@ -271,8 +308,9 @@ def evaluate_benchmark(bench_key, bench_cfg, device, n_samples=2000):
     baseline_ckpt = bench_cfg.get('baseline_ckpt', None)
     print(f"  Loading baseline ASBS...{f' (ckpt: {Path(baseline_ckpt).name})' if baseline_ckpt else ''}")
     sde_base, src_base, energy, ts_base = load_model(bench_cfg['baseline'], device, ckpt_override=baseline_ckpt)
-    print("  Loading KSD-ASBS...")
-    sde_ksd, src_ksd, _, ts_ksd = load_model(bench_cfg['ksd'], device)
+    ksd_ckpt = bench_cfg.get('ksd_ckpt', None)
+    print(f"  Loading KSD-ASBS...{f' (ckpt: {Path(ksd_ckpt).name})' if ksd_ckpt else ''}")
+    sde_ksd, src_ksd, _, ts_ksd = load_model(bench_cfg['ksd'], device, ckpt_override=ksd_ckpt)
 
     centers = energy.get_centers().to(device)
     std = energy.get_std()

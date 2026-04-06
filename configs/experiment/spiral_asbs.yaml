@@ -1,0 +1,38 @@
+# @package _global_
+
+defaults:
+  - /problem: spiral
+  - /source: gauss
+  - /sde@ref_sde: ve
+  - /model@controller: fouriermlp
+  - /state_cost: zero
+  - /term_cost: score_term_cost
+  - /matcher@adjoint_matcher: adjoint_ve
+
+exp_name: spiral_asbs
+
+# === source ===
+scale: 0.5
+
+# === sde ===
+nfe: 100
+sigma_max: 5
+sigma_min: 0.01
+rescale_t: null
+
+# === training ===
+num_epochs: 3000
+max_grad_E_norm: 50
+
+adjoint_matcher:
+  buffer_size: 10000
+  duplicates: 10
+  resample_size: 1000
+  num_epochs_per_stage: ${num_epochs}
+  optim:
+    lr: 1e-3
+    weight_decay: 0
+
+# === eval & logging ===
+use_wandb: false
+eval_freq: 200
