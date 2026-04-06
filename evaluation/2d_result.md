@@ -95,27 +95,3 @@ Generated: 2026-04-07 08:29:33 KST
 ![spiral marginal ksd](figures_2d/spiral_marginal_ksd.png)
 
 ---
-
-## Nested Rings
-
-| Metric | ASBS (Baseline) | KSD-ASBS (lambda=0.1) |
-|---|---|---|
-| Modes covered (of 2) | 2 | 0 |
-| Mean energy | 0.9022 | 2.3656 |
-| Std energy | 0.9165 | 1.1847 |
-| Per-mode counts | [26, 72] | [0, 0] |
-
-### Terminal Distribution
-
-![nested_rings terminal](figures_2d/nested_rings_terminal.png)
-
-### Marginal Evolution: ASBS
-
-![nested_rings marginal asbs](figures_2d/nested_rings_marginal_asbs.png)
-
-### Marginal Evolution: KSD-ASBS
-
-![nested_rings marginal ksd](figures_2d/nested_rings_marginal_ksd.png)
-
----
-
