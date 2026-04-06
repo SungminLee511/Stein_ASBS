@@ -29,7 +29,7 @@ def train_one_epoch(
 ):
     # build dataloader
     B = cfg.resample_batch_size
-    M = matcher.resample_size // (B * cfg.world_size)
+    M = max(1, matcher.resample_size // (B * cfg.world_size))
     loss_scale = matcher.loss_scale
 
     is_asbs_init_stage = train_utils.is_asbs_init_stage(epoch, cfg)

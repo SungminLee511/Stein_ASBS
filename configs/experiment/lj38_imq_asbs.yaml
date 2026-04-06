@@ -7,22 +7,22 @@ defaults:
   - /model@controller: egnn
   - /state_cost: zero
   - /term_cost: graph_corrector_term_cost
-  - /matcher@adjoint_matcher: ksd_adjoint_ve
+  - /matcher@adjoint_matcher: ksd_imq_adjoint_ve
   - /model@corrector: egnn
   - /matcher@corrector_matcher: corrector
 
-exp_name: lj38_ksd_asbs
+exp_name: lj38_imq_asbs
 
 # === source ===
 scale: 1.5
 
 # === sde ===
 nfe: 1000
-sigma_max: 2
+sigma_max: 5               # High sigma_max: melt structures, enable funnel crossing
 sigma_min: 0.001
 rescale_t: null
 
-# === KSD parameters (RBF kernel) ===
+# === KSD parameters (IMQ kernel, aggressive) ===
 ksd_lambda: 1.0
 
 # === training ===
@@ -41,7 +41,8 @@ adjoint_matcher:
   buffer_size: 10000
   duplicates: 25
   resample_size: 256
-  ksd_score_beta: 1.0  # No smoothing (standard score)
+  ksd_score_beta: 0.1   # Smoothed score: s(x) = -β∇E(x). Shrinks ico-FCC barrier
+  ksd_imq_c: 1.0        # Fixed IMQ scale parameter c (polynomial tails for d=114)
   num_epochs_per_stage: ${adj_num_epochs_per_stage}
   optim:
     lr: 1e-4

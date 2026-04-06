@@ -61,14 +61,7 @@ All new source files, energy functions, evaluators, and Hydra configs needed bef
 - [x] `configs/term_cost/score_term_cost.yaml` ✅
 - [x] `configs/source/gauss.yaml` ✅
 
-### 1.9 LJ38 Reference Data
-
-- [ ] **Generate `data/test_split_LJ38-1000.npy`** ⚠️ STILL MISSING — no public download exists
-  - Must self-generate via parallel-tempering MCMC or long MD at target temperature
-  - Need ~500 samples from each funnel (icosahedral: E≈-173.93, FCC: E≈-173.25)
-  - **Deferred** — do this before LJ38 evaluation (Phase 5), not blocking other experiments
-
-### 1.10 Validation
+### 1.9 Validation
 
 - [x] Verify RotGMM energy: forward pass ✅
 - [x] Verify Müller-Brown energy: forward pass ✅
@@ -95,11 +88,12 @@ Train all baselines with 3 training seeds each. **~50 GPU-hours total.**
   - [ ] seed 1
   - [ ] seed 2
 
-- [ ] **LJ38 baseline** (3 seeds × ~8 hrs) — `experiment=lj38_asbs seed=0,1,2`
-  - Requires LJ38 reference data (Phase 1.9)
+- [ ] **LJ38 baseline** (~8 hrs) — `experiment=lj38_asbs seed=0`
+  - 38 particles × 3D = 114D. Between LJ13 (39D) and LJ55 (165D).
+  - Double-funnel energy landscape — ideal mode-collapse test case.
+  - **Single seed=0 for focused 3-run comparison** (Baseline / RBF / IMQ+β).
+  - Updated: sigma_max=2, batch_size=256, adj_epochs_per_stage=250.
   - [ ] seed 0
-  - [ ] seed 1
-  - [ ] seed 2
 
 - [ ] **LJ55 baseline** (3 seeds × ~12 hrs) — `experiment=lj55_asbs seed=0,1,2`
   - [ ] seed 0
@@ -143,17 +137,42 @@ Use best λ from DW4 ± neighbors.
 - [ ] **λ=1.0, seed=0,1,2**
 - [ ] **λ=5.0, seed=0,1,2**
 
-### 3.3 LJ38 KSD (3λ × 3 seeds = 9 runs, ~72 GPU-hrs)
+### 3.3 LJ38 Focused 3-Run Comparison (seed=0, ~24 GPU-hrs total)
 
-The headline experiment — double-funnel landscape.
+LJ38 uses the **double-funnel** energy landscape (icosahedral vs FCC basins) as a natural mode-collapse test.
+At d=114, this sits in the **IMQ kernel sweet spot** (d=30–50 crossover confirmed in RotGMM §5.7).
 
-- [ ] **λ=0.5, seed=0,1,2**
-- [ ] **λ=1.0, seed=0,1,2**
-- [ ] **λ=5.0, seed=0,1,2**
+**New: Temperature-Scaled KSD (β parameter).**
+Replace the score in the Stein kernel with a smoothed score s(x) = -β∇E(x), the score of p(x) at effective temperature 1/β. At β=0.1, the icosahedral-FCC barrier (~1 energy unit) shrinks to ~0.1 in the Stein kernel's view. The KSD gradient can "see across" to the FCC funnel. The SDE dynamics and per-particle adjoint still use the true score — only the inter-particle correction uses the smoothed score.
+
+| Run | Config | Kernel | λ | σ_max | β | Purpose |
+|-----|--------|--------|---|-------|---|---------|
+| 1 | `lj38_asbs` | — | 0 | 2 | — | Control (baseline) |
+| 2 | `lj38_ksd_asbs` | RBF | 1.0 | 2 | 1.0 | Does KSD help at d=114? |
+| 3 | `lj38_imq_asbs` | IMQ | 1.0 | 5 | 0.1 | Best shot at both funnels |
+
+- [ ] **Run 1: Baseline** — `experiment=lj38_asbs seed=0`
+- [ ] **Run 2: KSD-ASBS (RBF)** — `experiment=lj38_ksd_asbs seed=0`
+- [ ] **Run 3: KSD-ASBS (IMQ, aggressive)** — `experiment=lj38_imq_asbs seed=0`
+
+#### Expected Outcomes
+
+| Run | Energy histogram | Metrics vs baseline |
+|-----|-----------------|---------------------|
+| 1. Baseline | Single peak, -170 to -173 (icosahedral only) | — |
+| 2. RBF | Single peak, tighter, mean closer to -173.93 | KSD² ↓, dist_W2 ↓ (modest) |
+| 3. IMQ+β=0.1 | **Bimodal if successful**: -173.93 (ico) + -173.25 (FCC) | Large KSD² ↓ if both funnels found |
+
+#### Evaluation Protocol
+
+1. Check energy histogram for bimodality.
+2. If bimodal: count samples per funnel (E < -172, classify by structure or Q6 order parameter).
+3. If unimodal: report intra-funnel diversity improvement.
+4. If no improvement: confirms kernel scaling limit at d=114.
 
 ### 3.4 LJ55 KSD (best λ × 3 seeds = 3 runs, ~36 GPU-hrs)
 
-Only if DW4/LJ13/LJ38 show improvement.
+Only if LJ38 shows improvement.
 
 - [ ] **λ=best, seed=0,1,2**
 
@@ -246,20 +265,72 @@ Port WT-ASBS's well-tempered metadynamics bias to our RotGMM setup. Give WT-ASBS
   - `n_modes_covered`, `coverage_fraction` (RotGMM only)
 - [ ] Saves per-group JSON files to `results/`
 
-### 5.2 Chunking Timing Test
+### 5.2 LJ38 Data-Free Evaluation Metrics
 
-- [ ] Compare full vs chunked Stein kernel gradient: N=512, d∈{8, 39, 114, 165}
+Since ground-truth reference samples are unavailable for LJ38, we define **four data-free metrics** that exploit only the known Lennard-Jones potential $U(x)$ and the model's own log-probability $\log q_\theta(x)$.
+
+#### 5.2.1 Steinhardt Bond-Orientational Order Parameters ($Q_4$ and $Q_6$)
+
+**Purpose:** Classify generated 3D coordinates into the two dominant LJ38 funnels without visual inspection.
+- FCC Truncated Octahedron (Global Min): High $Q_4$, specific $Q_6$.
+- Mackay Icosahedron (Secondary Min): High $Q_6$, near-zero $Q_4$.
+
+**Implementation:**
+1. Take the generated sample tensor of shape `(batch_size, 38, 3)`.
+2. Do not write spherical harmonics from scratch. Use an established physics library like **freud** (Python) or **pyscal** to compute the per-atom or global $Q_4$ and $Q_6$ for each sample in the batch.
+3. Output: Return a `(batch_size, 2)` tensor containing the $(Q_4, Q_6)$ pairs.
+4. Visualization: Implement a function to plot a 2D histogram (hexbin or scatter with density) of these pairs to visually confirm the two distinct funnel clusters.
+
+#### 5.2.2 Free Energy Difference ($\Delta F$)
+
+**Purpose:** Measure if the model captures the correct thermodynamic probability weights between the two funnels at a specific temperature.
+
+**Implementation:**
+1. Define boundaries in the $(Q_4, Q_6)$ space to classify a sample as belonging to State A (FCC) or State B (Icosahedral).
+2. Count the number of samples in each state ($N_A$ and $N_B$).
+3. Calculate:
+   $$\Delta F_{A \to B} = -k_B T \ln \left( \frac{N_B}{N_A} \right)$$
+   *(Set $k_B = 1$ and use the simulation temperature $T$ if working in reduced LJ units.)*
+4. Output: Return the scalar $\Delta F$ value.
+
+#### 5.2.3 Unnormalized Reverse KL Divergence
+
+**Purpose:** Evaluate model convergence to the true Boltzmann distribution without ground-truth samples.
+
+**Implementation:**
+1. Inputs: model's log-probability $\log q_\theta(x)$ for each generated sample, and the true LJ potential $U(x)$.
+2. Calculate:
+   $$\mathcal{L} = \frac{1}{N} \sum_{i=1}^{N} \left[ \log q_\theta(x_i) + \beta U(x_i) \right]$$
+   where $\beta = 1 / (k_B T)$.
+3. Constraint: Ensure $U(x)$ is implemented efficiently in PyTorch to process the `(batch_size, 38, 3)` tensor in parallel without CPU bottlenecks.
+4. Output: Return the scalar $\mathcal{L}$. Lower values indicate a better fit.
+
+#### 5.2.4 Effective Sample Size (ESS)
+
+**Purpose:** Measure mode collapse and sampling efficiency. ESS close to $N$ = perfect sampling; ESS near $1$ = severe mode collapse (e.g., stuck in one funnel).
+
+**Implementation:**
+1. Compute unnormalized log-importance weights for each sample:
+   $$\log w_i = -\beta U(x_i) - \log q_\theta(x_i)$$
+2. **Crucial:** Use the `torch.logsumexp` trick to prevent underflow/overflow:
+   $$\log(\text{ESS}) = 2 \cdot \text{logsumexp}(\log w_i) - \text{logsumexp}(2 \cdot \log w_i)$$
+   $$\text{ESS} = \exp(\log(\text{ESS}))$$
+3. Output: Return the ESS value and the ESS ratio ($\text{ESS} / \text{batch\_size}$).
+
+#### General Directives
+
+- All code must be well-structured; all inline comments written entirely in English.
+- Ensure tensor operations are batched for PyTorch.
+- These metrics replace the W2-based metrics (which require reference samples) for LJ38 evaluation.
+
+### 5.3 Chunking Timing Test
+
+- [ ] Compare full vs chunked Stein kernel gradient: N=512, d∈{8, 39, 165}
 - [ ] Verify max absolute difference ≈ 0 (fp precision)
 
-### 5.3 Run Evaluation
+### 5.4 Run Evaluation
 
 - [ ] `python evaluation/evaluate_all.py --outputs_root outputs --results_dir results --n_samples 2000 --n_eval_seeds 5`
-
-### 5.4 LJ38 Funnel Classification
-
-- [ ] For each generated LJ38 sample: compute energy, classify as icosahedral or FCC funnel
-- [ ] Count: how many samples in each funnel?
-- [ ] **Headline result:** if baseline finds 1 funnel, KSD-ASBS finds both → mode collapse fixed
 
 ---
 
@@ -297,9 +368,9 @@ Port WT-ASBS's well-tempered metadynamics bias to our RotGMM setup. Give WT-ASBS
 | 5 | **IMQ kernel on RotGMM d=10,30,50** | ~3 hrs | **High-D fix — could recover mode coverage at d=30–50** |
 | 6 | **DW4 ℓ ablation** | ~5 hrs | Bandwidth sensitivity — informs optimal kernel tuning |
 | 7 | DW4 λ ablation | ~5 hrs | Finds optimal hyperparameter |
-| 8 | LJ38 baseline + KSD | ~24 hrs | Headline real-system result (double funnel) |
-| 9 | Bayesian LogReg | ~2 hrs | Proves generality beyond molecular |
-| 10 | LJ13 baseline + KSD | ~24 hrs | Medium-scale molecular |
+| 8 | Bayesian LogReg | ~2 hrs | Proves generality beyond molecular |
+| 9 | LJ13 baseline + KSD | ~24 hrs | Medium-scale molecular |
+| 10 | **LJ38 3-run comparison** (baseline / RBF / IMQ+β) | ~24 hrs | **114D molecular — double-funnel, temperature-scaled KSD** |
 | 11 | LJ55 baseline + KSD | ~72 hrs | Only if LJ38 works |
 
 **Total estimated GPU time: ~250–300 hours (parallelizable across seeds).**
@@ -311,8 +382,7 @@ Port WT-ASBS's well-tempered metadynamics bias to our RotGMM setup. Give WT-ASBS
 1. **DO NOT modify existing files** (`matcher.py`, `train.py`, `evaluator.py`, etc.). All new code inherits/extends.
 2. **Non-graph vs graph**: RotGMM/Müller/BLogReg use `VESDE` + `FourierMLP` + `gauss` source. Molecular systems use `GraphVESDE` + `EGNN` + `harmonic` source.
 3. **RotGMM has n_particles=1**: sidesteps graph machinery.
-4. **LJ38 reference data** must be generated or downloaded before training can be evaluated.
-5. **λ tuning**: if `ksd_grad_norm >> adjoint_norm`, λ is too large. Start at 1.0, reduce to 0.1 if unstable.
+4. **λ tuning**: if `ksd_grad_norm >> adjoint_norm`, λ is too large. Start at 1.0, reduce to 0.1 if unstable.
 6. **Memory**: Stein kernel gradient is O(N²d). At N=512, d=165: ~170MB — fine. Use chunked version above N=1024.
 7. **Seeding**: training seeds (0,1,2) ≠ evaluation seeds (eval_seed in evaluate_all.py).
 8. **Hydra outputs**: `outputs/{exp_name}/` with `checkpoints/` and `.hydra/config.yaml`.

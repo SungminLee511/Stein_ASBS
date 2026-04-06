@@ -13,10 +13,10 @@ This guide covers **every experiment** needed to evaluate KSD-Augmented ASBS com
 |Phase|What                    |Benchmarks               |Runs                                          |
 |-----|------------------------|-------------------------|----------------------------------------------|
 |1    |Infrastructure          |—                        |Setup only                                    |
-|2    |Baseline ASBS           |DW4, LJ13, LJ38, LJ55    |3 seeds × 4 benchmarks = 12                   |
-|3    |KSD-ASBS + ablation     |DW4, LJ13, LJ38, LJ55    |5 λ × 3 seeds × 4 benchmarks = 60             |
+|2    |Baseline ASBS           |DW4, LJ13, LJ55          |3 seeds × 3 benchmarks = 9                    |
+|3    |KSD-ASBS + ablation     |DW4, LJ13, LJ55          |5 λ × 3 seeds × 3 benchmarks = 45             |
 |4    |Synthetic CV-unknown    |RotGMM (d=10,30,50,100)  |3 seeds × 4 dims × 2 methods = 24             |
-|4b   |Real CV-unknown         |LJ38, Müller-Brown       |Covered in Phase 2–3 (LJ38), Phase 4b (Müller)|
+|4b   |Real CV-unknown         |Müller-Brown              |Phase 4b (Müller)                              |
 |4c   |Non-molecular           |Bayesian LogReg (d=15,25)|3 seeds × 2 datasets × 2 methods = 12         |
 |5    |Comprehensive evaluation|All above                |All checkpoints                               |
 |6    |Results report          |—                        |Generate RESULTS.md                           |

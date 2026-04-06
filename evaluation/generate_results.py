@@ -337,7 +337,7 @@ def generate_results_md(args):
 
     lines.append("## Molecular Benchmarks")
     lines.append("")
-    for benchmark in ['dw4', 'lj13', 'lj38', 'lj55']:
+    for benchmark in ['dw4', 'lj13', 'lj55']:
         if benchmark in all_data:
             lines.append(make_benchmark_table(
                 all_data[benchmark], benchmark, particle_metrics, fig_dir
@@ -355,7 +355,7 @@ def generate_results_md(args):
     # --- Lambda ablation ---
     lines.append("## Lambda Ablation")
     lines.append("")
-    for benchmark in ['dw4', 'lj13', 'lj38']:
+    for benchmark in ['dw4', 'lj13']:
         if benchmark in all_data:
             lines.append(make_lambda_ablation(all_data[benchmark], benchmark, fig_dir))
 

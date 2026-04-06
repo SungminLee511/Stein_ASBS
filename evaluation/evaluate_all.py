@@ -340,8 +340,6 @@ def main():
             groups['dw4'].append(exp)
         elif exp.startswith('lj13'):
             groups['lj13'].append(exp)
-        elif exp.startswith('lj38'):
-            groups['lj38'].append(exp)
         elif exp.startswith('lj55'):
             groups['lj55'].append(exp)
         elif exp.startswith('muller'):
@@ -382,7 +380,7 @@ def main():
     print("Chunking timing test")
     print(f"{'='*60}")
     timing_results = {}
-    for dim_label, dim in [('dw4_8d', 8), ('lj13_39d', 39), ('lj38_114d', 114), ('lj55_165d', 165)]:
+    for dim_label, dim in [('dw4_8d', 8), ('lj13_39d', 39), ('lj55_165d', 165)]:
         N = 512
         samples = torch.randn(N, dim, device=device)
         scores = -samples  # dummy scores

@@ -38,6 +38,8 @@ class KSDAdjointVEMatcher(AdjointVEMatcher):
         ksd_max_particles: int = 2048,
         ksd_efficient_threshold: int = 1024,
         ksd_kernel: str = "rbf",
+        ksd_score_beta: float = 1.0,
+        ksd_imq_c: float | None = None,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -46,6 +48,8 @@ class KSDAdjointVEMatcher(AdjointVEMatcher):
         self.ksd_max_particles = ksd_max_particles
         self.ksd_efficient_threshold = ksd_efficient_threshold
         self.ksd_kernel = ksd_kernel
+        self.ksd_score_beta = ksd_score_beta
+        self.ksd_imq_c = ksd_imq_c
 
         # Logging
         self._last_ksd = 0.0
@@ -114,13 +118,23 @@ class KSDAdjointVEMatcher(AdjointVEMatcher):
         # Compute scores at terminal samples
         # energy(x) returns {"forces": -∇E(x), ...}
         # score sₚ(x) = -∇E(x) = forces
+        # Temperature-scaled KSD: s(x) = -β∇E(x) = β·forces
+        # At β=1.0 (default), this is the standard score.
+        # At β<1 (e.g. 0.1), the score is smoothed — the KSD kernel
+        # "sees" a flatter landscape, enabling cross-funnel gradients.
+        # Only the inter-particle KSD correction uses the smoothed score;
+        # the SDE dynamics and per-particle adjoint use the true score.
         with torch.enable_grad():
             x1_req = x1_sub.clone().detach().requires_grad_(True)
             energy_out = self.grad_term_cost.energy(x1_req)
-            scores = energy_out["forces"].detach()
+            scores = self.ksd_score_beta * energy_out["forces"].detach()
 
-        # Bandwidth
-        if self.ksd_bandwidth is not None:
+        # Bandwidth / IMQ scale parameter
+        if self.ksd_imq_c is not None and self.ksd_kernel == "imq":
+            # For IMQ kernel, ksd_imq_c overrides the bandwidth as the
+            # scale parameter c in k(x,x') = (c² + ‖x-x'‖²)^{-1/2}
+            ell = torch.tensor(self.ksd_imq_c, device=device, dtype=x1.dtype)
+        elif self.ksd_bandwidth is not None:
             ell = torch.tensor(self.ksd_bandwidth, device=device, dtype=x1.dtype)
         else:
             ell = median_bandwidth(x1_sub)
@@ -164,6 +178,8 @@ class KSDAdjointVPMatcher(AdjointVPMatcher):
         ksd_max_particles: int = 2048,
         ksd_efficient_threshold: int = 1024,
         ksd_kernel: str = "rbf",
+        ksd_score_beta: float = 1.0,
+        ksd_imq_c: float | None = None,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -172,6 +188,8 @@ class KSDAdjointVPMatcher(AdjointVPMatcher):
         self.ksd_max_particles = ksd_max_particles
         self.ksd_efficient_threshold = ksd_efficient_threshold
         self.ksd_kernel = ksd_kernel
+        self.ksd_score_beta = ksd_score_beta
+        self.ksd_imq_c = ksd_imq_c
         self._last_ksd = 0.0
         self._last_ksd_grad_norm = 0.0
 

@@ -2,6 +2,8 @@
 
 import sys
 import traceback
+import time
+from datetime import datetime, timezone, timedelta
 import hydra
 import numpy as np
 import termcolor
@@ -10,6 +12,8 @@ from pathlib import Path
 
 import torch
 import torch.backends.cudnn as cudnn
+
+KST = timezone(timedelta(hours=9))
 
 from adjoint_samplers.components.sde import ControlledSDE, sdeint
 from adjoint_samplers.train_loop import train_one_epoch
@@ -164,16 +168,22 @@ def main(cfg):
                 f"{stage}_buffer_size": len(matcher.buffer),
             }, step=epoch)
 
-            print("[{0} | {1}] {2}".format(
+            # Timestamp and GPU memory info
+            now_kst = datetime.now(KST).strftime("%H:%M:%S")
+            gpu_mem = torch.cuda.max_memory_allocated() / 1024**2  # MiB
+            gpu_mem_reserved = torch.cuda.memory_reserved() / 1024**2
+            print("[{0} | {1}] {2} | {3} | {4}".format(
                 cyan(  f"{stage:<7}"),
                 yellow(f"ep={epoch:04}"),
                 green( f"loss={loss:.4f}"),
+                f"gpu={gpu_mem:.0f}MiB(rsv={gpu_mem_reserved:.0f}MiB)",
+                f"t={now_kst}",
             ))
 
             # Eval epoch according to the frequency
             # otherwise eval at the end of adjoint matching
             if "eval_freq" in cfg:
-                eval_this_epoch = epoch % cfg.eval_freq == 0
+                eval_this_epoch = epoch > 0 and epoch % cfg.eval_freq == 0
             else:
                 eval_this_epoch = train_utils.is_last_am_epoch(epoch, cfg)
 
@@ -250,6 +260,20 @@ def main(cfg):
                     corrector=corrector,
                     corrector_matcher=corrector_matcher,
                 )
+
+            # Periodic checkpoint saving based on save_freq
+            if hasattr(cfg, 'save_freq') and cfg.save_freq > 0 and epoch > 0 and epoch % cfg.save_freq == 0:
+                if distributed_mode.is_main_process():
+                    print(f"Periodic save @ epoch {epoch} (save_freq={cfg.save_freq})")
+                    train_utils.save(
+                        epoch,
+                        cfg,
+                        optimizer,
+                        controller,
+                        adjoint_matcher,
+                        corrector=corrector,
+                        corrector_matcher=corrector_matcher,
+                    )
 
     except Exception as e:
         # This way we have the full traceback in the log.  otherwise Hydra

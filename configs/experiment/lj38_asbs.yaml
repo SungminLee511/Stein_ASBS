@@ -14,10 +14,10 @@ defaults:
 exp_name: lj38_asbs
 
 # === source ===
-scale: 1
+scale: 1.5
 
 # === sde ===
-nfe: 500
+nfe: 1000
 sigma_max: 2
 sigma_min: 0.001
 rescale_t: null
@@ -36,7 +36,7 @@ ctr_num_epochs_per_stage: 20
 
 adjoint_matcher:
   buffer_size: 10000
-  duplicates: 20
+  duplicates: 25
   resample_size: 256
   num_epochs_per_stage: ${adj_num_epochs_per_stage}
   optim:
@@ -45,7 +45,7 @@ adjoint_matcher:
 
 corrector_matcher:
   buffer_size: 10000
-  duplicates: 20
+  duplicates: 25
   resample_size: 256
   num_epochs_per_stage: ${ctr_num_epochs_per_stage}
   optim:
@@ -53,5 +53,5 @@ corrector_matcher:
     weight_decay: 0
 
 # === eval & logging ===
-use_wandb: false
-eval_freq: 200
+use_wandb: true
+eval_freq: 100

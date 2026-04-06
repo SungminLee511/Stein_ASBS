@@ -22,13 +22,6 @@ for SEED in 0 1 2; do
   python train.py experiment=lj13_asbs seed=${SEED} use_wandb=false exp_name=lj13_asbs_s${SEED}
 done
 
-# LJ38 baselines (3 seeds, ~8 hrs each)
-echo "--- LJ38 Baselines ---"
-for SEED in 0 1 2; do
-  echo "LJ38: seed=${SEED}"
-  python train.py experiment=lj38_asbs seed=${SEED} use_wandb=false exp_name=lj38_asbs_s${SEED}
-done
-
 # LJ55 baselines (3 seeds, ~12 hrs each)
 echo "--- LJ55 Baselines ---"
 for SEED in 0 1 2; do

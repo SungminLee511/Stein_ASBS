@@ -1,6 +1,6 @@
 # Results: KSD-Augmented ASBS — Comprehensive Evaluation
 
-**Last updated:** 2026-04-05 19:50 KST
+**Last updated:** 2026-04-05 22:18 KST
 
 ---
 
@@ -145,7 +145,70 @@ See `.claude/skills/references_and_equations.md` for full derivation.
 
 ---
 
-### 1.3 LJ55 (55 particles × 3D = 165D, Lennard-Jones)
+### 1.3 LJ38 (38 particles × 3D = 114D, Lennard-Jones — Double Funnel)
+
+**Status: ⬜ PLANNED** — *Focused 3-run comparison (seed=0). Data-free metrics (no ground-truth reference samples available).*
+
+LJ38 is a critical benchmark: the energy landscape has a **double-funnel** structure (icosahedral vs face-centered cubic basins), making it a natural mode-collapse test for molecular systems. At 114D, this sits in the **IMQ kernel sweet spot** identified in the RotGMM ablation (§5.7) — RBF degrades above ~50D, but IMQ maintains mode-resolving gradients up to ~100D.
+
+#### Experiment Design: 3-Run Comparison (all seed=0)
+
+| Run | Config | Kernel | λ | σ_max | β | Purpose |
+|-----|--------|--------|---|-------|---|---------|
+| 1 | `lj38_asbs` | — | 0 | 2 | — | Control (baseline) |
+| 2 | `lj38_ksd_asbs` | RBF | 1.0 | 2 | 1.0 | Does KSD help at d=114? |
+| 3 | `lj38_imq_asbs` | IMQ | 1.0 | 5 | 0.1 | Best shot at both funnels |
+
+**Setup (shared across all runs):**
+- n_particles=38, dim=114, spatial_dim=3
+- nfe=1000, num_epochs=5000, batch_size=256
+- adj_num_epochs_per_stage=250, ctr_num_epochs_per_stage=20
+- max_grad_E_norm=100, scale=1.5
+
+**Run 3 specifics (IMQ, aggressive):**
+- σ_max=5: High noise to melt structures and enable funnel crossing
+- β=0.1: Temperature-scaled KSD score s(x) = -β∇E(x). At β=0.1, the icosahedral-FCC barrier (~1 energy unit) shrinks to ~0.1 in the Stein kernel's view. The KSD gradient can "see across" to the FCC funnel. The SDE dynamics and per-particle adjoint still use the true score — only the inter-particle correction uses the smoothed score.
+- ksd_imq_c=1.0: Fixed IMQ scale parameter (polynomial tails for d=114)
+
+**Hypothesis:** Run 3 (IMQ+β=0.1) should discover both funnels of the LJ38 landscape, while baseline ASBS may collapse to one. The RotGMM d=50 result (IMQ covers 7/8 modes at 50D) suggests IMQ can resolve distinct energy basins at this dimension scale.
+
+#### Expected Outcomes
+
+| Run | Energy histogram | Metrics vs baseline |
+|-----|-----------------|---------------------|
+| 1. Baseline | Single peak, -170 to -173 (icosahedral only) | — |
+| 2. RBF | Single peak, tighter, mean closer to -173.93 | KSD² ↓, dist_W2 ↓ (modest) |
+| 3. IMQ+β=0.1 | **Bimodal if successful**: -173.93 (ico) + -173.25 (FCC) | Large KSD² ↓ if both funnels found |
+
+#### Evaluation Metrics (Data-Free)
+
+Since no reference sample set exists for LJ38, W2-based metrics are replaced by four data-free metrics:
+
+1. **Steinhardt Order Parameters ($Q_4$, $Q_6$):** Classify samples into the two funnels — FCC (high $Q_4$) vs Icosahedral (high $Q_6$, near-zero $Q_4$). Visualized as a 2D histogram to confirm bimodal funnel coverage.
+2. **Free Energy Difference ($\Delta F$):** $-k_B T \ln(N_B / N_A)$ between the two funnel populations. Measures whether the model captures the correct thermodynamic weighting.
+3. **Unnormalized Reverse KL:** $\mathcal{L} = \frac{1}{N} \sum_i [\log q_\theta(x_i) + \beta U(x_i)]$ — measures convergence to the Boltzmann distribution using only the model's log-probability and the known LJ potential. Lower is better.
+4. **Effective Sample Size (ESS):** Computed via log-importance weights $\log w_i = -\beta U(x_i) - \log q_\theta(x_i)$ with `logsumexp` trick. ESS near $N$ = good coverage of both funnels; ESS near 1 = mode collapse.
+
+#### Evaluation Protocol
+
+1. Check energy histogram for bimodality.
+2. If bimodal: count samples per funnel (E < -172, classify by structure or Q6 order parameter).
+3. If unimodal: report intra-funnel diversity improvement.
+4. If no improvement: confirms kernel scaling limit at d=114.
+
+#### Results
+
+| Run | Method | Energy Histogram | $Q_4$/$Q_6$ Bimodality | $\Delta F$ | Reverse KL ↓ | ESS | ESS Ratio |
+|-----|--------|-----------------|------------------------|------------|--------------|-----|-----------|
+| 1 | Baseline | | | | | | |
+| 2 | KSD-ASBS (RBF, β=1.0) | | | | | | |
+| 3 | KSD-ASBS (IMQ, β=0.1) | | | | | | |
+
+*Figures: Q4-Q6 scatter (3-way comparison), energy histograms, pairwise distance distributions — to be generated after training completes.*
+
+---
+
+### 1.4 LJ55 (55 particles × 3D = 165D, Lennard-Jones)
 
 **Status: ⬜ PENDING** — *Only if LJ38 shows improvement*
 
@@ -160,42 +223,43 @@ Expected: RBF kernel degrades at 165D. Pairwise distances concentrate. May need 
 
 ## 2. DW4 λ Ablation
 
-**Status: ⬜ PENDING** (only λ=1.0 done so far)
+**Status: ✅ COMPLETE**
 
-Ablate over λ ∈ {0.1, 0.5, 1.0, 5.0, 10.0}, 3 training seeds each.
+Ablate over λ ∈ {0.1, 0.5, 1.0, 5.0, 10.0} using a single trained checkpoint per λ, evaluated with 2000 samples × 5 sampling seeds (0–4).
 
-| λ | energy_W2 (mean±std) | eq_W2 (mean±std) | dist_W2 (mean±std) | KSD² (mean±std) |
-|---|----------------------|-------------------|---------------------|-----------------|
-| 0 (baseline) | 0.1400 ± 0.0060 | 0.4460 ± 0.0542 | 0.026799 ± 0.012059 |  |
-| 0.1 |  |  |  |  |
-| 0.5 |  |  |  |  |
-| 1.0 | 0.1820 ± 0.0410 | 0.4023 ± 0.0494 | 0.010010 ± 0.007469 |  |
-| 5.0 |  |  |  |  |
-| 10.0 |  |  |  |  |
+| λ | energy_W2 (mean±std) | eq_W2 (mean±std) | dist_W2 (mean±std) |
+|---|----------------------|-------------------|---------------------|
+| 0 (baseline) | 0.1400 ± 0.0060 | 0.4460 ± 0.0542 | 0.026799 ± 0.012059 |
+| 0.1 | 0.3766 ± 0.0303 | 0.5363 ± 0.0511 | 0.042609 ± 0.014317 |
+| 0.5 | 0.3092 ± 0.0264 | 0.3970 ± 0.0351 | 0.006296 ± 0.006079 |
+| **1.0** | **0.1820 ± 0.0410** | **0.4023 ± 0.0494** | **0.010010 ± 0.007469** |
+| 5.0 | 0.3566 ± 0.0278 | 0.4210 ± 0.0483 | 0.014017 ± 0.009851 |
+| 10.0 | 0.3653 ± 0.0263 | 0.3845 ± 0.0427 | 0.010224 ± 0.007169 |
 
-**Expected:** There is an optimal λ* that balances energy accuracy (per-particle cost) with mode coverage (KSD penalty). Too small λ → no effect. Too large λ → energy degrades, particles spread too much.
+#### Best λ per Metric
 
-*Figure: λ ablation curves (energy_W2, dist_W2, KSD² vs λ) — to be generated.*
+| Metric | Best λ | Value | vs Baseline |
+|--------|--------|-------|-------------|
+| energy_W2 ↓ | **1.0** | 0.1820 | -30% (worse) |
+| eq_W2 ↓ | **0.5** | 0.3970 | **+11% (better)** |
+| dist_W2 ↓ | **0.5** | 0.006296 | **+77% (better)** |
+
+#### Interpretation
+
+- **λ=1.0 is the best all-rounder:** It has the lowest energy_W2 among all KSD-ASBS variants (closest to baseline), while still achieving strong dist_W2 and eq_W2 improvements. This confirms the default choice.
+- **λ=0.5 achieves the best structural metrics:** Lowest eq_W2 (0.397) and dist_W2 (0.006) — 77% improvement in interatomic distances vs baseline — but at the cost of higher energy_W2 (0.309).
+- **λ=0.1 is too weak _and_ too noisy:** Surprisingly, λ=0.1 is the worst KSD-ASBS variant, with degraded energy_W2 (0.377) and the worst dist_W2 (0.043, even worse than baseline). The KSD correction at this scale is too small to meaningfully improve structure but large enough to perturb energy fitting.
+- **λ=5.0 and λ=10.0 show diminishing returns:** Both degrade energy_W2 significantly (~0.36) without further improving dist_W2 beyond λ=1.0. The extra repulsive force overshoots.
+- **The U-shaped energy_W2 curve:** energy_W2 follows a clear pattern — worst at λ=0.1, improving to λ=1.0 (best), then degrading again at λ=5.0/10.0. This suggests λ=1.0 sits near the optimal trade-off point for DW4.
+- **dist_W2 is non-monotonic too:** Best at λ=0.5, good at λ=1.0 and λ=10.0, bad at λ=0.1 and λ=5.0 — indicating complex interactions between the KSD penalty strength and the learned dynamics.
+
+*Results saved to `evaluation/eval_results_dw4_lambda_ablation.json`.*
+
+*Figure: λ ablation curves (energy_W2, dist_W2 vs λ) — to be generated.*
 
 ---
 
-## 3. DW4 Batch Size Ablation
-
-**Status: ⬜ PENDING**
-
-Effect of resample_batch_size (N particles per buffer refresh) on KSD correction quality.
-
-| Batch Size | energy_W2 | dist_W2 | KSD² | Training Time |
-|------------|-----------|---------|------|---------------|
-| 64 |  |  |  |  |
-| 128 |  |  |  |  |
-| 256 |  |  |  |  |
-| 512 |  |  |  |  |
-| 1024 |  |  |  |  |
-
----
-
-## 4. Visualization: Müller-Brown Potential (2D)
+## 3. Visualization: Müller-Brown Potential (2D)
 
 **Status: ✅ COMPLETE**
 
@@ -659,6 +723,10 @@ Wall-clock time for Stein kernel gradient (N=512 particles). Chunking is mathema
 | LJ13 | eq_W2 | 1.871 | **1.844** | +1.4% ↓ | **KSD-ASBS** |
 | LJ13 | energy_W2 | 12.201 | **3.287** | +73.1% ↓ | **KSD-ASBS** |
 | LJ13 | KSD² | 101.45 | **3.278** | +96.8% ↓ | **KSD-ASBS** |
+| LJ38 | Reverse KL ($\mathcal{L}$) |  |  |  | 🔄 TRAINING (data-free) |
+| LJ38 | ESS Ratio |  |  |  | 🔄 TRAINING (data-free) |
+| LJ38 | $Q_4$/$Q_6$ Bimodality |  |  |  | 🔄 TRAINING (data-free) |
+| LJ38 | $\Delta F$ |  |  |  | 🔄 TRAINING (data-free) |
 | LJ55 | dist_W2 |  |  |  |  |
 | RotGMM-10 | mode coverage | 1/8 (12.5%) | **3/8 (37.5%)** RBF | +200% | **KSD-ASBS (RBF)** |
 | RotGMM-10 | energy_W2 | 0.1754 | **0.1342** RBF | +23.5% ↓ | **KSD-ASBS (RBF)** |

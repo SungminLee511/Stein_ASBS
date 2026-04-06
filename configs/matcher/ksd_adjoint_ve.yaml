@@ -4,6 +4,7 @@ ksd_lambda: ${ksd_lambda}
 ksd_bandwidth: null  # null = median heuristic
 ksd_max_particles: 2048
 ksd_efficient_threshold: 1024
+ksd_score_beta: 1.0  # Temperature-scaled score: s(x) = -β∇E(x). Override in experiment config for smoothing
 
 grad_state_cost:
   _target_: adjoint_samplers.components.state_cost.ZeroGradStateCost

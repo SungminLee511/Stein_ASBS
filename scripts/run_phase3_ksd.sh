@@ -30,19 +30,6 @@ for LAMBDA in 0.5 1.0 5.0; do
   done
 done
 
-# --- LJ38 (3 lambda x 3 seeds = 9 runs) ---
-echo "--- LJ38 KSD ---"
-for LAMBDA in 0.5 1.0 5.0; do
-  for SEED in 0 1 2; do
-    echo "LJ38: lambda=${LAMBDA}, seed=${SEED}"
-    python train.py experiment=lj38_ksd_asbs \
-      seed=${SEED} \
-      ksd_lambda=${LAMBDA} \
-      use_wandb=false \
-      exp_name=lj38_ksd_l${LAMBDA}_s${SEED}
-  done
-done
-
 # --- LJ55 (best lambda only, 3 seeds) ---
 echo "--- LJ55 KSD ---"
 BEST_LAMBDA=1.0  # Update after DW4/LJ13 ablation

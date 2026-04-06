@@ -107,7 +107,17 @@ class BayesianLogRegEnergy(BaseEnergy):
             grad = -(X.T @ (y * sig)) + lam * th
             return E, grad
 
-        for i in range(n_burnin + n_samples):
+        import time as _time
+        _t0 = _time.time()
+        total = n_burnin + n_samples
+
+        # Force single-threaded: tiny matrices don't benefit from parallelism
+        # and thread overhead dominates under system load
+        _prev_threads = torch.get_num_threads()
+        torch.set_num_threads(1)
+        print(f"[HMC] Starting {total} iterations (burnin={n_burnin}, samples={n_samples}, dim={dim}, threads=1)", flush=True)
+
+        for i in range(total):
             p = torch.randn(dim)
             theta_new = theta.clone()
             p_new = p.clone()
@@ -134,6 +144,18 @@ class BayesianLogRegEnergy(BaseEnergy):
             if i >= n_burnin:
                 samples.append(theta.clone())
 
+            if (i + 1) % 500 == 0 or i == 0:
+                elapsed = _time.time() - _t0
+                rate = (i + 1) / elapsed
+                eta = (total - i - 1) / rate
+                acc_rate = n_accept / (i + 1) * 100
+                phase = "burnin" if i < n_burnin else "sampling"
+                print(f"[HMC] iter {i+1}/{total} ({phase}) | acc={acc_rate:.1f}% | "
+                      f"{elapsed:.1f}s elapsed, ETA {eta:.1f}s | E={E_old.item():.2f}", flush=True)
+
+        elapsed = _time.time() - _t0
+        print(f"[HMC] Done in {elapsed:.1f}s | final accept rate: {n_accept/total*100:.1f}%", flush=True)
+        torch.set_num_threads(_prev_threads)
         return torch.stack(samples)
 
     def _eval_single(self, theta, X, y):

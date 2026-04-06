@@ -56,8 +56,9 @@ Stein_ASBS/
 │   │   ├── dw4_ksd_asbs.yaml     # NEW — DW4 + KSD
 │   │   ├── lj13_asbs.yaml        # EXISTING — LJ13 baseline
 │   │   ├── lj13_ksd_asbs.yaml    # NEW — LJ13 + KSD
-│   │   ├── lj38_asbs.yaml        # NEW — LJ38 baseline (double-funnel)
-│   │   ├── lj38_ksd_asbs.yaml    # NEW — LJ38 + KSD
+│   │   ├── lj38_asbs.yaml        # NEW — LJ38 baseline (114D), σ_max=2, batch=256
+│   │   ├── lj38_ksd_asbs.yaml    # NEW — LJ38 + KSD (RBF kernel, β=1.0)
+│   │   ├── lj38_imq_asbs.yaml    # NEW — LJ38 + KSD (IMQ kernel, σ_max=5, β=0.1, aggressive)
 │   │   ├── lj55_asbs.yaml        # EXISTING — LJ55 baseline
 │   │   ├── lj55_ksd_asbs.yaml    # NEW — LJ55 + KSD
 │   │   ├── muller_asbs.yaml      # NEW — Müller-Brown baseline
@@ -94,6 +95,7 @@ Stein_ASBS/
 ├── scripts/
 │   ├── dw4.sh                    # DW4 training script (original)
 │   ├── lj13.sh                   # LJ13 training script (original)
+│   ├── lj38.sh                   # NEW — LJ38 training script (baseline + IMQ-KSD)
 │   ├── lj55.sh                   # LJ55 training script (original)
 │   ├── demo.sh                   # Demo script (original)
 │   ├── download.sh               # Download reference test samples
@@ -109,10 +111,13 @@ Stein_ASBS/
 │   ├── generate_results.py       # Auto-generate RESULTS.md (Phase 6)
 │   ├── run_phase5_evaluate.sh    # Evaluation run script
 │   ├── RESULTS.md                # Results (auto-generated + manually edited)
+│   ├── eval_blogreg.py            # NEW — Evaluate BLogReg Australian (d=15) & German (d=25)
 │   ├── eval_imq_ablation.py      # NEW — Evaluate all 4 IMQ experiments (d=10,30,50,100)
 │   ├── plot_imq_ablation.py      # NEW — 3-way comparison figures (Baseline/RBF/IMQ)
 │   ├── eval_results_dw4.json     # DW4 eval metrics
 │   ├── imq_ablation_results.json # Combined IMQ eval results
+│   ├── results_blogreg/          # BLogReg eval results directory
+│   │   └── blogreg_results.json  # Australian & German eval metrics
 │   └── eval_comparison_log.txt   # DW4 comparison log
 ├── PLAN.md                       # Experiment execution plan
 ├── environment.yml               # Conda environment spec
@@ -161,6 +166,7 @@ Stein_ASBS/
 |-----------|-----|-----------|--------|---------------------|
 | DW4 | 8 | 4 × 2D | Double well (multimodal) | **High** — clear mode collapse target |
 | LJ13 | 39 | 13 × 3D | Lennard-Jones | **Medium** — Stein kernel still works at 39D |
+| LJ38 | 114 | 38 × 3D | Lennard-Jones (double funnel) | **High** — IMQ kernel, double-funnel mode collapse test |
 | LJ55 | 165 | 55 × 3D | Lennard-Jones | **Low** — RBF kernel degrades at 165D |
 
 ### Hyperparameters (KSD-specific)
@@ -172,6 +178,8 @@ Stein_ASBS/
 | `ksd_max_particles` | 2048 | Subsample if N exceeds this |
 | `ksd_efficient_threshold` | 1024 | Use chunked computation above this |
 | `ksd_kernel` | "rbf" | Kernel type: "rbf" (Gaussian) or "imq" (Inverse Multi-Quadric) |
+| `ksd_score_beta` | 1.0 | Temperature-scaled score: s(x) = -β∇E(x). At β<1, the Stein kernel sees a flatter landscape (smoothed score), enabling cross-barrier gradients. SDE dynamics still use the true score. |
+| `ksd_imq_c` | null (uses bandwidth) | Fixed IMQ scale parameter c in k(x,x') = (c² + ‖x-x'‖²)^{-1/2}. Overrides bandwidth for IMQ kernel when set. |
 
 ## Conventions
 - Conda env: **`Sampling_env`** (NOT `SML_env` — this project needs bgflow + einops)
