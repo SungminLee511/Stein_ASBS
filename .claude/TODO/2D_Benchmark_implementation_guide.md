@@ -789,6 +789,68 @@ results/figures_2d/
 
 -----
 
+## 10. Additional 2D Benchmarks (Phase 2)
+
+These benchmarks go beyond separated Gaussians to test KSD on harder geometry.
+
+### 10.1 Two Moons
+
+Two crescent-shaped modes that wrap around each other. Unlike Gaussians, the modes are non-convex and interleaved. Tests whether KSD can handle non-Gaussian geometry, not just "find separated blobs."
+
+- **Modes**: 2 crescent-shaped (non-convex)
+- **Challenge**: Interleaved non-convex geometry — modes are not separable by any hyperplane
+- **sigma_max**: 3 (modes are close, radius ~1-2)
+- **Mode coverage metric**: Assign by sign of a learned or geometric boundary, or by nearest centroid of each crescent
+
+### 10.2 Pinwheel
+
+5 elongated clusters arranged in a pinwheel/spiral pattern. Each arm is a thin stretched Gaussian rotated at a different angle. Mode-seeking methods collapse to the thickest arm.
+
+- **Modes**: 5 anisotropic (elongated, rotated)
+- **Challenge**: Anisotropic mode geometry — modes have very different aspect ratios and orientations
+- **sigma_max**: 5 (arms extend to radius ~3-4)
+- **Mode coverage metric**: Nearest-centroid assignment to arm centers
+
+### 10.3 Checkerboard
+
+4x4 grid of alternating high/low density squares. Not separated Gaussians — the modes share boundaries. Harder than GMM9 because there's no empty space between modes, so the sampler must learn sharp density boundaries.
+
+- **Modes**: 8 (the "on" squares in 4x4 checkerboard)
+- **Challenge**: Shared boundaries between modes — no gaps. Sharp density transitions.
+- **sigma_max**: 5 (grid spans ~[-4, 4])
+- **Mode coverage metric**: Count how many of the 8 "on" squares have samples
+
+### 10.4 Nested Rings
+
+Two concentric rings at different radii (e.g., r=2 and r=5) with different weights (80/20). The inner ring is hard to find because the outer ring surrounds it.
+
+- **Modes**: 2 (inner ring, outer ring)
+- **Challenge**: Inner mode is geometrically surrounded/shielded by outer mode. Tests whether KSD can push samples inward, not just outward.
+- **sigma_max**: 8 (outer ring at r=5)
+- **Mode coverage metric**: Fraction of samples within radius threshold of each ring
+
+### 10.5 Spiral
+
+A single continuous spiral-shaped density. Not multimodal, but tests whether the SDE can learn complex non-convex geometry. Good contrast with the multimodal benchmarks — shows the method doesn't hurt on unimodal targets.
+
+- **Modes**: 1 (continuous spiral)
+- **Challenge**: Complex non-convex unimodal geometry. No mode collapse possible, but requires learning curved transport.
+- **sigma_max**: 5 (spiral extends to radius ~4)
+- **Mode coverage metric**: Not applicable (unimodal). Use energy W2 or sample quality metrics instead.
+
+### Summary Table
+
+| Benchmark | Modes | Geometry | Key Test |
+|-----------|-------|----------|----------|
+| GMM9 (done) | 9 Gaussians | Convex, separated | Basic mode coverage |
+| Two Moons | 2 crescents | Non-convex, interleaved | Non-Gaussian geometry |
+| Pinwheel | 5 elongated | Anisotropic, rotated | Anisotropic modes |
+| Checkerboard | 8 squares | Shared boundaries | Sharp density transitions |
+| Nested Rings | 2 rings | Concentric, shielded | Inward exploration |
+| Spiral | 1 spiral | Non-convex, unimodal | Complex transport (control) |
+
+-----
+
 ## 9. Notes for Claude Code
 
 1. **`sdeint` with `only_boundary=False`** returns a list of tensors, one per timestep. Stack with `torch.stack(states, dim=1)` to get `(B, T, D)`.
