@@ -27,12 +27,15 @@ import adjoint_samplers.utils.train_utils as train_utils
 # Loading
 # ====================================================================
 
-def load_model(exp_dir, device):
+def load_model(exp_dir, device, ckpt_override=None):
     exp_dir = Path(exp_dir)
     cfg_path = exp_dir / '.hydra' / 'config.yaml'
     if not cfg_path.exists():
         cfg_path = exp_dir / 'config.yaml'
-    ckpt_path = exp_dir / 'checkpoints' / 'checkpoint_latest.pt'
+    if ckpt_override:
+        ckpt_path = Path(ckpt_override)
+    else:
+        ckpt_path = exp_dir / 'checkpoints' / 'checkpoint_latest.pt'
     if not ckpt_path.exists():
         raise FileNotFoundError(f"No checkpoint at {ckpt_path}")
 
@@ -261,6 +264,7 @@ BENCHMARKS = {
         'name': '8-Mode Ring',
         'xlim': (-8, 8), 'ylim': (-8, 8),
         'baseline': RESULTS_DIR / 'ring8_asbs' / 'seed_0',
+        'baseline_ckpt': str(RESULTS_DIR / 'ring8_asbs' / 'seed_0' / 'checkpoints' / 'checkpoint_1800.pt'),
         'ksd': RESULTS_DIR / 'ring8_ksd_nowarmup' / 'seed_0',
         'ksd_lambda': 0.1,
     },
@@ -273,8 +277,9 @@ def evaluate_benchmark(bench_key, bench_cfg, device, n_samples=2000):
     print(f"{'='*60}")
 
     # Load models
-    print("  Loading baseline ASBS...")
-    sde_base, src_base, energy, ts_base = load_model(bench_cfg['baseline'], device)
+    baseline_ckpt = bench_cfg.get('baseline_ckpt', None)
+    print(f"  Loading baseline ASBS...{f' (ckpt: {Path(baseline_ckpt).name})' if baseline_ckpt else ''}")
+    sde_base, src_base, energy, ts_base = load_model(bench_cfg['baseline'], device, ckpt_override=baseline_ckpt)
     print("  Loading KSD-ASBS...")
     sde_ksd, src_ksd, _, ts_ksd = load_model(bench_cfg['ksd'], device)
 
