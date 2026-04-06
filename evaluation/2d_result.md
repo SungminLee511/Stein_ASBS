@@ -1,6 +1,6 @@
 # 2D Visualization Benchmark Results
 
-Generated: 2026-04-07 06:54:10 KST
+Generated: 2026-04-07 07:01:29 KST
 
 ---
 
@@ -15,15 +15,15 @@ Generated: 2026-04-07 06:54:10 KST
 
 ### Terminal Distribution
 
-![gmm9 terminal](figures_2d/gmm9_terminal.png)
+![gmm9 terminal](figures_2d/gmm9_terminal_v2.png)
 
 ### Marginal Evolution: ASBS
 
-![gmm9 marginal asbs](figures_2d/gmm9_marginal_asbs.png)
+![gmm9 marginal asbs](figures_2d/gmm9_marginal_asbs_v2.png)
 
 ### Marginal Evolution: KSD-ASBS
 
-![gmm9 marginal ksd](figures_2d/gmm9_marginal_ksd.png)
+![gmm9 marginal ksd](figures_2d/gmm9_marginal_ksd_v2.png)
 
 ---
 
@@ -38,15 +38,15 @@ Generated: 2026-04-07 06:54:10 KST
 
 ### Terminal Distribution
 
-![ring8 terminal](figures_2d/ring8_terminal.png)
+![ring8 terminal](figures_2d/ring8_terminal_v2.png)
 
 ### Marginal Evolution: ASBS
 
-![ring8 marginal asbs](figures_2d/ring8_marginal_asbs.png)
+![ring8 marginal asbs](figures_2d/ring8_marginal_asbs_v2.png)
 
 ### Marginal Evolution: KSD-ASBS
 
-![ring8 marginal ksd](figures_2d/ring8_marginal_ksd.png)
+![ring8 marginal ksd](figures_2d/ring8_marginal_ksd_v2.png)
 
 ---
 
