@@ -259,14 +259,6 @@ BENCHMARKS = {
         'ksd': RESULTS_DIR / 'gmm9_ksd_nowarmup' / 'seed_0',
         'ksd_lambda': 0.01,
     },
-    'ring8': {
-        'name': '8-Mode Ring',
-        'xlim': (-8, 8), 'ylim': (-8, 8),
-        'baseline': RESULTS_DIR / 'ring8_asbs' / 'seed_0',
-        'baseline_ckpt': str(RESULTS_DIR / 'ring8_asbs' / 'seed_0' / 'checkpoints' / 'checkpoint_1800.pt'),
-        'ksd': RESULTS_DIR / 'ring8_ksd_nowarmup' / 'seed_0',
-        'ksd_lambda': 0.1,
-    },
 }
 
 

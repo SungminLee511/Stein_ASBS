@@ -1,0 +1,73 @@
+=== [2026-04-07 01:11:58 KST] Starting 2D benchmark experiments ===
+
+=== [1/6] gmm9_asbs ===
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/hydra/_internal/hydra.py:119: UserWarning: Future Hydra versions will no longer change working directory at job runtime by default.
+See https://hydra.cc/docs/1.2/upgrades/1.1_to_1.2/changes_to_job_working_dir/ for more information.
+  ret = run_job(
+Found 1 CUDA devices.
+NVIDIA A100 80GB PCIe 	 Memory: 79.25GB
+{'SHELL': '/bin/bash', 'COREPACK_ENABLE_AUTO_PIN': '0', 'NVIDIA_VISIBLE_DEVICES': 'void', 'KUBERNETES_SERVICE_PORT_HTTPS': '443', 'CLEANUP_22A05E3C_HEAD_SSH_PORT_22_TCP_PROTO': 'tcp', 'COLORTERM': 'truecolor', 'VSCODE_DEBUGPY_ADAPTER_ENDPOINTS': '/root/.vscode-server/extensions/ms-python.debugpy-2025.18.0-linux-x64/.noConfigDebugAdapterEndpoints/endpoint-2cc974af6afc822c.txt', 'KUBERNETES_SERVICE_PORT': '443', 'TERM_PROGRAM_VERSION': '1.112.0', 'M2_TRAIN_2ED0EEBF_HEAD_SSH_PORT_22_TCP_ADDR': '10.43.118.187', 'SUNGMIN_CLUSTER_EF307C6F_HEAD_SSH_SERVICE_HOST': '10.43.185.213', 'CONDA_EXE': '/root/miniconda3/bin/conda', '_CE_M': '', 'CLEANUP_22A05E3C_HEAD_SSH_PORT_22_TCP_ADDR': '10.43.55.118', 'SUNGMIN_CLUSTER_EF307C6F_HEAD_SSH_PORT_22_TCP': 'tcp://10.43.185.213:22', 'CLEANUP_22A05E3C_HEAD_SSH_PORT': 'tcp://10.43.55.118:22', 'TMUX': '/tmp/tmux-0/default,135677,0', 'HOSTNAME': 'sungmin-cluster-ef307c6f-head', 'M2_TRAIN_2ED0EEBF_HEAD_SSH_PORT': 'tcp://10.43.118.187:22', 'CLAUDE_MAX_COST_PER_USER': '1000.0', 'SUNGMIN_CLUSTER_EF307C6F_HEAD_SSH_PORT_22_TCP_PORT': '22', 'PYDEVD_DISABLE_FILE_VALIDATION': '1', 'SKYPILOT_IN_CLUSTER_CONTEXT_NAME': 'ssh-azure-vm6', 'CLAUDE_MAX_TURNS': '50', 'SUNGMIN_CLUSTER_EF307C6F_HEAD_SSH_SERVICE_PORT': '22', 'PWD': '/home/RESEARCH/Stein_ASBS', 'LOGNAME': 'root', 'CONDA_PREFIX': '/root/miniconda3/envs/Claude_bot', 'M2_TRAIN_2ED0EEBF_HEAD_SSH_PORT_22_TCP_PORT': '22', 'BUNDLED_DEBUGPY_PATH': '/root/.vscode-server/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/libs/debugpy', 'CLEANUP_22A05E3C_HEAD_SSH_SERVICE_HOST': '10.43.55.118', 'NoDefaultCurrentDirectoryInExePath': '1', 'VSCODE_GIT_ASKPASS_NODE': '/root/.vscode/cli/servers/Stable-07ff9d6178ede9a1bd12ad3399074d726ebe6e43/server/node', 'CLAUDE_TIMEOUT_SECONDS': '900', 'CLAUDECODE': '1', 'MOTD_SHOWN': 'pam', 'HOME': '/root', 'CLAUDE_AGENT_SDK_VERSION': '0.1.48', 'LANG': 'C.UTF-8', 'M2_TRAIN_2ED0EEBF_HEAD_SSH_PORT_22_TCP': 'tcp://10.43.118.187:22', 'TELEGRAM_BOT_TOKEN': '8648398608:AAGQsB8Woq3WZ7Fsxu8UV_MtuTyKYeGhDP0', 'KUBERNETES_PORT_443_TCP': 'tcp://10.43.0.1:443', 'APPROVED_DIRECTORY': '/home', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'PYTHONSTARTUP': '/root/.vscode-server/data/User/workspaceStorage/7aee286f/ms-python.python/pythonrc.py', 'SSL_CERT_DIR': '/usr/lib/ssl/certs', 'CLAUDE_CODE_ENABLE_FINE_GRAINED_TOOL_STREAMING': '1', 'CONDA_PROMPT_MODIFIER': '(Claude_bot) ', 'GIT_ASKPASS': '/root/.vscode/cli/servers/Stable-07ff9d6178ede9a1bd12ad3399074d726ebe6e43/server/extensions/git/dist/askpass.sh', 'CLEANUP_22A05E3C_HEAD_SSH_SERVICE_PORT': '22', 'SSH_CONNECTION': '10.42.0.106 57298 10.42.0.106 22', 'CLEANUP_22A05E3C_HEAD_SSH_PORT_22_TCP': 'tcp://10.43.55.118:22', 'SUNGMIN_CLUSTER_EF307C6F_HEAD_SSH_PORT_22_TCP_PROTO': 'tcp', 'M2_TRAIN_2ED0EEBF_HEAD_SSH_PORT_22_TCP_PROTO': 'tcp', 'SUNGMIN_CLUSTER_EF307C6F_HEAD_SSH_PORT_22_TCP_ADDR': '10.43.185.213', 'VSCODE_GIT_ASKPASS_EXTRA_ARGS': '', 'CLAUDE_MAX_COST_PER_REQUEST': '1000.0', 'VSCODE_PYTHON_AUTOACTIVATE_GUARD': '1', 'CLEANUP_22A05E3C_HEAD_SSH_PORT_22_TCP_PORT': '22', 'CLAUDE_CODE_SSE_PORT': '17341', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'SKYPILOT_POD_NODE_TYPE': 'head', 'TERM': 'xterm-256color', 'PYTHON_BASIC_REPL': '1', '_CE_CONDA': '', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'root', 'TMUX_PANE': '%0', 'VSCODE_GIT_IPC_HANDLE': '/tmp/vscode-git-9938d24ba2.sock', 'CONDA_SHLVL': '1', 'SHLVL': '2', 'GIT_EDITOR': 'true', 'KUBERNETES_PORT_443_TCP_PROTO': 'tcp', 'SKYPILOT_POD_MEMORY_BYTES_LIMIT': '16000000000', 'M2_TRAIN_2ED0EEBF_HEAD_SSH_SERVICE_PORT': '22', 'KUBERNETES_PORT_443_TCP_ADDR': '10.43.0.1', 'OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE': 'delta', 'CONDA_PYTHON_EXE': '/root/miniconda3/bin/python', 'ALLOWED_USERS': '8610757705', 'LC_CTYPE': 'C.UTF-8', 'SSL_CERT_FILE': '/usr/lib/ssl/certs/ca-certificates.crt', 'SSH_CLIENT': '10.42.0.106 57298 22', 'CONDA_DEFAULT_ENV': 'Claude_bot', 'CLAUDE_CODE_ENTRYPOINT': 'sdk-py', 'M2_TRAIN_2ED0EEBF_HEAD_SSH_SERVICE_HOST': '10.43.118.187', 'NVIDIA_CTK_LIBCUDA_DIR': '/usr/lib/x86_64-linux-gnu', 'SKYPILOT_POD_CPU_CORE_LIMIT': '4', 'KUBERNETES_SERVICE_HOST': '10.43.0.1', 'KUBERNETES_PORT': 'tcp://10.43.0.1:443', 'KUBERNETES_PORT_443_TCP_PORT': '443', 'VSCODE_GIT_ASKPASS_MAIN': '/root/.vscode/cli/servers/Stable-07ff9d6178ede9a1bd12ad3399074d726ebe6e43/server/extensions/git/dist/askpass-main.js', 'BROWSER': '/root/.vscode/cli/servers/Stable-07ff9d6178ede9a1bd12ad3399074d726ebe6e43/server/bin/helpers/browser.sh', 'PATH': '/root/miniconda3/envs/Claude_bot/bin:/root/miniconda3/condabin:/root/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand:/root/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli:/root/.vscode/cli/servers/Stable-07ff9d6178ede9a1bd12ad3399074d726ebe6e43/server/bin/remote-cli:/root/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.vscode-server/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts', 'SUNGMIN_CLUSTER_EF307C6F_HEAD_SSH_PORT': 'tcp://10.43.185.213:22', 'TELEGRAM_BOT_USERNAME': 'claudecodebotskypilotbot', 'OLDPWD': '/home/RESEARCH/Stein_ASBS', 'TERM_PROGRAM': 'vscode', 'VSCODE_IPC_HOOK_CLI': '/tmp/vscode-ipc-30fbb495-edfd-4c73-871e-2177725a4d4a.sock', '_': '/root/miniconda3/envs/Sampling_env/bin/python', 'CUDA_MODULE_LOADING': 'LAZY'}
+job dir: /home/RESEARCH/Stein_ASBS/adjoint_samplers/utils
+Not using distributed mode
+Saving cfg to cfg.yaml
+{'project': 'adjoint_sampler', 'train_itr_per_epoch': 100, 'init_stage': 'adjoint', 'seed': 0, 'clip_grad_norm': False, 'checkpoint': None, 'save_freq': 100, 'skip_eval': False, 'timesteps': {'t0': 0.0, 't1': 1.0, 'steps': '${nfe}', 'rescale_t': '${rescale_t}'}, 'resample_batch_size': 512, 'train_batch_size': 512, 'eval_batch_size': 2000, 'num_eval_samples': '${eval_batch_size}', 'dim': 2, 'n_particles': 1, 'spatial_dim': 2, 'energy': {'_target_': 'adjoint_samplers.energies.viz_energies.GMM9Energy', 'dim': '${dim}'}, 'evaluator': {'_target_': 'adjoint_samplers.components.generic_evaluator.GenericEnergyEvaluator'}, 'source': {'_target_': 'adjoint_samplers.utils.dist_utils.Gauss', 'dim': '${dim}', 'scale': '${scale}'}, 'ref_sde': {'_target_': 'adjoint_samplers.components.sde.VESDE', 'sigma_max': '${sigma_max}', 'sigma_min': '${sigma_min}'}, 'controller': {'_target_': 'adjoint_samplers.components.model.FourierMLP', 'dim': '${dim}', 'num_layers': 4, 'channels': 64, 'activation': {'_target_': 'torch.nn.GELU'}, 'last_bias_init': {'_target_': 'torch.nn.init.zeros_', '_partial_': True}, 'last_weight_init': {'_target_': 'torch.nn.init.zeros_', '_partial_': True}}, 'state_cost': {'_target_': 'adjoint_samplers.components.state_cost.ZeroGradStateCost'}, 'term_cost': {'_target_': 'adjoint_samplers.components.term_cost.ScoreGradTermCost', 'max_grad_E_norm': '${max_grad_E_norm}'}, 'adjoint_matcher': {'_target_': 'adjoint_samplers.components.matcher.AdjointVEMatcher', 'grad_state_cost': {'_target_': 'adjoint_samplers.components.state_cost.ZeroGradStateCost'}, 'buffer': {'_target_': 'adjoint_samplers.components.buffer.BatchBuffer', 'buffer_size': '${adjoint_matcher.buffer_size}'}, 'buffer_size': 10000, 'duplicates': 10, 'resample_size': 1000, 'num_epochs_per_stage': '${num_epochs}', 'optim': {'lr': 0.001, 'weight_decay': 0}}, 'exp_name': 'gmm9_asbs', 'scale': 0.5, 'nfe': 100, 'sigma_max': 8, 'sigma_min': 0.01, 'rescale_t': None, 'num_epochs': 3000, 'max_grad_E_norm': 50, 'use_wandb': False, 'eval_freq': 200, 'shared_dir': '/checkpoint', 'distributed': False, 'rank': 0, 'world_size': 1}
+Instantiating energy...
+Instantiating source...
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.Gauss'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+Instantiating model...
+Instantiating grad of costs...
+Instantiating adjoint matcher...
+Instantiating optimizer...
+Instantiating writer...
+Instantiating evaluator...
+Starting from 0/3000 epochs...
+[adjoint | ep=0000] loss=436.1681 | gpu=19MiB(rsv=24MiB) | t=01:12:05
+[adjoint | ep=0001] loss=5006851682861056.0000 | gpu=19MiB(rsv=24MiB) | t=01:12:05
+[adjoint | ep=0002] loss=271631138816.0000 | gpu=19MiB(rsv=24MiB) | t=01:12:06
+[adjoint | ep=0003] loss=157974462464.0000 | gpu=19MiB(rsv=24MiB) | t=01:12:07
+[adjoint | ep=0004] loss=121169608704.0000 | gpu=19MiB(rsv=24MiB) | t=01:12:08
+[adjoint | ep=0005] loss=70854705152.0000 | gpu=19MiB(rsv=24MiB) | t=01:12:08
+[adjoint | ep=0006] loss=77990821888.0000 | gpu=19MiB(rsv=24MiB) | t=01:12:09
+[adjoint | ep=0007] loss=82934390784.0000 | gpu=19MiB(rsv=24MiB) | t=01:12:10
+[adjoint | ep=0008] loss=47636709376.0000 | gpu=19MiB(rsv=24MiB) | t=01:12:11
+[adjoint | ep=0009] loss=46451482624.0000 | gpu=19MiB(rsv=24MiB) | t=01:12:11
+[adjoint | ep=0010] loss=49775235072.0000 | gpu=19MiB(rsv=24MiB) | t=01:12:12
+[adjoint | ep=0011] loss=38126809088.0000 | gpu=19MiB(rsv=24MiB) | t=01:12:13
+[adjoint | ep=0012] loss=43045568512.0000 | gpu=19MiB(rsv=24MiB) | t=01:12:13
+[adjoint | ep=0013] loss=40456802304.0000 | gpu=19MiB(rsv=24MiB) | t=01:12:14
+[adjoint | ep=0014] loss=31534733312.0000 | gpu=19MiB(rsv=24MiB) | t=01:12:15
+[adjoint | ep=0015] loss=39098601472.0000 | gpu=19MiB(rsv=24MiB) | t=01:12:16
+[adjoint | ep=0016] loss=31257655296.0000 | gpu=19MiB(rsv=24MiB) | t=01:12:16
+[adjoint | ep=0017] loss=27555731456.0000 | gpu=19MiB(rsv=24MiB) | t=01:12:17
+[adjoint | ep=0018] loss=24806004736.0000 | gpu=19MiB(rsv=24MiB) | t=01:12:18
+[adjoint | ep=0019] loss=31574984704.0000 | gpu=19MiB(rsv=24MiB) | t=01:12:18
+[adjoint | ep=0020] loss=13219471360.0000 | gpu=19MiB(rsv=24MiB) | t=01:12:19
+[adjoint | ep=0021] loss=1113.3768 | gpu=19MiB(rsv=24MiB) | t=01:12:20
+[adjoint | ep=0022] loss=1079.9728 | gpu=19MiB(rsv=24MiB) | t=01:12:21
+[adjoint | ep=0023] loss=1043.7822 | gpu=19MiB(rsv=24MiB) | t=01:12:21
+[adjoint | ep=0024] loss=1011.9648 | gpu=19MiB(rsv=24MiB) | t=01:12:22
+[adjoint | ep=0025] loss=981.8571 | gpu=19MiB(rsv=24MiB) | t=01:12:23
+[adjoint | ep=0026] loss=949.5380 | gpu=19MiB(rsv=24MiB) | t=01:12:23
+[adjoint | ep=0027] loss=920.8997 | gpu=19MiB(rsv=24MiB) | t=01:12:24
+[adjoint | ep=0028] loss=889.8436 | gpu=19MiB(rsv=24MiB) | t=01:12:25
+[adjoint | ep=0029] loss=863.3781 | gpu=19MiB(rsv=24MiB) | t=01:12:25
+[adjoint | ep=0030] loss=833.6016 | gpu=19MiB(rsv=24MiB) | t=01:12:26
+[adjoint | ep=0031] loss=804.3965 | gpu=19MiB(rsv=24MiB) | t=01:12:27
+[adjoint | ep=0032] loss=782.6887 | gpu=19MiB(rsv=24MiB) | t=01:12:28
+[adjoint | ep=0033] loss=755.6213 | gpu=19MiB(rsv=24MiB) | t=01:12:28
+[adjoint | ep=0034] loss=731.4991 | gpu=19MiB(rsv=24MiB) | t=01:12:29
+[adjoint | ep=0035] loss=706.8197 | gpu=19MiB(rsv=24MiB) | t=01:12:30
+[adjoint | ep=0036] loss=670.8172 | gpu=19MiB(rsv=24MiB) | t=01:12:30
+[adjoint | ep=0037] loss=746.4908 | gpu=19MiB(rsv=24MiB) | t=01:12:31
+[adjoint | ep=0038] loss=1670.4343 | gpu=19MiB(rsv=24MiB) | t=01:12:32
+[adjoint | ep=0039] loss=1632.8495 | gpu=19MiB(rsv=24MiB) | t=01:12:33
+[adjoint | ep=0040] loss=1694.0757 | gpu=19MiB(rsv=24MiB) | t=01:12:33
+[adjoint | ep=0041] loss=1853.2677 | gpu=19MiB(rsv=24MiB) | t=01:12:34
+[adjoint | ep=0042] loss=2032.8727 | gpu=19MiB(rsv=24MiB) | t=01:12:35
+[adjoint | ep=0043] loss=2180.3604 | gpu=19MiB(rsv=24MiB) | t=01:12:36
+[adjoint | ep=0044] loss=2251.9622 | gpu=19MiB(rsv=24MiB) | t=01:12:36
+[adjoint | ep=0045] loss=2362.1794 | gpu=19MiB(rsv=24MiB) | t=01:12:37
+[adjoint | ep=0046] loss=2439.6367 | gpu=19MiB(rsv=24MiB) | t=01:12:38
+[adjoint | ep=0047] loss=2469.5579 | gpu=19MiB(rsv=24MiB) | t=01:12:38
+[adjoint | ep=0048] loss=2535.5771 | gpu=19MiB(rsv=24MiB) | t=01:12:39
