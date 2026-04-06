@@ -12,6 +12,7 @@ seed: 0
 clip_grad_norm: false
 checkpoint: null
 save_freq: 100
+skip_eval: false
 
 timesteps:
   t0: 0.0

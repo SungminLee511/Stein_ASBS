@@ -182,73 +182,77 @@ def main(cfg):
 
             # Eval epoch according to the frequency
             # otherwise eval at the end of adjoint matching
+            skip_eval = getattr(cfg, "skip_eval", False)
             if "eval_freq" in cfg:
                 eval_this_epoch = epoch > 0 and epoch % cfg.eval_freq == 0
             else:
                 eval_this_epoch = train_utils.is_last_am_epoch(epoch, cfg)
 
             if distributed_mode.is_main_process() and eval_this_epoch:
-                # eval only after adjoint training
-                if stage == "adjoint":
-                    n_gen_samples = 0
-                    x1_list = []
-                    while n_gen_samples < cfg.num_eval_samples:
-                        B = min(cfg.eval_batch_size, cfg.num_eval_samples - n_gen_samples)
-                        x0 = source.sample([B,]).to(device)
-                        timesteps = train_utils.get_timesteps(**cfg.timesteps).to(x0)
+                if not skip_eval:
+                    # eval only after adjoint training
+                    if stage == "adjoint":
+                        n_gen_samples = 0
+                        x1_list = []
+                        while n_gen_samples < cfg.num_eval_samples:
+                            B = min(cfg.eval_batch_size, cfg.num_eval_samples - n_gen_samples)
+                            x0 = source.sample([B,]).to(device)
+                            timesteps = train_utils.get_timesteps(**cfg.timesteps).to(x0)
 
-                        # model samples
-                        x0, x1 = sdeint(
-                            sde,
-                            x0,
-                            timesteps,
-                            only_boundary=True,
-                        )
-                        x1_list.append(x1)
-                        n_gen_samples += x1.shape[0]
-                        print("Generated {} samples (total: {}/{})".format(
-                            x1.shape[0],
-                            n_gen_samples,
-                            cfg.num_eval_samples,
-                        ))
+                            # model samples
+                            x0, x1 = sdeint(
+                                sde,
+                                x0,
+                                timesteps,
+                                only_boundary=True,
+                            )
+                            x1_list.append(x1)
+                            n_gen_samples += x1.shape[0]
+                            print("Generated {} samples (total: {}/{})".format(
+                                x1.shape[0],
+                                n_gen_samples,
+                                cfg.num_eval_samples,
+                            ))
 
-                    samples = torch.cat(x1_list, dim=0)
-                    eval_dict = evaluator(samples)
-                    print(f"Evaluated @{epoch=}!")
+                        samples = torch.cat(x1_list, dim=0)
+                        eval_dict = evaluator(samples)
+                        print(f"Evaluated @{epoch=}!")
 
-                    if "hist_img" in eval_dict:
-                        eval_dict["hist_img"].save(eval_dir / "gen.png")
+                        if "hist_img" in eval_dict:
+                            eval_dict["hist_img"].save(eval_dir / "gen.png")
 
-                    writer.log(eval_dict, step=epoch)
+                        writer.log(eval_dict, step=epoch)
 
-                    # --- Best checkpoint saving ---
-                    # Use energy_W2 if available, else use negative log_Z_lb (lower is better)
-                    eval_metric = None
-                    if "energy_W2" in eval_dict:
-                        eval_metric = eval_dict["energy_W2"]
-                    elif "log_Z_lb" in eval_dict:
-                        eval_metric = -eval_dict["log_Z_lb"]  # higher log_Z_lb is better
+                        # --- Best checkpoint saving ---
+                        # Use energy_W2 if available, else use negative log_Z_lb (lower is better)
+                        eval_metric = None
+                        if "energy_W2" in eval_dict:
+                            eval_metric = eval_dict["energy_W2"]
+                        elif "log_Z_lb" in eval_dict:
+                            eval_metric = -eval_dict["log_Z_lb"]  # higher log_Z_lb is better
 
-                    if eval_metric is not None and eval_metric < best_eval_metric:
-                        best_eval_metric = eval_metric
-                        metric_name = "energy_W2" if "energy_W2" in eval_dict else "log_Z_lb"
-                        print(f"New best {metric_name}: {eval_metric:.4f} @ epoch {epoch} — saving checkpoint_best.pt")
-                        ckpt_dir = Path("checkpoints")
-                        ckpt_dir.mkdir(exist_ok=True)
-                        def _get_sd(module):
-                            if cfg.distributed and hasattr(module, "module"):
-                                return module.module.state_dict()
-                            return module.state_dict()
-                        best_state = {
-                            "epoch": epoch,
-                            "cfg": cfg,
-                            "optimizer": optimizer.state_dict(),
-                            "controller": _get_sd(controller),
-                            "best_eval_metric": float(eval_metric),
-                        }
-                        if corrector is not None:
-                            best_state["corrector"] = _get_sd(corrector)
-                        torch.save(best_state, ckpt_dir / "checkpoint_best.pt")
+                        if eval_metric is not None and eval_metric < best_eval_metric:
+                            best_eval_metric = eval_metric
+                            metric_name = "energy_W2" if "energy_W2" in eval_dict else "log_Z_lb"
+                            print(f"New best {metric_name}: {eval_metric:.4f} @ epoch {epoch} — saving checkpoint_best.pt")
+                            ckpt_dir = Path("checkpoints")
+                            ckpt_dir.mkdir(exist_ok=True)
+                            def _get_sd(module):
+                                if cfg.distributed and hasattr(module, "module"):
+                                    return module.module.state_dict()
+                                return module.state_dict()
+                            best_state = {
+                                "epoch": epoch,
+                                "cfg": cfg,
+                                "optimizer": optimizer.state_dict(),
+                                "controller": _get_sd(controller),
+                                "best_eval_metric": float(eval_metric),
+                            }
+                            if corrector is not None:
+                                best_state["corrector"] = _get_sd(corrector)
+                            torch.save(best_state, ckpt_dir / "checkpoint_best.pt")
+                else:
+                    print(f"[skip_eval] Skipping evaluation @ epoch {epoch}")
 
                 print("Saving checkpoint ... ")
                 train_utils.save(
