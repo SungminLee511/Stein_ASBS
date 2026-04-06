@@ -175,12 +175,7 @@ def plot_terminal(
     colors = ['gray', '#d62728', '#ff7f0e']
 
     for idx, (ax, title, samples, color) in enumerate(zip(axes, titles, sample_sets, colors)):
-        if idx == 0:
-            # Only Ground Truth panel gets density contours
-            plot_density_contours(ax, energy, xlim, ylim)
-        else:
-            ax.set_facecolor('#f7f7f7')
-
+        ax.set_facecolor('#f7f7f7')
         ax.set_title(title, fontsize=14, fontweight='bold')
         ax.set_xlim(xlim)
         ax.set_ylim(ylim)
