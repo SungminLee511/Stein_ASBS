@@ -1,10 +1,9 @@
 """
 scripts/eval_2d_all.py
 
-Evaluates all 6 2D experiments (3 per benchmark: baseline, ksd_warmup, ksd_nowarmup)
-and generates:
-  - 6-panel terminal distribution figure per benchmark
-  - 4-panel trajectory figure per benchmark
+Evaluates 2D experiments (baseline ASBS vs KSD-ASBS) and generates:
+  - 3-panel terminal distribution: Ground Truth | ASBS | KSD-ASBS
+  - 5-panel marginal evolution per method: snapshots from source to terminal
   - 2d_result.md with all figures and metrics
 """
 
@@ -69,13 +68,17 @@ def generate_samples(sde, source, ts_cfg, n_samples, device):
 
 
 @torch.no_grad()
-def generate_trajectories(sde, source, ts_cfg, n_traj, device):
-    x0 = source.sample([n_traj]).to(device)
+def generate_full_states(sde, source, ts_cfg, n_samples, device):
+    """Generate full trajectory states for marginal snapshots.
+
+    Returns:
+        states: list of T tensors, each (n_samples, D)
+        ts: timestep tensor (T,)
+    """
+    x0 = source.sample([n_samples]).to(device)
     ts = train_utils.get_timesteps(**ts_cfg).to(device)
     states = sdeint(sde, x0, ts, only_boundary=False)
-    trajectories = torch.stack(states, dim=1)
-    x1 = states[-1]
-    return trajectories, x1
+    return states, ts
 
 
 def generate_reference_samples(energy, centers, std, n=2000):
@@ -148,63 +151,41 @@ MODE_COLORS = [
 
 
 # ====================================================================
-# Figure: Terminal distribution (6-panel for 3-way comparison)
+# Figure: Terminal distribution (3-panel: GT, ASBS, KSD-ASBS)
 # ====================================================================
 
-def plot_terminal_3way(
-    energy, samples_ref, samples_base, samples_ksd_warm, samples_ksd_nowarm,
-    centers, m_base, m_ksd_warm, m_ksd_nowarm,
+def plot_terminal(
+    energy, samples_ref, samples_base, samples_ksd,
+    centers, m_base, m_ksd,
     benchmark_name, output_path, xlim, ylim,
 ):
-    """6-panel: Reference | Baseline | KSD-Warmup | KSD-NoWarmup | Overlay(Base vs Warm) | Overlay(Warm vs NoWarm)"""
-    fig, axes = plt.subplots(2, 3, figsize=(18, 11))
-    axes = axes.flatten()
+    """3-panel: Ground Truth | Baseline ASBS | KSD-ASBS"""
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5.5))
 
     titles = [
-        'Target Density',
-        f'Baseline ASBS\n({m_base["n_modes_covered"]} modes)',
-        f'KSD-Warmup\n({m_ksd_warm["n_modes_covered"]} modes)',
-        f'KSD-NoWarmup\n({m_ksd_nowarm["n_modes_covered"]} modes)',
-        'Overlay: Baseline vs KSD-Warmup',
-        'Overlay: KSD-Warmup vs KSD-NoWarmup',
+        'Ground Truth',
+        f'ASBS\n({m_base["n_modes_covered"]}/{m_base["n_modes_total"]} modes)',
+        f'KSD-ASBS\n({m_ksd["n_modes_covered"]}/{m_ksd["n_modes_total"]} modes)',
     ]
 
-    for ax, title in zip(axes, titles):
+    sample_sets = [samples_ref, samples_base, samples_ksd]
+    colors = ['gray', '#d62728', '#ff7f0e']
+
+    for ax, title, samples, color in zip(axes, titles, sample_sets, colors):
         plot_density_contours(ax, energy, xlim, ylim)
-        ax.set_title(title, fontsize=12)
+        ax.set_title(title, fontsize=14, fontweight='bold')
         ax.set_xlim(xlim)
         ax.set_ylim(ylim)
         ax.set_aspect('equal')
+
         c = centers.cpu().numpy()
-        ax.scatter(c[:, 0], c[:, 1], marker='*', s=80, c='black', zorder=10, edgecolors='white', linewidths=0.5)
+        ax.scatter(c[:, 0], c[:, 1], marker='*', s=80, c='black',
+                   zorder=10, edgecolors='white', linewidths=0.5)
 
-    # Panel 0: Reference
-    r = samples_ref.cpu().numpy()
-    axes[0].scatter(r[:, 0], r[:, 1], s=2, c='gray', alpha=0.3, zorder=5)
+        s = samples.cpu().numpy()
+        ax.scatter(s[:, 0], s[:, 1], s=4, c=color, alpha=0.4, zorder=5)
 
-    # Panel 1: Baseline
-    b = samples_base.cpu().numpy()
-    axes[1].scatter(b[:, 0], b[:, 1], s=4, c='#d62728', alpha=0.5, zorder=5)
-
-    # Panel 2: KSD-Warmup
-    kw = samples_ksd_warm.cpu().numpy()
-    axes[2].scatter(kw[:, 0], kw[:, 1], s=4, c='#ff7f0e', alpha=0.5, zorder=5)
-
-    # Panel 3: KSD-NoWarmup
-    knw = samples_ksd_nowarm.cpu().numpy()
-    axes[3].scatter(knw[:, 0], knw[:, 1], s=4, c='#2ca02c', alpha=0.5, zorder=5)
-
-    # Panel 4: Overlay Base vs Warmup
-    axes[4].scatter(b[:, 0], b[:, 1], s=3, c='#d62728', alpha=0.3, zorder=5, label='Baseline')
-    axes[4].scatter(kw[:, 0], kw[:, 1], s=3, c='#ff7f0e', alpha=0.3, zorder=6, label='KSD-Warmup')
-    axes[4].legend(fontsize=9, loc='upper right')
-
-    # Panel 5: Overlay Warmup vs NoWarmup
-    axes[5].scatter(kw[:, 0], kw[:, 1], s=3, c='#ff7f0e', alpha=0.3, zorder=5, label='KSD-Warmup')
-    axes[5].scatter(knw[:, 0], knw[:, 1], s=3, c='#2ca02c', alpha=0.3, zorder=6, label='KSD-NoWarmup')
-    axes[5].legend(fontsize=9, loc='upper right')
-
-    fig.suptitle(f'{benchmark_name}: Terminal Distribution (3-way)', fontsize=15, y=1.01)
+    fig.suptitle(f'{benchmark_name}: Terminal Distribution', fontsize=16, y=1.02)
     fig.tight_layout()
     fig.savefig(output_path, dpi=200, bbox_inches='tight')
     plt.close(fig)
@@ -212,50 +193,48 @@ def plot_terminal_3way(
 
 
 # ====================================================================
-# Figure: Trajectory visualization (4-panel for 3-way)
+# Figure: Marginal evolution (5-panel per method)
 # ====================================================================
 
-def plot_trajectories_3way(
-    energy, traj_base, traj_ksd_warm, traj_ksd_nowarm,
-    x1_base, x1_ksd_warm, x1_ksd_nowarm,
-    centers, std, benchmark_name, output_path, xlim, ylim,
-    n_show=80, stride=5,
+def plot_marginal_evolution(
+    energy, states, ts, centers, std,
+    method_name, benchmark_name, output_path, xlim, ylim,
+    n_snapshots=5,
 ):
-    """4-panel: Density | Baseline trajs | KSD-Warmup trajs | KSD-NoWarmup trajs"""
-    fig, axes = plt.subplots(1, 4, figsize=(24, 6))
+    """5-panel figure showing marginal distribution at evenly spaced timesteps.
 
-    titles = ['Target Density', 'Baseline Trajectories', 'KSD-Warmup Trajectories', 'KSD-NoWarmup Trajectories']
-    for ax, title in zip(axes, titles):
+    Each panel shows the sample scatter at a specific time t, with density
+    contours of the target in the background.
+    """
+    T = len(states)
+    # Pick n_snapshots evenly spaced indices including first and last
+    indices = np.linspace(0, T - 1, n_snapshots, dtype=int)
+
+    fig, axes = plt.subplots(1, n_snapshots, figsize=(5 * n_snapshots, 5.5))
+
+    for panel_idx, state_idx in enumerate(indices):
+        ax = axes[panel_idx]
+        t_val = ts[state_idx].item()
+        samples = states[state_idx].cpu().numpy()
+
+        # Background: target density contours
         plot_density_contours(ax, energy, xlim, ylim)
-        ax.set_title(title, fontsize=12)
+
+        # Scatter samples
+        ax.scatter(samples[:, 0], samples[:, 1], s=4, c='#d62728' if 'ASBS' == method_name else '#ff7f0e',
+                   alpha=0.4, zorder=5)
+
+        # Mode centers
+        c = centers.cpu().numpy()
+        ax.scatter(c[:, 0], c[:, 1], marker='*', s=80, c='black',
+                   zorder=10, edgecolors='white', linewidths=0.5)
+
         ax.set_xlim(xlim)
         ax.set_ylim(ylim)
         ax.set_aspect('equal')
-        c = centers.cpu().numpy()
-        ax.scatter(c[:, 0], c[:, 1], marker='*', s=100, c='black', zorder=10, edgecolors='white', linewidths=0.5)
+        ax.set_title(f't = {t_val:.2f}', fontsize=13, fontweight='bold')
 
-    assign_base, _, _ = assign_modes(x1_base, centers.to(x1_base.device), std=std)
-    assign_warm, _, _ = assign_modes(x1_ksd_warm, centers.to(x1_ksd_warm.device), std=std)
-    assign_nowarm, _, _ = assign_modes(x1_ksd_nowarm, centers.to(x1_ksd_nowarm.device), std=std)
-
-    def draw_trajectories(ax, traj, assignments, n_show):
-        idx = torch.randperm(traj.shape[0])[:n_show]
-        for i in idx:
-            path = traj[i, ::stride].cpu().numpy()
-            mode = assignments[i].item()
-            color = MODE_COLORS[mode % len(MODE_COLORS)] if mode >= 0 else '#cccccc'
-            ax.plot(path[:, 0], path[:, 1], color=color, alpha=0.3, linewidth=0.6, zorder=3)
-            ax.scatter(path[-1, 0], path[-1, 1], s=8, c=color, zorder=7, edgecolors='black', linewidths=0.3)
-
-    # Panel 0: reference samples
-    ref_samples = generate_reference_samples(energy, centers, std, n=2000)
-    axes[0].scatter(ref_samples[:, 0].numpy(), ref_samples[:, 1].numpy(), s=2, c='gray', alpha=0.3, zorder=5)
-
-    draw_trajectories(axes[1], traj_base, assign_base, n_show)
-    draw_trajectories(axes[2], traj_ksd_warm, assign_warm, n_show)
-    draw_trajectories(axes[3], traj_ksd_nowarm, assign_nowarm, n_show)
-
-    fig.suptitle(f'{benchmark_name}: SDE Trajectories (3-way)', fontsize=15, y=1.02)
+    fig.suptitle(f'{benchmark_name}: {method_name} — Marginal Evolution', fontsize=16, y=1.02)
     fig.tight_layout()
     fig.savefig(output_path, dpi=200, bbox_inches='tight')
     plt.close(fig)
@@ -275,97 +254,91 @@ BENCHMARKS = {
         'name': '9-Mode GMM (3x3 Grid)',
         'xlim': (-8, 8), 'ylim': (-8, 8),
         'baseline': RESULTS_DIR / 'gmm9_asbs' / 'seed_0',
-        'ksd_warmup': RESULTS_DIR / 'gmm9_ksd_asbs' / 'seed_0',
-        'ksd_nowarmup': RESULTS_DIR / 'gmm9_ksd_nowarmup' / 'seed_0',
-        'ksd_lambda_warmup': 0.01,
-        'ksd_lambda_nowarmup': 0.01,
+        'ksd': RESULTS_DIR / 'gmm9_ksd_nowarmup' / 'seed_0',
+        'ksd_lambda': 0.01,
     },
     'ring8': {
         'name': '8-Mode Ring',
         'xlim': (-8, 8), 'ylim': (-8, 8),
         'baseline': RESULTS_DIR / 'ring8_asbs' / 'seed_0',
-        'ksd_warmup': RESULTS_DIR / 'ring8_ksd_asbs' / 'seed_0',
-        'ksd_nowarmup': RESULTS_DIR / 'ring8_ksd_nowarmup' / 'seed_0',
-        'ksd_lambda_warmup': 0.1,
-        'ksd_lambda_nowarmup': 0.1,
+        'ksd': RESULTS_DIR / 'ring8_ksd_nowarmup' / 'seed_0',
+        'ksd_lambda': 0.1,
     },
 }
 
 
-def evaluate_benchmark(bench_key, bench_cfg, device, n_samples=2000, n_traj=200, n_traj_show=80, traj_stride=5):
+def evaluate_benchmark(bench_key, bench_cfg, device, n_samples=2000):
     print(f"\n{'='*60}")
     print(f"  Evaluating: {bench_cfg['name']}")
     print(f"{'='*60}")
 
     # Load models
-    print("  Loading baseline...")
+    print("  Loading baseline ASBS...")
     sde_base, src_base, energy, ts_base = load_model(bench_cfg['baseline'], device)
-    print("  Loading KSD-Warmup...")
-    sde_warm, src_warm, _, ts_warm = load_model(bench_cfg['ksd_warmup'], device)
-    print("  Loading KSD-NoWarmup...")
-    sde_nowarm, src_nowarm, _, ts_nowarm = load_model(bench_cfg['ksd_nowarmup'], device)
+    print("  Loading KSD-ASBS...")
+    sde_ksd, src_ksd, _, ts_ksd = load_model(bench_cfg['ksd'], device)
 
     centers = energy.get_centers().to(device)
     std = energy.get_std()
 
-    # Generate terminal samples (same seed for fair comparison)
+    # --- Terminal samples ---
     print(f"  Generating {n_samples} terminal samples...")
     torch.manual_seed(0)
     samples_base = generate_samples(sde_base, src_base, ts_base, n_samples, device)
     torch.manual_seed(0)
-    samples_warm = generate_samples(sde_warm, src_warm, ts_warm, n_samples, device)
-    torch.manual_seed(0)
-    samples_nowarm = generate_samples(sde_nowarm, src_nowarm, ts_nowarm, n_samples, device)
+    samples_ksd = generate_samples(sde_ksd, src_ksd, ts_ksd, n_samples, device)
     samples_ref = generate_reference_samples(energy, centers, std, n_samples).to(device)
 
-    # Metrics
+    # --- Metrics ---
     print("  Computing metrics...")
     m_base = compute_2d_metrics(samples_base, energy, centers, std)
-    m_warm = compute_2d_metrics(samples_warm, energy, centers, std)
-    m_nowarm = compute_2d_metrics(samples_nowarm, energy, centers, std)
+    m_ksd = compute_2d_metrics(samples_ksd, energy, centers, std)
 
     K = centers.shape[0]
-    print(f"    Baseline:       {m_base['n_modes_covered']}/{K} modes, mean_E={m_base['mean_energy']:.3f}")
-    print(f"    KSD-Warmup:     {m_warm['n_modes_covered']}/{K} modes, mean_E={m_warm['mean_energy']:.3f}")
-    print(f"    KSD-NoWarmup:   {m_nowarm['n_modes_covered']}/{K} modes, mean_E={m_nowarm['mean_energy']:.3f}")
+    print(f"    ASBS:     {m_base['n_modes_covered']}/{K} modes, mean_E={m_base['mean_energy']:.3f}")
+    print(f"    KSD-ASBS: {m_ksd['n_modes_covered']}/{K} modes, mean_E={m_ksd['mean_energy']:.3f}")
 
-    # Terminal distribution figure
+    # --- Figure: Terminal distribution (3-panel) ---
     print("  Generating terminal distribution figure...")
-    plot_terminal_3way(
-        energy, samples_ref, samples_base, samples_warm, samples_nowarm,
-        centers, m_base, m_warm, m_nowarm,
+    plot_terminal(
+        energy, samples_ref, samples_base, samples_ksd,
+        centers, m_base, m_ksd,
         bench_cfg['name'],
         FIG_DIR / f'{bench_key}_terminal.png',
         bench_cfg['xlim'], bench_cfg['ylim'],
     )
 
-    # Trajectories
-    print(f"  Generating {n_traj} trajectories...")
+    # --- Full states for marginal evolution ---
+    print(f"  Generating full trajectories for marginal snapshots...")
     torch.manual_seed(42)
-    traj_base, x1_base = generate_trajectories(sde_base, src_base, ts_base, n_traj, device)
+    states_base, ts_base_full = generate_full_states(sde_base, src_base, ts_base, n_samples, device)
     torch.manual_seed(42)
-    traj_warm, x1_warm = generate_trajectories(sde_warm, src_warm, ts_warm, n_traj, device)
-    torch.manual_seed(42)
-    traj_nowarm, x1_nowarm = generate_trajectories(sde_nowarm, src_nowarm, ts_nowarm, n_traj, device)
+    states_ksd, ts_ksd_full = generate_full_states(sde_ksd, src_ksd, ts_ksd, n_samples, device)
 
-    print("  Generating trajectory figure...")
-    plot_trajectories_3way(
-        energy, traj_base, traj_warm, traj_nowarm,
-        x1_base, x1_warm, x1_nowarm,
-        centers, std, bench_cfg['name'],
-        FIG_DIR / f'{bench_key}_trajectories.png',
+    # --- Figure: Marginal evolution ASBS (5-panel) ---
+    print("  Generating ASBS marginal evolution figure...")
+    plot_marginal_evolution(
+        energy, states_base, ts_base_full, centers, std,
+        'ASBS', bench_cfg['name'],
+        FIG_DIR / f'{bench_key}_marginal_asbs.png',
         bench_cfg['xlim'], bench_cfg['ylim'],
-        n_show=n_traj_show, stride=traj_stride,
+    )
+
+    # --- Figure: Marginal evolution KSD-ASBS (5-panel) ---
+    print("  Generating KSD-ASBS marginal evolution figure...")
+    plot_marginal_evolution(
+        energy, states_ksd, ts_ksd_full, centers, std,
+        'KSD-ASBS', bench_cfg['name'],
+        FIG_DIR / f'{bench_key}_marginal_ksd.png',
+        bench_cfg['xlim'], bench_cfg['ylim'],
     )
 
     return {
         'name': bench_cfg['name'],
         'K': K,
-        'ksd_lambda_warmup': bench_cfg['ksd_lambda_warmup'],
-        'ksd_lambda_nowarmup': bench_cfg['ksd_lambda_nowarmup'],
+        'ksd_lambda': bench_cfg['ksd_lambda'],
         'm_base': m_base,
-        'm_warm': m_warm,
-        'm_nowarm': m_nowarm,
+        'm_ksd': m_ksd,
     }
 
 
@@ -382,25 +355,28 @@ Generated: {kst}
     for bench_key, res in all_results.items():
         K = res['K']
         m_b = res['m_base']
-        m_w = res['m_warm']
-        m_nw = res['m_nowarm']
+        m_k = res['m_ksd']
 
         md += f"""## {res['name']}
 
-| Metric | Baseline ASBS | KSD-Warmup (lambda={res['ksd_lambda_warmup']}) | KSD-NoWarmup (lambda={res['ksd_lambda_nowarmup']}) |
-|---|---|---|---|
-| Modes covered (of {K}) | {m_b['n_modes_covered']} | {m_w['n_modes_covered']} | {m_nw['n_modes_covered']} |
-| Mean energy | {m_b['mean_energy']:.4f} | {m_w['mean_energy']:.4f} | {m_nw['mean_energy']:.4f} |
-| Std energy | {m_b['std_energy']:.4f} | {m_w['std_energy']:.4f} | {m_nw['std_energy']:.4f} |
-| Per-mode counts | {m_b['per_mode_counts']} | {m_w['per_mode_counts']} | {m_nw['per_mode_counts']} |
+| Metric | ASBS (Baseline) | KSD-ASBS (lambda={res['ksd_lambda']}) |
+|---|---|---|
+| Modes covered (of {K}) | {m_b['n_modes_covered']} | {m_k['n_modes_covered']} |
+| Mean energy | {m_b['mean_energy']:.4f} | {m_k['mean_energy']:.4f} |
+| Std energy | {m_b['std_energy']:.4f} | {m_k['std_energy']:.4f} |
+| Per-mode counts | {m_b['per_mode_counts']} | {m_k['per_mode_counts']} |
 
 ### Terminal Distribution
 
 ![{bench_key} terminal](figures_2d/{bench_key}_terminal.png)
 
-### SDE Trajectories
+### Marginal Evolution: ASBS
 
-![{bench_key} trajectories](figures_2d/{bench_key}_trajectories.png)
+![{bench_key} marginal asbs](figures_2d/{bench_key}_marginal_asbs.png)
+
+### Marginal Evolution: KSD-ASBS
+
+![{bench_key} marginal ksd](figures_2d/{bench_key}_marginal_ksd.png)
 
 ---
 
