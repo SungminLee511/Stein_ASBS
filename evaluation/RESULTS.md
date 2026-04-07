@@ -786,3 +786,25 @@ python evaluate_all.py --outputs_root outputs --results_dir results --n_samples 
 # Phase 6: Generate this report
 python generate_results.py --results_dir results --output RESULTS.md
 ```
+
+
+### 2D Visualization: 25-Mode Grid (5×5)
+
+Evaluated: 2026-04-07 10:58:39 KST
+
+| Metric | Baseline ASBS | SDR-ASBS | Δ |
+|---|---|---|---|
+| Modes covered (of 25) | 25 | 25 | +0 |
+| Mean energy | 1.0373 | 1.0327 | -0.0046 |
+| Std energy | 1.0660 | 1.0167 | |
+| Per-mode counts (base) | [13, 17, 53, 93, 159, 20, 25, 64, 113, 164, 20, 42, 67, 140, 173, 17, 34, 70, 104, 135, 18, 43, 85, 126, 166] | | |
+| Per-mode counts (SDR) | | [61, 69, 106, 143, 227, 65, 53, 61, 84, 75, 49, 50, 65, 98, 71, 62, 67, 71, 65, 47, 74, 89, 81, 98, 38] | |
+
+Terminal Distribution:
+
+![grid25 terminal](figures_2d/grid25_terminal.png)
+
+SDE Trajectories:
+
+![grid25 trajectories](figures_2d/grid25_trajectories.png)
+

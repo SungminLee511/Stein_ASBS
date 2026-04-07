@@ -295,6 +295,54 @@ class NestedRingsEnergy(BaseEnergy):
         return torch.cat(samples, dim=0)
 
 
+class Grid25Energy(BaseEnergy):
+    """25-mode Gaussian mixture on a 5x5 grid.
+
+    Modes at {-4, -2, 0, 2, 4} x {-4, -2, 0, 2, 4}, each with sigma=0.3.
+    Equal weights (1/25). Source N(0,I) sits directly on the center mode (0,0),
+    creating a strong mode collapse trap for baseline ASBS.
+
+    p(x) ~ sum_{k=1}^{25} N(x; mu_k, 0.3^2 I)
+    """
+    def __init__(self, dim=2, device="cpu"):
+        super().__init__("grid25", dim)
+        assert dim == 2
+
+        centers = []
+        for i in [-4.0, -2.0, 0.0, 2.0, 4.0]:
+            for j in [-4.0, -2.0, 0.0, 2.0, 4.0]:
+                centers.append([i, j])
+        self.centers = torch.tensor(centers, dtype=torch.float32)  # (25, 2)
+        self.std = 0.3
+        self.n_modes = 25
+
+    def eval(self, x: torch.Tensor) -> torch.Tensor:
+        """x: (B, 2) -> E: (B,)"""
+        if self.centers.device != x.device:
+            self.centers = self.centers.to(x.device)
+        # (B, 25, 2)
+        diff = x.unsqueeze(1) - self.centers.unsqueeze(0)
+        sq_dist = (diff ** 2).sum(dim=-1)  # (B, 25)
+        log_probs = -sq_dist / (2 * self.std ** 2)
+        return -torch.logsumexp(log_probs, dim=1)
+
+    def get_centers(self):
+        return self.centers
+
+    def get_std(self):
+        return self.std
+
+    def get_ref_samples(self, n=10000):
+        """Generate reference samples by sampling uniformly from all 25 modes."""
+        K = self.centers.shape[0]
+        n_per = n // K
+        samples = []
+        for k in range(K):
+            s = torch.randn(n_per, 2) * self.std + self.centers[k]
+            samples.append(s)
+        return torch.cat(samples, dim=0)
+
+
 class SpiralEnergy(BaseEnergy):
     """Single continuous Archimedean spiral density.
 
