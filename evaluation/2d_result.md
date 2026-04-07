@@ -149,6 +149,59 @@ Evaluated: 2026-04-07 09:06:12 KST | Checkpoint: latest (~ep 2316, early-stopped
 ---
 
 
+## 25-Mode Grid — ASBS 3-Seed Evaluation
+
+Evaluated: 2026-04-08 07:12:34 KST
+
+| Metric | Seed 0 | Seed 1 | Seed 2 | Mean ± Std |
+|---|---|---|---|---|
+| Modes covered (of 25) | 25 | 10 | 25 | 20.0 ± 7.1 |
+| Mean energy | 1.9985 | 42181872.0000 | 42.9796 | 14060638.9927 ± 19884714.5548 |
+| Std energy | 1.7637 | 120698752.0000 | 998.0815 | 40233250.6151 ± 56897701.6823 |
+| KL divergence | 2.6559 | -0.0021 | 3.3248 | 1.9929 ± 1.4368 |
+| W₂ distance | 1.3709 | 674.4346 | 5.2233 | 227.0096 ± 316.3812 |
+| Sinkhorn divergence | 1.9192 | 0.0003 | 0.0005 | 0.6400 ± 0.9045 |
+| Mode weight TV | 0.2570 | 0.7774 | 0.7168 | 0.5837 ± 0.2324 |
+| ESS | 3.9 (0.19%) | 1.9 (0.10%) | 4.8 (0.24%) | 3.5 (0.18% ± 0.06%) |
+| Per-mode counts (seed 0) | [58, 77, 99, 107, 149, 35, 27, 28, 54, 91, 31, 19, 28, 28, 61, 56, 40, 33, 43, 63, 79, 80, 97, 138, 240] | | | |
+| Per-mode counts (seed 1) | | [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 2, 5, 7, 3, 105, 70, 99, 303, 376] | | |
+| Per-mode counts (seed 2) | | | [4, 4, 16, 25, 284, 4, 4, 9, 13, 157, 5, 2, 6, 14, 229, 3, 2, 3, 12, 247, 3, 3, 1, 12, 680] | |
+
+### Seed 0
+
+#### Terminal Distribution
+![grid25 asbs seed0 terminal](figures_2d/grid25_asbs_seed0_terminal_neurips.png)
+
+#### Marginal Evolution
+![grid25 asbs seed0 marginal](figures_2d/grid25_asbs_seed0_marginal_neurips.png)
+
+#### KDE Density
+![grid25 asbs seed0 kde](figures_2d/grid25_asbs_seed0_kde_neurips.png)
+
+### Seed 1
+
+#### Terminal Distribution
+![grid25 asbs seed1 terminal](figures_2d/grid25_asbs_seed1_terminal_neurips.png)
+
+#### Marginal Evolution
+![grid25 asbs seed1 marginal](figures_2d/grid25_asbs_seed1_marginal_neurips.png)
+
+#### KDE Density
+![grid25 asbs seed1 kde](figures_2d/grid25_asbs_seed1_kde_neurips.png)
+
+### Seed 2
+
+#### Terminal Distribution
+![grid25 asbs seed2 terminal](figures_2d/grid25_asbs_seed2_terminal_neurips.png)
+
+#### Marginal Evolution
+![grid25 asbs seed2 marginal](figures_2d/grid25_asbs_seed2_marginal_neurips.png)
+
+#### KDE Density
+![grid25 asbs seed2 kde](figures_2d/grid25_asbs_seed2_kde_neurips.png)
+
+---
+
 ## 25-Mode Grid — Baseline Comparison
 
 Evaluated: 2026-04-07 23:06:56 KST
