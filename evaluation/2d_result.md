@@ -27,6 +27,31 @@ Generated: 2026-04-07 08:29:33 KST
 
 ---
 
+## 9-Mode GMM (3x3 Grid) — Seed 1
+
+Evaluated: 2026-04-07 09:06:12 KST | Checkpoint: latest (~ep 2316, early-stopped)
+
+| Metric | ASBS (Baseline) | KSD-ASBS (lambda=0.01) |
+|---|---|---|
+| Modes covered (of 9) | 9 | 9 |
+| Mean energy | 1.0573 | 1.0621 |
+| Std energy | 1.0890 | 1.2858 |
+| Per-mode counts | [60, 110, 1066, 25, 35, 253, 44, 73, 302] | [341, 317, 697, 94, 98, 191, 71, 62, 99] |
+
+### Terminal Distribution
+
+![gmm9_s1 terminal](figures_2d/gmm9_s1_terminal.png)
+
+### Marginal Evolution: ASBS
+
+![gmm9_s1 marginal asbs](figures_2d/gmm9_s1_marginal_asbs.png)
+
+### Marginal Evolution: KSD-ASBS
+
+![gmm9_s1 marginal ksd](figures_2d/gmm9_s1_marginal_ksd.png)
+
+---
+
 ## Two Moons
 
 | Metric | ASBS (Baseline) | KSD-ASBS (lambda=0.01) |
