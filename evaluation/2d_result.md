@@ -148,3 +148,25 @@ Evaluated: 2026-04-07 09:06:12 KST | Checkpoint: latest (~ep 2316, early-stopped
 
 ---
 
+
+## 25-Mode Grid — Baseline Comparison
+
+Evaluated: 2026-04-07 23:06:56 KST
+
+Methods: ASBS, SDR-ASBS (λ=0.1), AS (Adjoint Sampler), DGFS (GFlowNet), iDEM, pDEM
+
+| Metric | ASBS | SDR-ASBS | AS | DGFS | iDEM | pDEM |
+|---|---|---|---|---|---|---|
+| Modes covered (of 25) | 25 | 25 | 25 | 17 | 22 | 22 |
+| Mean energy | 1.0373 | 1.0327 | 1.1450 | 3.5238 | 0.9330 | 1.0185 |
+| Std energy | 1.0660 | 1.0167 | 1.2024 | 2.2148 | 0.9276 | 1.0140 |
+| KL divergence | 2.0499 | 2.1956 | 2.5769 | 2.9108 | 1.6091 | 1.6380 |
+| W₂ distance | 2.1672 | 1.1113 | 1.2651 | 2.4011 | 2.3014 | 2.2773 |
+| Sinkhorn divergence | 3.4227 | 1.2849 | 1.6488 | 5.3930 | 5.3452 | 5.2375 |
+| Mode weight TV | 0.3035 | 0.1503 | 0.2207 | 0.6568 | 0.6014 | 0.5970 |
+
+### Terminal Distribution Comparison
+
+![grid25 baselines](figures_2d/grid25_baselines_terminal.png)
+
+---
