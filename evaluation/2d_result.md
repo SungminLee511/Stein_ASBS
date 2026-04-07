@@ -122,24 +122,29 @@ Evaluated: 2026-04-07 09:06:12 KST | Checkpoint: latest (~ep 2316, early-stopped
 ---
 ## 25-Mode Grid (5×5)
 
-| Metric | ASBS (Baseline) | KSD-ASBS (lambda=0.1) |
+| Metric | ASBS (Baseline) | SDR-ASBS (λ=0.1) |
 |---|---|---|
 | Modes covered (of 25) | 25 | 25 |
 | Mean energy | 1.0373 | 1.0327 |
 | Std energy | 1.0660 | 1.0167 |
+| KL divergence | 2.0499 | 2.1956 |
+| W₂ distance | 2.1668 | 1.1025 |
+| Sinkhorn divergence | 3.4123 | 1.2662 |
+| Mode weight TV | 0.3035 | 0.1503 |
+| ESS | 3.8 (0.19%) | 3.7 (0.19%) |
 | Per-mode counts | [13, 17, 53, 93, 159, 20, 25, 64, 113, 164, 20, 42, 67, 140, 173, 17, 34, 70, 104, 135, 18, 43, 85, 126, 166] | [61, 69, 106, 143, 227, 65, 53, 61, 84, 75, 49, 50, 65, 98, 71, 62, 67, 71, 65, 47, 74, 89, 81, 98, 38] |
 
 ### Terminal Distribution
 
-![grid25 terminal](figures_2d/grid25_terminal.png)
+![grid25 terminal](figures_2d/grid25_terminal_neurips.png)
 
 ### Marginal Evolution: ASBS
 
-![grid25 marginal asbs](figures_2d/grid25_marginal_asbs.png)
+![grid25 marginal asbs](figures_2d/grid25_marginal_asbs_neurips.png)
 
-### Marginal Evolution: KSD-ASBS
+### Marginal Evolution: SDR-ASBS
 
-![grid25 marginal ksd](figures_2d/grid25_marginal_ksd.png)
+![grid25 marginal sdr](figures_2d/grid25_marginal_sdr_neurips.png)
 
 ---
 
