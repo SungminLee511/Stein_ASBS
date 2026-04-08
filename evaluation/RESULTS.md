@@ -1,6 +1,6 @@
 # Results: KSD-Augmented ASBS — Comprehensive Evaluation
 
-**Last updated:** 2026-04-05 22:18 KST
+**Last updated:** 2026-04-08 17:05 KST
 
 ---
 
@@ -24,58 +24,101 @@ See `.claude/skills/references_and_equations.md` for full derivation.
 
 ### 1.1 DW4 (4 particles × 2D = 8D, double-well)
 
-**Status: ✅ COMPLETE (λ=1.0)**
+**Status: ✅ COMPLETE — Full 6-method comparison**
 
 **Setup:**
-- Baseline: ASBS (AdjointVEMatcher) — `baselines/dw4_asbs/`
-- KSD-ASBS: KSDAdjointVEMatcher, λ=1.0, median bandwidth — `results/local/2026.04.04/064017/`
+- **ASBS:** AdjointVEMatcher — `results/dw4_asbs/seed_0/`
+- **KSD-ASBS:** KSDAdjointVEMatcher, λ=1.0, median bandwidth — `results/dw4_ksd_asbs/seed_0/`
+- **AS:** Adjoint Sampler (same SDE framework, no bridge/buffer) — `results/dw4_as/seed_0/`
+- **iDEM:** Interpolant Diffusion Energy Model — `results/dw4_idem/`
+- **pDEM:** Probabilistic DEM — `results/dw4_pdem/`
+- **DGFS:** Discrete GFlowNet Sampler — `results/dw4_dgfs/`
 - Evaluation: 2000 samples × 5 sampling seeds (0–4)
-- Metrics: Wasserstein-2 distances (lower is better)
+- Metrics: Wasserstein-2 distances (lower is better), KSD², ESS (where applicable)
+- Evaluated: 2026-04-08 KST
 
-#### Per-Seed Results
+#### Per-Seed Results — ASBS & KSD-ASBS
 
-| Seed | Method | energy_W2 | eq_W2 | dist_W2 |
-|------|--------|-----------|-------|---------|
-| 0 | Baseline | 0.1328 | 0.4735 | 0.032750 |
-| 0 | KSD-ASBS | 0.2343 | 0.4273 | 0.010486 |
-| 1 | Baseline | 0.1384 | 0.3566 | 0.008214 |
-| 1 | KSD-ASBS | 0.1809 | 0.3287 | 0.000206 |
-| 2 | Baseline | 0.1399 | 0.4393 | 0.023793 |
-| 2 | KSD-ASBS | 0.1559 | 0.4061 | 0.009944 |
-| 3 | Baseline | 0.1377 | 0.5225 | 0.044986 |
-| 3 | KSD-ASBS | 0.2179 | 0.4754 | 0.023028 |
-| 4 | Baseline | 0.1510 | 0.4383 | 0.024253 |
-| 4 | KSD-ASBS | 0.1213 | 0.3737 | 0.006387 |
+| Seed | Method | energy_W2 | eq_W2 | dist_W2 | KSD² | ESS |
+|------|--------|-----------|-------|---------|------|-----|
+| 0 | ASBS | 0.1820 | 0.5331 | 0.041909 | 0.068377 | 3.12 |
+| 0 | KSD-ASBS | 0.2401 | 0.5047 | 0.019213 | 0.088110 | 2.06 |
+| 1 | ASBS | 0.1313 | 0.4879 | 0.035687 | 0.066196 | 17.76 |
+| 1 | KSD-ASBS | 0.1731 | 0.4223 | 0.012022 | 0.056879 | 3.33 |
+| 2 | ASBS | 0.1685 | 0.5466 | 0.051731 | 0.216514 | 40.62 |
+| 2 | KSD-ASBS | 0.1400 | 0.4819 | 0.024509 | 0.225613 | 6.13 |
+| 3 | ASBS | 0.0820 | 0.4805 | 0.029798 | 0.116986 | 29.30 |
+| 3 | KSD-ASBS | 0.1327 | 0.4451 | 0.012482 | 0.125909 | 20.38 |
+| 4 | ASBS | 0.0978 | 0.4365 | 0.025690 | 0.074522 | 5.71 |
+| 4 | KSD-ASBS | 0.0907 | 0.3849 | 0.007602 | 0.081044 | 2.88 |
 
-#### Summary Statistics
+#### Per-Seed Results — AS
 
-| Method | energy_W2 (mean±std) | eq_W2 (mean±std) | dist_W2 (mean±std) |
-|--------|----------------------|-------------------|---------------------|
-| **Baseline** | 0.1400 ± 0.0060 | 0.4460 ± 0.0542 | 0.026799 ± 0.012059 |
-| **KSD-ASBS** | 0.1820 ± 0.0410 | 0.4023 ± 0.0494 | 0.010010 ± 0.007469 |
+| Seed | energy_W2 | eq_W2 | dist_W2 | KSD² | ESS |
+|------|-----------|-------|---------|------|-----|
+| 0 | 0.3402 | 0.5272 | 0.001035 | 0.082416 | 8.11 |
+| 1 | 0.3296 | 0.4685 | 0.008759 | 0.136968 | 1.75 |
+| 2 | 0.3521 | 0.4338 | 0.000660 | 0.115465 | 1.78 |
+| 3 | 0.2541 | 0.4791 | 0.004050 | 0.079722 | 1.32 |
+| 4 | 0.2941 | 0.4897 | 0.002250 | 0.095934 | 9.58 |
 
-#### Best Seed Comparison
+#### Per-Seed Results — iDEM
 
-| Metric | Baseline (best) | KSD-ASBS (best) | Winner |
-|--------|-----------------|-----------------|--------|
-| energy_W2 | 0.1328 (seed 0) | **0.1213** (seed 4) | **KSD-ASBS** |
-| eq_W2 | 0.3566 (seed 1) | **0.3287** (seed 1) | **KSD-ASBS** |
-| dist_W2 | 0.008214 (seed 1) | **0.000206** (seed 1) | **KSD-ASBS** |
+| Seed | energy_W2 | eq_W2 | dist_W2 | KSD² |
+|------|-----------|-------|---------|------|
+| 0 | 0.7814 | 1.1588 | 0.401510 | 0.243406 |
+| 1 | 0.7093 | 1.1907 | 0.427803 | 0.240172 |
+| 2 | 0.6427 | 1.1986 | 0.424655 | 0.234039 |
+| 3 | 0.7243 | 1.1591 | 0.396216 | 0.249369 |
+| 4 | 0.5792 | 1.1107 | 0.349570 | 0.214989 |
 
-#### Relative Change (mean)
+#### Per-Seed Results — pDEM
 
-| Metric | Change | Direction |
-|--------|--------|-----------|
-| energy_W2 | -30.07% | ↑ worse |
-| eq_W2 | +9.82% | ↓ better |
-| dist_W2 | +62.65% | ↓ better |
+| Seed | energy_W2 | eq_W2 | dist_W2 | KSD² |
+|------|-----------|-------|---------|------|
+| 0 | 0.8282 | 0.4304 | 0.006531 | 0.116371 |
+| 1 | 0.7354 | 0.4407 | 0.004932 | 0.138678 |
+| 2 | 0.6713 | 0.3905 | 0.002694 | 0.095996 |
+| 3 | 0.7964 | 0.4322 | 0.006838 | 0.086841 |
+| 4 | 0.6765 | 0.4187 | 0.010274 | 0.087687 |
+
+#### Per-Seed Results — DGFS
+
+| Seed | energy_W2 | eq_W2 | dist_W2 | KSD² |
+|------|-----------|-------|---------|------|
+| 0 | 43.9943 | 1.4242 | 0.632449 | 5.324304 |
+| 1 | 46.6336 | 1.4617 | 0.666645 | 4.202462 |
+| 2 | 43.6016 | 1.4369 | 0.650906 | 8.786057 |
+| 3 | 47.4775 | 1.4391 | 0.628953 | 9.396015 |
+| 4 | 46.6327 | 1.4110 | 0.594384 | 7.751892 |
+
+#### Summary Statistics — All Methods
+
+| Method | energy_W2 (mean±std) | eq_W2 (mean±std) | dist_W2 (mean±std) | KSD² (mean±std) |
+|--------|----------------------|-------------------|---------------------|-----------------|
+| **ASBS** | **0.132 ± 0.039** | 0.497 ± 0.039 | 0.037 ± 0.009 | 0.109 ± 0.057 |
+| **KSD-ASBS (λ=1.0)** | 0.155 ± 0.050 | **0.448 ± 0.042** | **0.015 ± 0.006** | 0.116 ± 0.059 |
+| AS | 0.314 ± 0.036 | 0.480 ± 0.030 | 0.003 ± 0.003 | 0.102 ± 0.022 |
+| pDEM | 0.742 ± 0.063 | 0.422 ± 0.017 | 0.006 ± 0.002 | 0.105 ± 0.020 |
+| iDEM | 0.687 ± 0.070 | 1.164 ± 0.031 | 0.400 ± 0.028 | 0.236 ± 0.012 |
+| DGFS | 45.67 ± 1.56 | 1.435 ± 0.017 | 0.635 ± 0.024 | 7.092 ± 2.004 |
+
+#### ESS Comparison (SDE-based methods only)
+
+| Method | ESS (mean±std) | ESS% |
+|--------|---------------|------|
+| ASBS | 19.30 ± 14.16 | 0.97% |
+| KSD-ASBS | 6.95 ± 6.85 | 0.35% |
+| AS | 4.51 ± 3.58 | 0.23% |
 
 #### Interpretation
 
-- **dist_W2 (interatomic distances):** KSD-ASBS significantly better on average (63% improvement) — the KSD penalty pushes samples toward the correct interatomic distance distribution, indicating better **mode coverage**.
-- **eq_W2 (equilibrium/point cloud):** KSD-ASBS moderately better (~10%) — structural quality improved.
-- **energy_W2:** Worse on average (-30%), but **best-seed KSD-ASBS (0.1213) beats best-seed baseline (0.1328)**. High variance suggests sensitivity to sampling noise, not fundamental degradation.
-- **Best-seed comparison:** KSD-ASBS wins all three metrics — higher potential but more variance.
+- **energy_W2:** ASBS is the clear winner (0.132). KSD-ASBS (0.155) is close behind. All other baselines are significantly worse — AS (0.314, 2.4×), pDEM (0.742, 5.6×), iDEM (0.687, 5.2×), DGFS (45.67, 346×). The Schrödinger Bridge framework dominates energy matching.
+- **eq_W2:** pDEM has the best point cloud distance (0.422), closely followed by KSD-ASBS (0.448) and AS (0.480). ASBS (0.497) is slightly behind. iDEM and DGFS are poor (>1.1).
+- **dist_W2:** AS (0.003) and pDEM (0.006) achieve the best interatomic distance distributions, but at the cost of much worse energy matching. KSD-ASBS (0.015) achieves 59% improvement over ASBS (0.037) while maintaining competitive energy_W2 — the best balance of the two. iDEM (0.400) and DGFS (0.635) are catastrophically poor.
+- **KSD²:** AS (0.102), pDEM (0.105), and ASBS/KSD-ASBS (~0.11) are all comparable. iDEM (0.236) is 2× worse. DGFS (7.09) is in a different league entirely.
+- **ESS:** ASBS has the highest ESS (19.3) but with huge variance. KSD-ASBS (6.95) and AS (4.51) are lower. ESS is not applicable to iDEM/pDEM/DGFS (different generative process).
+- **Overall:** KSD-ASBS offers the best trade-off — near-best energy_W2 (only 17% behind ASBS), best-in-class eq_W2 among SDE methods, and 59% dist_W2 improvement over ASBS. Methods with better dist_W2 (AS, pDEM) pay a heavy price in energy accuracy.
 
 ---
 

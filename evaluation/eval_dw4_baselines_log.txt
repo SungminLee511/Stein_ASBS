@@ -1,0 +1,209 @@
+======================================================================
+DW4 Baseline Evaluation — energy_W2, eq_W2, dist_W2, KSD²
+Methods: AS, iDEM, pDEM, DGFS
+Started: 2026-04-08 15:41:05 KST
+N_SAMPLES=2000, N_EVAL_SEEDS=5, DEVICE=cuda
+======================================================================
+Reference: torch.Size([10000, 8])
+
+======================================================================
+  AS (Adjoint Sampler)
+======================================================================
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.Delta'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.CenteredParticlesGauss'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+  AS checkpoint: checkpoint_latest.pt
+
+  Seed 0:
+    Computing W2 metrics...
+    Computing KSD²...
+    Computing ESS (2000 trajectories)...
+    energy_W2=0.3402  eq_W2=0.5272  dist_W2=0.001035  KSD²=0.082416  ESS=8.11 (0.4056%)  [153.7s]
+
+  Seed 1:
+    Computing W2 metrics...
+    Computing KSD²...
+    Computing ESS (2000 trajectories)...
+    energy_W2=0.3296  eq_W2=0.4685  dist_W2=0.008759  KSD²=0.136968  ESS=1.75 (0.0874%)  [152.8s]
+
+  Seed 2:
+    Computing W2 metrics...
+    Computing KSD²...
+    Computing ESS (2000 trajectories)...
+    energy_W2=0.3521  eq_W2=0.4338  dist_W2=0.000660  KSD²=0.115465  ESS=1.78 (0.0889%)  [153.2s]
+
+  Seed 3:
+    Computing W2 metrics...
+    Computing KSD²...
+    Computing ESS (2000 trajectories)...
+    energy_W2=0.2541  eq_W2=0.4791  dist_W2=0.004050  KSD²=0.079722  ESS=1.32 (0.0660%)  [152.9s]
+
+  Seed 4:
+    Computing W2 metrics...
+    Computing KSD²...
+    Computing ESS (2000 trajectories)...
+    energy_W2=0.2941  eq_W2=0.4897  dist_W2=0.002250  KSD²=0.095934  ESS=9.58 (0.4791%)  [154.6s]
+    energy_w2: 0.314032 ± 0.035665
+    eq_w2: 0.479673 ± 0.030301
+    dist_w2: 0.003351 ± 0.002951
+    ksd_squared: 0.102101 ± 0.021544
+    ess: 4.508283 ± 3.576656
+
+======================================================================
+  iDEM
+======================================================================
+Buffer not initialised, expected that checkpoint will be loaded.
+  dw4_idem checkpoint: last.ckpt
+
+  Seed 0:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=0.7814  eq_W2=1.1588  dist_W2=0.401510  KSD²=0.243406  [154.1s]
+
+  Seed 1:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=0.7093  eq_W2=1.1907  dist_W2=0.427803  KSD²=0.240172  [154.1s]
+
+  Seed 2:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=0.6427  eq_W2=1.1986  dist_W2=0.424655  KSD²=0.234039  [154.3s]
+
+  Seed 3:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=0.7243  eq_W2=1.1591  dist_W2=0.396216  KSD²=0.249369  [155.0s]
+
+  Seed 4:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=0.5792  eq_W2=1.1107  dist_W2=0.349570  KSD²=0.214989  [153.8s]
+    energy_w2: 0.687371 ± 0.069809
+    eq_w2: 1.163572 ± 0.030982
+    dist_w2: 0.399951 ± 0.028074
+    ksd_squared: 0.236395 ± 0.011794
+
+======================================================================
+  pDEM
+======================================================================
+Buffer not initialised, expected that checkpoint will be loaded.
+  dw4_pdem checkpoint: last.ckpt
+
+  Seed 0:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=0.8282  eq_W2=0.4304  dist_W2=0.006531  KSD²=0.116371  [154.6s]
+
+  Seed 1:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=0.7354  eq_W2=0.4407  dist_W2=0.004932  KSD²=0.138678  [154.2s]
+
+  Seed 2:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=0.6713  eq_W2=0.3905  dist_W2=0.002694  KSD²=0.095996  [152.9s]
+
+  Seed 3:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=0.7964  eq_W2=0.4322  dist_W2=0.006838  KSD²=0.086841  [153.3s]
+
+  Seed 4:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=0.6765  eq_W2=0.4187  dist_W2=0.010274  KSD²=0.087687  [154.3s]
+    energy_w2: 0.741549 ± 0.062781
+    eq_w2: 0.422492 ± 0.017475
+    dist_w2: 0.006254 ± 0.002490
+    ksd_squared: 0.105115 ± 0.019870
+
+======================================================================
+  DGFS
+======================================================================
+  DGFS checkpoint: checkpoint_latest.pt
+/home/RESEARCH/Stein_ASBS/baseline_models/dgfs/gflownet/gflownet.py:362: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  save_dict = torch.load(path)
+
+  Seed 0:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=43.9943  eq_W2=1.4242  dist_W2=0.632449  KSD²=5.324304  [151.9s]
+
+  Seed 1:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=46.6336  eq_W2=1.4617  dist_W2=0.666645  KSD²=4.202462  [151.8s]
+
+  Seed 2:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=43.6016  eq_W2=1.4369  dist_W2=0.650906  KSD²=8.786057  [151.0s]
+
+  Seed 3:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=47.4775  eq_W2=1.4391  dist_W2=0.628953  KSD²=9.396015  [151.6s]
+
+  Seed 4:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=46.6327  eq_W2=1.4110  dist_W2=0.594384  KSD²=7.751892  [151.6s]
+    energy_w2: 45.667945 ± 1.562584
+    eq_w2: 1.434575 ± 0.016874
+    dist_w2: 0.634667 ± 0.024276
+    ksd_squared: 7.092146 ± 2.004393
+
+
+======================================================================
+SUMMARY — DW4 Baseline Evaluation
+======================================================================
+
+Method       Seed    energy_W2      eq_W2    dist_W2       KSD²        ESS     ESS%
+───────────────────────────────────────────────────────────────────────────────────
+AS           0          0.3402     0.5272   0.001035   0.082416       8.11  0.4056%
+AS           1          0.3296     0.4685   0.008759   0.136968       1.75  0.0874%
+AS           2          0.3521     0.4338   0.000660   0.115465       1.78  0.0889%
+AS           3          0.2541     0.4791   0.004050   0.079722       1.32  0.0660%
+AS           4          0.2941     0.4897   0.002250   0.095934       9.58  0.4791%
+             mean±std energy_w2: 0.314032 ± 0.035665
+             mean±std eq_w2: 0.479673 ± 0.030301
+             mean±std dist_w2: 0.003351 ± 0.002951
+             mean±std ksd_squared: 0.102101 ± 0.021544
+             mean±std ess: 4.51 ± 3.58
+
+iDEM         0          0.7814     1.1588   0.401510   0.243406        N/A      N/A
+iDEM         1          0.7093     1.1907   0.427803   0.240172        N/A      N/A
+iDEM         2          0.6427     1.1986   0.424655   0.234039        N/A      N/A
+iDEM         3          0.7243     1.1591   0.396216   0.249369        N/A      N/A
+iDEM         4          0.5792     1.1107   0.349570   0.214989        N/A      N/A
+             mean±std energy_w2: 0.687371 ± 0.069809
+             mean±std eq_w2: 1.163572 ± 0.030982
+             mean±std dist_w2: 0.399951 ± 0.028074
+             mean±std ksd_squared: 0.236395 ± 0.011794
+
+pDEM         0          0.8282     0.4304   0.006531   0.116371        N/A      N/A
+pDEM         1          0.7354     0.4407   0.004932   0.138678        N/A      N/A
+pDEM         2          0.6713     0.3905   0.002694   0.095996        N/A      N/A
+pDEM         3          0.7964     0.4322   0.006838   0.086841        N/A      N/A
+pDEM         4          0.6765     0.4187   0.010274   0.087687        N/A      N/A
+             mean±std energy_w2: 0.741549 ± 0.062781
+             mean±std eq_w2: 0.422492 ± 0.017475
+             mean±std dist_w2: 0.006254 ± 0.002490
+             mean±std ksd_squared: 0.105115 ± 0.019870
+
+DGFS         0         43.9943     1.4242   0.632449   5.324304        N/A      N/A
+DGFS         1         46.6336     1.4617   0.666645   4.202462        N/A      N/A
+DGFS         2         43.6016     1.4369   0.650906   8.786057        N/A      N/A
+DGFS         3         47.4775     1.4391   0.628953   9.396015        N/A      N/A
+DGFS         4         46.6327     1.4110   0.594384   7.751892        N/A      N/A
+             mean±std energy_w2: 45.667945 ± 1.562584
+             mean±std eq_w2: 1.434575 ± 0.016874
+             mean±std dist_w2: 0.634667 ± 0.024276
+             mean±std ksd_squared: 7.092146 ± 2.004393
+
+
+Results saved to /home/RESEARCH/Stein_ASBS/evaluation/eval_dw4_baselines_results.json
+Finished: 2026-04-08 16:32:12 KST

@@ -1,6 +1,6 @@
 ======================================================================
 DW4 Full Evaluation — energy_W2, eq_W2, dist_W2, KSD², ESS
-Started: 2026-04-08 07:56:21 KST
+Started: 2026-04-08 16:36:22 KST
 N_SAMPLES=2000, N_EVAL_SEEDS=5, DEVICE=cuda
 ======================================================================
 Reference: torch.Size([10000, 8])
@@ -18,36 +18,36 @@ Reference: torch.Size([10000, 8])
     Computing W2 metrics...
     Computing KSD²...
     Computing ESS (2000 trajectories)...
-    energy_W2=0.1820  eq_W2=0.5331  dist_W2=0.041909  KSD²=0.068377  ESS=3.12 (0.1560%)  [162.1s]
+    energy_W2=0.1820  eq_W2=0.5331  dist_W2=0.041909  KSD²=0.068377  ESS=3.12 (0.1560%)  [158.9s]
 
   Seed 1:
     Computing W2 metrics...
     Computing KSD²...
     Computing ESS (2000 trajectories)...
-    energy_W2=0.1313  eq_W2=0.4879  dist_W2=0.035687  KSD²=0.066196  ESS=17.76 (0.8880%)  [159.8s]
+    energy_W2=0.1313  eq_W2=0.4879  dist_W2=0.035687  KSD²=0.066196  ESS=17.76 (0.8880%)  [156.5s]
 
   Seed 2:
     Computing W2 metrics...
     Computing KSD²...
     Computing ESS (2000 trajectories)...
-    energy_W2=0.1685  eq_W2=0.5466  dist_W2=0.051731  KSD²=0.216514  ESS=40.62 (2.0308%)  [159.8s]
+    energy_W2=0.1685  eq_W2=0.5466  dist_W2=0.051731  KSD²=0.216514  ESS=40.62 (2.0308%)  [156.4s]
 
   Seed 3:
     Computing W2 metrics...
     Computing KSD²...
     Computing ESS (2000 trajectories)...
-    energy_W2=0.0820  eq_W2=0.4805  dist_W2=0.029798  KSD²=0.116986  ESS=29.30 (1.4650%)  [160.3s]
+    energy_W2=0.0820  eq_W2=0.4805  dist_W2=0.029798  KSD²=0.116986  ESS=29.30 (1.4650%)  [156.1s]
 
   Seed 4:
     Computing W2 metrics...
     Computing KSD²...
     Computing ESS (2000 trajectories)...
-    energy_W2=0.0978  eq_W2=0.4365  dist_W2=0.025690  KSD²=0.074522  ESS=5.71 (0.2857%)  [161.5s]
+    energy_W2=0.0978  eq_W2=0.4365  dist_W2=0.025690  KSD²=0.074522  ESS=5.71 (0.2857%)  [156.8s]
     energy_w2: 0.132328 ± 0.038724
     eq_w2: 0.496909 ± 0.039450
     dist_w2: 0.036963 ± 0.009194
     ksd_squared: 0.108519 ± 0.057084
-    ess: 19.302248 ± 14.164453
+    ess: 19.302165 ± 14.164423
 
 ======================================================================
   KSD-ASBS (λ=1.0)
@@ -62,36 +62,36 @@ Reference: torch.Size([10000, 8])
     Computing W2 metrics...
     Computing KSD²...
     Computing ESS (2000 trajectories)...
-    energy_W2=0.2401  eq_W2=0.5047  dist_W2=0.019213  KSD²=0.088111  ESS=2.06 (0.1028%)  [160.4s]
+    energy_W2=0.2401  eq_W2=0.5047  dist_W2=0.019213  KSD²=0.088110  ESS=2.06 (0.1028%)  [157.8s]
 
   Seed 1:
     Computing W2 metrics...
     Computing KSD²...
     Computing ESS (2000 trajectories)...
-    energy_W2=0.1731  eq_W2=0.4223  dist_W2=0.012022  KSD²=0.056879  ESS=3.33 (0.1663%)  [160.2s]
+    energy_W2=0.1731  eq_W2=0.4223  dist_W2=0.012022  KSD²=0.056879  ESS=3.33 (0.1663%)  [156.8s]
 
   Seed 2:
     Computing W2 metrics...
     Computing KSD²...
     Computing ESS (2000 trajectories)...
-    energy_W2=0.1400  eq_W2=0.4819  dist_W2=0.024509  KSD²=0.225613  ESS=6.13 (0.3067%)  [160.6s]
+    energy_W2=0.1400  eq_W2=0.4819  dist_W2=0.024509  KSD²=0.225613  ESS=6.13 (0.3066%)  [156.7s]
 
   Seed 3:
     Computing W2 metrics...
     Computing KSD²...
     Computing ESS (2000 trajectories)...
-    energy_W2=0.1327  eq_W2=0.4451  dist_W2=0.012482  KSD²=0.125909  ESS=20.38 (1.0189%)  [160.0s]
+    energy_W2=0.1327  eq_W2=0.4451  dist_W2=0.012482  KSD²=0.125909  ESS=20.38 (1.0189%)  [156.9s]
 
   Seed 4:
     Computing W2 metrics...
     Computing KSD²...
     Computing ESS (2000 trajectories)...
-    energy_W2=0.0907  eq_W2=0.3849  dist_W2=0.007602  KSD²=0.081045  ESS=2.88 (0.1438%)  [160.6s]
-    energy_w2: 0.155336 ± 0.049857
+    energy_W2=0.0907  eq_W2=0.3849  dist_W2=0.007602  KSD²=0.081044  ESS=2.88 (0.1438%)  [158.0s]
+    energy_w2: 0.155336 ± 0.049856
     eq_w2: 0.447786 ± 0.042472
     dist_w2: 0.015166 ± 0.005966
     ksd_squared: 0.115511 ± 0.059342
-    ess: 6.953646 ± 6.850363
+    ess: 6.953573 ± 6.850448
 
 
 ======================================================================
@@ -109,19 +109,19 @@ Seed   Method                  energy_W2      eq_W2    dist_W2       KSD²      
        mean±std               eq_w2: 0.496909 ± 0.039450
        mean±std               dist_w2: 0.036963 ± 0.009194
        mean±std               ksd_squared: 0.108519 ± 0.057084
-       mean±std               ess: 19.302248 ± 14.164453
+       mean±std               ess: 19.302165 ± 14.164423
 
-0      KSD-ASBS (λ=1.0)           0.2401     0.5047   0.019213   0.088111       2.06  0.1028%
+0      KSD-ASBS (λ=1.0)           0.2401     0.5047   0.019213   0.088110       2.06  0.1028%
 1      KSD-ASBS (λ=1.0)           0.1731     0.4223   0.012022   0.056879       3.33  0.1663%
-2      KSD-ASBS (λ=1.0)           0.1400     0.4819   0.024509   0.225613       6.13  0.3067%
+2      KSD-ASBS (λ=1.0)           0.1400     0.4819   0.024509   0.225613       6.13  0.3066%
 3      KSD-ASBS (λ=1.0)           0.1327     0.4451   0.012482   0.125909      20.38  1.0189%
-4      KSD-ASBS (λ=1.0)           0.0907     0.3849   0.007602   0.081045       2.88  0.1438%
-       mean±std               energy_w2: 0.155336 ± 0.049857
+4      KSD-ASBS (λ=1.0)           0.0907     0.3849   0.007602   0.081044       2.88  0.1438%
+       mean±std               energy_w2: 0.155336 ± 0.049856
        mean±std               eq_w2: 0.447786 ± 0.042472
        mean±std               dist_w2: 0.015166 ± 0.005966
        mean±std               ksd_squared: 0.115511 ± 0.059342
-       mean±std               ess: 6.953646 ± 6.850363
+       mean±std               ess: 6.953573 ± 6.850448
 
 
 Results saved to /home/RESEARCH/Stein_ASBS/evaluation/eval_dw4_full_results.json
-Finished: 2026-04-08 08:23:07 KST
+Finished: 2026-04-08 17:02:34 KST
