@@ -202,6 +202,29 @@ Evaluated: 2026-04-08 07:12:34 KST
 
 ---
 
+## 25-Mode Grid — ASBS Seed 3 (Diverged)
+
+Evaluated: 2026-04-09 06:15 KST | Checkpoint: 2600 (last valid before divergence at ~epoch 2674)
+
+Seed 3 diverged during training — adjoint loss exploded from ~28 to NaN at epoch ~2674.
+Below is the marginal evolution from checkpoint_2600.pt, the last valid checkpoint.
+
+#### Marginal Evolution: ASBS Seed 3 (ckpt 2600)
+![grid25 seed3 marginal](figures_2d/grid25_seed3_marginal_ckpt2600.png)
+
+---
+
+## 25-Mode Grid — ASBS Seed 4 (Healthy, 3000 epochs)
+
+Evaluated: 2026-04-09 06:15 KST | Checkpoint: latest (full 3000 epoch run)
+
+Seed 4 completed all 3000 epochs without divergence. Final corrector loss: 0.0002.
+
+#### Marginal Evolution: ASBS Seed 4 (latest)
+![grid25 seed4 marginal](figures_2d/grid25_seed4_marginal_latest.png)
+
+---
+
 ## 25-Mode Grid — ASBS Seed 5 (Diverged)
 
 Evaluated: 2026-04-08 23:14 KST | Checkpoint: 800 (last valid before divergence at ~epoch 867)
