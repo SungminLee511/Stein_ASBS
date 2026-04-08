@@ -1,0 +1,127 @@
+======================================================================
+DW4 Full Evaluation — energy_W2, eq_W2, dist_W2, KSD², ESS
+Started: 2026-04-08 07:56:21 KST
+N_SAMPLES=2000, N_EVAL_SEEDS=5, DEVICE=cuda
+======================================================================
+Reference: torch.Size([10000, 8])
+
+======================================================================
+  ASBS (Baseline)
+  Dir: /home/RESEARCH/Stein_ASBS/results/dw4_asbs/seed_0
+======================================================================
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.CenteredParticlesHarmonic'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.CenteredParticlesGauss'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+
+  Seed 0:
+    Computing W2 metrics...
+    Computing KSD²...
+    Computing ESS (2000 trajectories)...
+    energy_W2=0.1820  eq_W2=0.5331  dist_W2=0.041909  KSD²=0.068377  ESS=3.12 (0.1560%)  [162.1s]
+
+  Seed 1:
+    Computing W2 metrics...
+    Computing KSD²...
+    Computing ESS (2000 trajectories)...
+    energy_W2=0.1313  eq_W2=0.4879  dist_W2=0.035687  KSD²=0.066196  ESS=17.76 (0.8880%)  [159.8s]
+
+  Seed 2:
+    Computing W2 metrics...
+    Computing KSD²...
+    Computing ESS (2000 trajectories)...
+    energy_W2=0.1685  eq_W2=0.5466  dist_W2=0.051731  KSD²=0.216514  ESS=40.62 (2.0308%)  [159.8s]
+
+  Seed 3:
+    Computing W2 metrics...
+    Computing KSD²...
+    Computing ESS (2000 trajectories)...
+    energy_W2=0.0820  eq_W2=0.4805  dist_W2=0.029798  KSD²=0.116986  ESS=29.30 (1.4650%)  [160.3s]
+
+  Seed 4:
+    Computing W2 metrics...
+    Computing KSD²...
+    Computing ESS (2000 trajectories)...
+    energy_W2=0.0978  eq_W2=0.4365  dist_W2=0.025690  KSD²=0.074522  ESS=5.71 (0.2857%)  [161.5s]
+    energy_w2: 0.132328 ± 0.038724
+    eq_w2: 0.496909 ± 0.039450
+    dist_w2: 0.036963 ± 0.009194
+    ksd_squared: 0.108519 ± 0.057084
+    ess: 19.302248 ± 14.164453
+
+======================================================================
+  KSD-ASBS (λ=1.0)
+  Dir: /home/RESEARCH/Stein_ASBS/results/dw4_ksd_asbs/seed_0
+======================================================================
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.CenteredParticlesHarmonic'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.CenteredParticlesGauss'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+
+  Seed 0:
+    Computing W2 metrics...
+    Computing KSD²...
+    Computing ESS (2000 trajectories)...
+    energy_W2=0.2401  eq_W2=0.5047  dist_W2=0.019213  KSD²=0.088111  ESS=2.06 (0.1028%)  [160.4s]
+
+  Seed 1:
+    Computing W2 metrics...
+    Computing KSD²...
+    Computing ESS (2000 trajectories)...
+    energy_W2=0.1731  eq_W2=0.4223  dist_W2=0.012022  KSD²=0.056879  ESS=3.33 (0.1663%)  [160.2s]
+
+  Seed 2:
+    Computing W2 metrics...
+    Computing KSD²...
+    Computing ESS (2000 trajectories)...
+    energy_W2=0.1400  eq_W2=0.4819  dist_W2=0.024509  KSD²=0.225613  ESS=6.13 (0.3067%)  [160.6s]
+
+  Seed 3:
+    Computing W2 metrics...
+    Computing KSD²...
+    Computing ESS (2000 trajectories)...
+    energy_W2=0.1327  eq_W2=0.4451  dist_W2=0.012482  KSD²=0.125909  ESS=20.38 (1.0189%)  [160.0s]
+
+  Seed 4:
+    Computing W2 metrics...
+    Computing KSD²...
+    Computing ESS (2000 trajectories)...
+    energy_W2=0.0907  eq_W2=0.3849  dist_W2=0.007602  KSD²=0.081045  ESS=2.88 (0.1438%)  [160.6s]
+    energy_w2: 0.155336 ± 0.049857
+    eq_w2: 0.447786 ± 0.042472
+    dist_w2: 0.015166 ± 0.005966
+    ksd_squared: 0.115511 ± 0.059342
+    ess: 6.953646 ± 6.850363
+
+
+======================================================================
+SUMMARY — DW4 Full Evaluation
+======================================================================
+
+Seed   Method                  energy_W2      eq_W2    dist_W2       KSD²        ESS     ESS%
+─────────────────────────────────────────────────────────────────────────────────────────────
+0      ASBS (Baseline)            0.1820     0.5331   0.041909   0.068377       3.12  0.1560%
+1      ASBS (Baseline)            0.1313     0.4879   0.035687   0.066196      17.76  0.8880%
+2      ASBS (Baseline)            0.1685     0.5466   0.051731   0.216514      40.62  2.0308%
+3      ASBS (Baseline)            0.0820     0.4805   0.029798   0.116986      29.30  1.4650%
+4      ASBS (Baseline)            0.0978     0.4365   0.025690   0.074522       5.71  0.2857%
+       mean±std               energy_w2: 0.132328 ± 0.038724
+       mean±std               eq_w2: 0.496909 ± 0.039450
+       mean±std               dist_w2: 0.036963 ± 0.009194
+       mean±std               ksd_squared: 0.108519 ± 0.057084
+       mean±std               ess: 19.302248 ± 14.164453
+
+0      KSD-ASBS (λ=1.0)           0.2401     0.5047   0.019213   0.088111       2.06  0.1028%
+1      KSD-ASBS (λ=1.0)           0.1731     0.4223   0.012022   0.056879       3.33  0.1663%
+2      KSD-ASBS (λ=1.0)           0.1400     0.4819   0.024509   0.225613       6.13  0.3067%
+3      KSD-ASBS (λ=1.0)           0.1327     0.4451   0.012482   0.125909      20.38  1.0189%
+4      KSD-ASBS (λ=1.0)           0.0907     0.3849   0.007602   0.081045       2.88  0.1438%
+       mean±std               energy_w2: 0.155336 ± 0.049857
+       mean±std               eq_w2: 0.447786 ± 0.042472
+       mean±std               dist_w2: 0.015166 ± 0.005966
+       mean±std               ksd_squared: 0.115511 ± 0.059342
+       mean±std               ess: 6.953646 ± 6.850363
+
+
+Results saved to /home/RESEARCH/Stein_ASBS/evaluation/eval_dw4_full_results.json
+Finished: 2026-04-08 08:23:07 KST

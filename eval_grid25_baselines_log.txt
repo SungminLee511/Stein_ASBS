@@ -1,0 +1,112 @@
+============================================================
+  Grid25 Baseline Evaluation
+  Methods: AS, DGFS, iDEM, pDEM
+============================================================
+
+--- Loading ASBS (existing) ---
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.Gauss'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+  ASBS loaded.
+  SDR-ASBS loaded.
+
+--- Loading AS (Adjoint Sampler) ---
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.Delta'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+  AS checkpoint: checkpoint_900.pt
+  AS: torch.Size([2000, 2])
+
+--- Loading DGFS ---
+  DGFS checkpoint: checkpoint_best.pt
+/home/RESEARCH/Stein_ASBS/baseline_models/dgfs/gflownet/gflownet.py:362: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  save_dict = torch.load(path)
+  DGFS: torch.Size([2000, 2])
+
+--- Loading iDEM ---
+Buffer not initialised, expected that checkpoint will be loaded.
+  grid25_idem checkpoint: last.ckpt
+  iDEM: torch.Size([2000, 2])
+
+--- Loading pDEM ---
+Buffer not initialised, expected that checkpoint will be loaded.
+  grid25_pdem checkpoint: last.ckpt
+  pDEM: torch.Size([2000, 2])
+
+  === ASBS Metrics ===
+    Computing W2...
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/ot/lp/_network_simplex.py:574: UserWarning: numItermax reached before optimality. Try to increase numItermax.
+  check_result(result_code)
+    Computing Sinkhorn...
+    Computing KL...
+    Modes: 25/25
+    Mean E: 1.0373, Std E: 1.0660
+    W2: 2.1672, Sinkhorn: 3.4227
+    KL: 2.0499, Mode TV: 0.3035
+
+  === SDR-ASBS Metrics ===
+    Computing W2...
+    Computing Sinkhorn...
+    Computing KL...
+    Modes: 25/25
+    Mean E: 1.0327, Std E: 1.0167
+    W2: 1.1113, Sinkhorn: 1.2849
+    KL: 2.1956, Mode TV: 0.1503
+
+  === AS Metrics ===
+    Computing W2...
+    Computing Sinkhorn...
+    Computing KL...
+    Modes: 25/25
+    Mean E: 1.1450, Std E: 1.2024
+    W2: 1.2651, Sinkhorn: 1.6488
+    KL: 2.5769, Mode TV: 0.2207
+
+  === DGFS Metrics ===
+    Computing W2...
+    Computing Sinkhorn...
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/ot/bregman/_sinkhorn.py:630: RuntimeWarning: overflow encountered in divide
+  v = b / KtransposeU
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/ot/bregman/_sinkhorn.py:642: UserWarning: Warning: numerical errors at iteration 528
+  warnings.warn("Warning: numerical errors at iteration %d" % ii)
+    Computing KL...
+    Modes: 17/25
+    Mean E: 3.5238, Std E: 2.2148
+    W2: 2.4011, Sinkhorn: 5.3930
+    KL: 2.9108, Mode TV: 0.6568
+
+  === iDEM Metrics ===
+    Computing W2...
+    Computing Sinkhorn...
+    Computing KL...
+    Modes: 22/25
+    Mean E: 0.9330, Std E: 0.9276
+    W2: 2.3014, Sinkhorn: 5.3452
+    KL: 1.6091, Mode TV: 0.6014
+
+  === pDEM Metrics ===
+    Computing W2...
+    Computing Sinkhorn...
+    Computing KL...
+    Modes: 22/25
+    Mean E: 1.0185, Std E: 1.0140
+    W2: 2.2773, Sinkhorn: 5.2375
+    KL: 1.6380, Mode TV: 0.5970
+
+====================================================================================================
+  Metric                            ASBS     SDR-ASBS           AS         DGFS         iDEM         pDEM
+----------------------------------------------------------------------------------------------------
+  Modes covered                       25           25           25           17           22           22
+  Mean energy                     1.0373       1.0327       1.1450       3.5238       0.9330       1.0185
+  Std energy                      1.0660       1.0167       1.2024       2.2148       0.9276       1.0140
+  KL divergence                   2.0499       2.1956       2.5769       2.9108       1.6091       1.6380
+  W₂ distance                     2.1672       1.1113       1.2651       2.4011       2.3014       2.2773
+  Sinkhorn div.                   3.4227       1.2849       1.6488       5.3930       5.3452       5.2375
+  Mode weight TV                  0.3035       0.1503       0.2207       0.6568       0.6014       0.5970
+====================================================================================================
+
+  Generating baseline comparison figure...
+  Saved: /home/RESEARCH/Stein_ASBS/evaluation/figures_2d/grid25_baselines_terminal.png
+
+  Updating 2d_result.md...
+  Updated /home/RESEARCH/Stein_ASBS/evaluation/2d_result.md
+
+=== Baseline evaluation complete! ===

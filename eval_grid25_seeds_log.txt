@@ -1,0 +1,133 @@
+======================================================================
+  Grid25 ASBS — 3-Seed Evaluation + NeurIPS Figures
+======================================================================
+
+============================================================
+  SEED 0
+============================================================
+  Loading model from /home/RESEARCH/Stein_ASBS/results/grid25_asbs/seed_0...
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.Gauss'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+  Generating 2000 terminal samples...
+  Computing metrics...
+    Computing W2...
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/ot/lp/_network_simplex.py:574: UserWarning: numItermax reached before optimality. Try to increase numItermax.
+  check_result(result_code)
+    Computing Sinkhorn...
+    Computing KL divergence...
+    Computing ESS...
+
+  --- Seed 0 Results ---
+  Modes covered: 25/25
+  Mean energy:   1.9985
+  Std energy:    1.7637
+  KL:            2.6559
+  W2:            1.3709
+  Sinkhorn:      1.9192
+  Mode TV:       0.2570
+  ESS:           3.9 (0.19%)
+
+  Generating terminal figure for seed 0...
+  Saved: /home/RESEARCH/Stein_ASBS/evaluation/figures_2d/grid25_asbs_seed0_terminal_neurips.png
+  Generating marginal evolution for seed 0...
+  Saved: /home/RESEARCH/Stein_ASBS/evaluation/figures_2d/grid25_asbs_seed0_marginal_neurips.png
+  Generating density heatmap for seed 0...
+  Saved: /home/RESEARCH/Stein_ASBS/evaluation/figures_2d/grid25_asbs_seed0_kde_neurips.png
+
+============================================================
+  SEED 1
+============================================================
+  Loading model from /home/RESEARCH/Stein_ASBS/results/grid25_asbs/seed_1...
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.Gauss'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+  Generating 2000 terminal samples...
+  Computing metrics...
+    Computing W2...
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/ot/lp/_network_simplex.py:574: UserWarning: numItermax reached before optimality. Try to increase numItermax.
+  check_result(result_code)
+    Computing Sinkhorn...
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/ot/bregman/_sinkhorn.py:630: RuntimeWarning: divide by zero encountered in divide
+  v = b / KtransposeU
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/ot/bregman/_sinkhorn.py:642: UserWarning: Warning: numerical errors at iteration 0
+  warnings.warn("Warning: numerical errors at iteration %d" % ii)
+    Computing KL divergence...
+    Computing ESS...
+
+  --- Seed 1 Results ---
+  Modes covered: 10/25
+  Mean energy:   42181872.0000
+  Std energy:    120698752.0000
+  KL:            -0.0021
+  W2:            674.4346
+  Sinkhorn:      0.0003
+  Mode TV:       0.7774
+  ESS:           1.9 (0.10%)
+
+  Generating terminal figure for seed 1...
+  Saved: /home/RESEARCH/Stein_ASBS/evaluation/figures_2d/grid25_asbs_seed1_terminal_neurips.png
+  Generating marginal evolution for seed 1...
+  Saved: /home/RESEARCH/Stein_ASBS/evaluation/figures_2d/grid25_asbs_seed1_marginal_neurips.png
+  Generating density heatmap for seed 1...
+  Saved: /home/RESEARCH/Stein_ASBS/evaluation/figures_2d/grid25_asbs_seed1_kde_neurips.png
+
+============================================================
+  SEED 2
+============================================================
+  Loading model from /home/RESEARCH/Stein_ASBS/results/grid25_asbs/seed_2...
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.Gauss'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+  Generating 2000 terminal samples...
+  Computing metrics...
+    Computing W2...
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/ot/lp/_network_simplex.py:574: UserWarning: numItermax reached before optimality. Try to increase numItermax.
+  check_result(result_code)
+    Computing Sinkhorn...
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/ot/bregman/_sinkhorn.py:631: RuntimeWarning: divide by zero encountered in divide
+  u = 1.0 / nx.dot(Kp, v)
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/ot/bregman/_sinkhorn.py:642: UserWarning: Warning: numerical errors at iteration 0
+  warnings.warn("Warning: numerical errors at iteration %d" % ii)
+    Computing KL divergence...
+    Computing ESS...
+
+  --- Seed 2 Results ---
+  Modes covered: 25/25
+  Mean energy:   42.9796
+  Std energy:    998.0815
+  KL:            3.3248
+  W2:            5.2233
+  Sinkhorn:      0.0005
+  Mode TV:       0.7168
+  ESS:           4.8 (0.24%)
+
+  Generating terminal figure for seed 2...
+  Saved: /home/RESEARCH/Stein_ASBS/evaluation/figures_2d/grid25_asbs_seed2_terminal_neurips.png
+  Generating marginal evolution for seed 2...
+  Saved: /home/RESEARCH/Stein_ASBS/evaluation/figures_2d/grid25_asbs_seed2_marginal_neurips.png
+  Generating density heatmap for seed 2...
+  Saved: /home/RESEARCH/Stein_ASBS/evaluation/figures_2d/grid25_asbs_seed2_kde_neurips.png
+
+================================================================================
+  Metric                             Seed 0          Seed 1          Seed 2
+--------------------------------------------------------------------------------
+  Modes covered                       25/25           10/25           25/25
+  Mean energy                        1.9985   42181872.0000         42.9796
+  Std energy                         1.7637  120698752.0000        998.0815
+  KL divergence                      2.6559         -0.0021          3.3248
+  W2 distance                        1.3709        674.4346          5.2233
+  Sinkhorn div                       1.9192          0.0003          0.0005
+  Mode weight TV                     0.2570          0.7774          0.7168
+  ESS                                   3.9             1.9             4.8
+  ESS %                               0.19%           0.10%           0.24%
+================================================================================
+
+  Mean ± Std across seeds:
+    Mean energy               14060638.9927 ± 19884714.5548
+    KL divergence             1.9929 ± 1.4368
+    W2 distance               227.0096 ± 316.3812
+    Sinkhorn div              0.6400 ± 0.9045
+    Mode weight TV            0.5837 ± 0.2324
+    ESS                       3.5324 ± 1.1887
+
+  Updated /home/RESEARCH/Stein_ASBS/evaluation/2d_result.md
+
+=== 3-Seed evaluation complete! ===

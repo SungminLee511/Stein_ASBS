@@ -1,0 +1,11 @@
+_target_: dem.energies.grid25_energy.Grid25Energy
+
+dimensionality: 2
+
+device: ${trainer.accelerator}
+
+plot_samples_epoch_period: 1
+
+should_unnormalize: false
+data_normalization_factor: 10
+data_path_train: null

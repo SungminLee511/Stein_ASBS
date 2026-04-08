@@ -2,19 +2,14 @@
 
 defaults:
   - /problem: grid25
-  - /source: gauss
+  - /source: delta
   - /sde@ref_sde: ve
   - /model@controller: fouriermlp
   - /state_cost: zero
-  - /term_cost: corrector_term_cost
+  - /term_cost: score_term_cost
   - /matcher@adjoint_matcher: adjoint_ve
-  - /model@corrector: fouriermlp
-  - /matcher@corrector_matcher: corrector
 
-exp_name: grid25_asbs
-
-# === source ===
-scale: 0.5
+exp_name: grid25_as
 
 # === sde ===
 nfe: 100
@@ -25,23 +20,12 @@ rescale_t: null
 # === training ===
 num_epochs: 3000
 max_grad_E_norm: 50
-adj_num_epochs_per_stage: 60
-ctr_num_epochs_per_stage: 60
 
 adjoint_matcher:
   buffer_size: 10000
   duplicates: 10
   resample_size: 1000
-  num_epochs_per_stage: ${adj_num_epochs_per_stage}
-  optim:
-    lr: 1e-3
-    weight_decay: 0
-
-corrector_matcher:
-  buffer_size: 10000
-  duplicates: 10
-  resample_size: 1000
-  num_epochs_per_stage: ${ctr_num_epochs_per_stage}
+  num_epochs_per_stage: ${num_epochs}
   optim:
     lr: 1e-3
     weight_decay: 0

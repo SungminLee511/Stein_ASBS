@@ -145,6 +145,7 @@ def main(cfg):
 
         print(f"Starting from {start_epoch}/{cfg.num_epochs} epochs...")
         for epoch in range(start_epoch, cfg.num_epochs):
+            epoch_start = time.time()
             stage = train_utils.determine_stage(epoch, cfg)
 
             matcher, model = {
@@ -172,11 +173,13 @@ def main(cfg):
             now_kst = datetime.now(KST).strftime("%H:%M:%S")
             gpu_mem = torch.cuda.max_memory_allocated() / 1024**2  # MiB
             gpu_mem_reserved = torch.cuda.memory_reserved() / 1024**2
-            print("[{0} | {1}] {2} | {3} | {4}".format(
+            epoch_elapsed = time.time() - epoch_start
+            print("[{0} | {1}] {2} | {3} | {4} | {5}".format(
                 cyan(  f"{stage:<7}"),
                 yellow(f"ep={epoch:04}"),
                 green( f"loss={loss:.4f}"),
                 f"gpu={gpu_mem:.0f}MiB(rsv={gpu_mem_reserved:.0f}MiB)",
+                f"dt={epoch_elapsed:.1f}s",
                 f"t={now_kst}",
             ))
 

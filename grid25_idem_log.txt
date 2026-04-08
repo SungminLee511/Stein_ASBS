@@ -1,0 +1,340 @@
+[[36m2026-04-07 13:09:38,212[0m][[34mdem.utils.utils[0m][[32mINFO[0m] - [rank: 0] Enforcing tags! <cfg.extras.enforce_tags=True>[0m
+[[36m2026-04-07 13:09:38,217[0m][[34mdem.utils.utils[0m][[32mINFO[0m] - [rank: 0] Printing config tree with Rich! <cfg.extras.print_config=True>[0m
+CONFIG
+├── data
+│   └── _target_: dem.data.dummy.DummyDataModule                                
+│       n_train_batches_per_epoch: 100                                          
+│       n_val_batches_per_epoch: 1                                              
+│       n_test_batches_per_epoch: 1                                             
+│                                                                               
+├── model
+│   └── net:                                                                    
+│         _target_: dem.models.components.mlp.MyMLP                             
+│         _partial_: true                                                       
+│         hidden_size: 128                                                      
+│         hidden_layers: 3                                                      
+│         emb_size: 128                                                         
+│         time_emb: sinusoidal                                                  
+│         input_emb: sinusoidal                                                 
+│         input_dim: 2                                                          
+│         out_dim: 2                                                            
+│       noise_schedule:                                                         
+│         _target_: dem.models.components.noise_schedules.GeometricNoiseSchedule
+│         sigma_min: 1.0e-05                                                    
+│         sigma_max: 1.0                                                        
+│       _target_: dem.models.dem_module.DEMLitModule                            
+│       optimizer:                                                              
+│         _target_: torch.optim.Adam                                            
+│         _partial_: true                                                       
+│         lr: 0.0005                                                            
+│         weight_decay: 0.0                                                     
+│       scheduler: null                                                         
+│       buffer:                                                                 
+│         _target_: dem.models.components.prioritised_replay_buffer.SimpleBuffer
+│         dim: 2                                                                
+│         max_length: 10000                                                     
+│         min_sample_length: 1000                                               
+│         initial_sampler: null                                                 
+│         device: cuda                                                          
+│         sample_with_replacement: true                                         
+│         fill_buffer_during_init: false                                        
+│         prioritize: false                                                     
+│       score_scaler: null                                                      
+│       num_init_samples: 1024                                                  
+│       num_estimator_mc_samples: 500                                           
+│       num_samples_to_generate_per_epoch: 1000                                 
+│       num_samples_to_sample_from_buffer: 512                                  
+│       eval_batch_size: 1000                                                   
+│       num_integration_steps: 1000                                             
+│       nll_integration_method: dopri5                                          
+│       tol: 1.0e-05                                                            
+│       nll_with_cfm: false                                                     
+│       nll_with_dem: false                                                     
+│       nll_on_buffer: false                                                    
+│       compute_nll_on_train_data: false                                        
+│       logz_with_cfm: false                                                    
+│       cfm_sigma: 0.0                                                          
+│       cfm_prior_std: 10                                                       
+│       use_otcfm: false                                                        
+│       prioritize_cfm_training_samples: false                                  
+│       lr_scheduler_update_frequency: 10                                       
+│       input_scaling_factor: null                                              
+│       output_scaling_factor: null                                             
+│       compile: false                                                          
+│       use_richardsons: false                                                  
+│       cfm_loss_weight: 1.0                                                    
+│       use_ema: false                                                          
+│       use_exact_likelihood: true                                              
+│       debug_use_train_data: false                                             
+│       init_from_prior: false                                                  
+│       use_buffer: true                                                        
+│       num_samples_to_save: 100000                                             
+│       negative_time: false                                                    
+│       num_negative_time_steps: 100                                            
+│       nll_batch_size: 256                                                     
+│       seed: 12345                                                             
+│       partial_prior:                                                          
+│         _target_: dem.energies.base_prior.Prior                               
+│         _partial_: true                                                       
+│         dim: 2                                                                
+│       clipper:                                                                
+│         _target_: dem.models.components.clipper.Clipper                       
+│         should_clip_scores: true                                              
+│         should_clip_log_rewards: false                                        
+│         max_score_norm: 70                                                    
+│         min_log_reward: null                                                  
+│       lambda_weighter:                                                        
+│         _target_: dem.models.components.lambda_weighter.BasicLambdaWeighter   
+│         _partial_: true                                                       
+│         epsilon: 0.001                                                        
+│       diffusion_scale: 1.0                                                    
+│                                                                               
+├── callbacks
+│   └── model_checkpoint:                                                       
+│         _target_: lightning.pytorch.callbacks.ModelCheckpoint                 
+│         dirpath: /home/RESEARCH/Stein_ASBS/results/grid25_idem/checkpoints    
+│         filename: epoch_{epoch:03d}                                           
+│         monitor: val/2-Wasserstein                                            
+│         verbose: true                                                         
+│         save_last: true                                                       
+│         save_top_k: 5                                                         
+│         mode: min                                                             
+│         auto_insert_metric_name: false                                        
+│         save_weights_only: false                                              
+│         every_n_train_steps: null                                             
+│         train_time_interval: null                                             
+│         every_n_epochs: 10                                                    
+│         save_on_train_epoch_end: null                                         
+│       model_summary:                                                          
+│         _target_: lightning.pytorch.callbacks.RichModelSummary                
+│         max_depth: -1                                                         
+│       rich_progress_bar:                                                      
+│         _target_: lightning.pytorch.callbacks.RichProgressBar                 
+│                                                                               
+├── logger
+│   └── csv:                                                                    
+│         _target_: lightning.pytorch.loggers.csv_logs.CSVLogger                
+│         save_dir: /home/RESEARCH/Stein_ASBS/results/grid25_idem               
+│         name: csv/                                                            
+│         prefix: ''                                                            
+│       wandb:                                                                  
+│         tags:                                                                 
+│         - Grid25                                                              
+│         - iDEM                                                                
+│         group: grid25                                                         
+│                                                                               
+├── trainer
+│   └── _target_: lightning.pytorch.trainer.Trainer                             
+│       default_root_dir: /home/RESEARCH/Stein_ASBS/results/grid25_idem         
+│       min_epochs: 1                                                           
+│       max_epochs: 1000                                                        
+│       accelerator: cuda                                                       
+│       devices: 1                                                              
+│       check_val_every_n_epoch: 10                                             
+│       deterministic: false                                                    
+│       gradient_clip_val: 0.5                                                  
+│       inference_mode: false                                                   
+│                                                                               
+├── paths
+│   └── root_dir: /home/RESEARCH/Stein_ASBS/baseline_models/dem                 
+│       data_dir: /home/RESEARCH/Stein_ASBS/baseline_models/dem/data/           
+│       log_dir: /home/RESEARCH/Stein_ASBS/baseline_models/dem/                 
+│       output_dir: /home/RESEARCH/Stein_ASBS/results/grid25_idem               
+│       work_dir: /home/RESEARCH/Stein_ASBS/baseline_models/dem                 
+│                                                                               
+├── extras
+│   └── ignore_warnings: false                                                  
+│       enforce_tags: true                                                      
+│       print_config: true                                                      
+│                                                                               
+├── task_name
+│   └── train                                                                   
+├── tags
+│   └── ['Grid25', 'iDEM']                                                      
+├── train
+│   └── True                                                                    
+├── test
+│   └── True                                                                    
+├── ckpt_path
+│   └── None                                                                    
+├── seed
+│   └── 12345                                                                   
+└── energy
+    └── _target_: dem.energies.grid25_energy.Grid25Energy                       
+        dimensionality: 2                                                       
+        device: cuda                                                            
+        plot_samples_epoch_period: 1                                            
+        should_unnormalize: false                                               
+        data_normalization_factor: 10                                           
+        data_path_train: null                                                   
+                                                                                
+Seed set to 12345
+[[36m2026-04-07 13:09:38,279[0m][[34m__main__[0m][[32mINFO[0m] - [rank: 0] Instantiating datamodule <dem.data.dummy.DummyDataModule>[0m
+[[36m2026-04-07 13:09:38,280[0m][[34m__main__[0m][[32mINFO[0m] - [rank: 0] Instantiating energy function <dem.energies.grid25_energy.Grid25Energy>[0m
+[[36m2026-04-07 13:09:38,748[0m][[34m__main__[0m][[32mINFO[0m] - [rank: 0] Instantiating model <dem.models.dem_module.DEMLitModule>[0m
+Buffer not initialised, expected that checkpoint will be loaded.
+[[36m2026-04-07 13:09:39,451[0m][[34m__main__[0m][[32mINFO[0m] - [rank: 0] Instantiating callbacks...[0m
+[[36m2026-04-07 13:09:39,452[0m][[34mdem.utils.instantiators[0m][[32mINFO[0m] - [rank: 0] Instantiating callback <lightning.pytorch.callbacks.ModelCheckpoint>[0m
+[[36m2026-04-07 13:09:39,456[0m][[34mdem.utils.instantiators[0m][[32mINFO[0m] - [rank: 0] Instantiating callback <lightning.pytorch.callbacks.RichModelSummary>[0m
+[[36m2026-04-07 13:09:39,456[0m][[34mdem.utils.instantiators[0m][[32mINFO[0m] - [rank: 0] Instantiating callback <lightning.pytorch.callbacks.RichProgressBar>[0m
+[[36m2026-04-07 13:09:39,457[0m][[34m__main__[0m][[32mINFO[0m] - [rank: 0] Instantiating loggers...[0m
+[[36m2026-04-07 13:09:39,457[0m][[34mdem.utils.instantiators[0m][[32mINFO[0m] - [rank: 0] Instantiating logger <lightning.pytorch.loggers.csv_logs.CSVLogger>[0m
+[[36m2026-04-07 13:09:39,459[0m][[34m__main__[0m][[32mINFO[0m] - [rank: 0] Instantiating trainer <lightning.pytorch.trainer.Trainer>[0m
+[[36m2026-04-07 13:09:39,464[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Trainer already configured with model summary callbacks: [<class 'lightning.pytorch.callbacks.rich_model_summary.RichModelSummary'>]. Skipping setting a default `ModelSummary` callback.[0m
+[[36m2026-04-07 13:09:39,475[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - GPU available: True (cuda), used: True[0m
+[[36m2026-04-07 13:09:39,476[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - TPU available: False, using: 0 TPU cores[0m
+[[36m2026-04-07 13:09:39,476[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - 💡 Tip: For seamless cloud logging and experiment tracking, try installing [litlogger](https://pypi.org/project/litlogger/) to enable LitLogger, which logs metrics and artifacts automatically to the Lightning Experiments platform.[0m
+[[36m2026-04-07 13:09:39,476[0m][[34m__main__[0m][[32mINFO[0m] - [rank: 0] Logging hyperparameters![0m
+[[36m2026-04-07 13:09:39,495[0m][[34m__main__[0m][[32mINFO[0m] - [rank: 0] Starting training![0m
+[[36m2026-04-07 13:09:39,497[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - You are using a CUDA device ('NVIDIA A100 80GB PCIe') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision[0m
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/lightning/pytorch/trainer/connectors/data_connector.py:434: The 'val_dataloader' does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` to `num_workers=95` in the `DataLoader` to improve performance.
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃      Validate metric      ┃       DataLoader 0        ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│     val/1-Wasserstein     │    13.641254425048828     │
+│     val/2-Wasserstein     │    15.894248962402344     │
+│      val/Linear_MMD       │     14.59486198425293     │
+│        val/Mean_L1        │    0.40212976932525635    │
+│        val/Mean_L2        │    0.45715805888175964    │
+│       val/Mean_MSE        │    0.20899347960948944    │
+│       val/Median_L1       │    0.5290199518203735     │
+│       val/Median_L2       │    0.5738801956176758     │
+│      val/Median_MSE       │    0.3293384909629822     │
+│       val/Poly_MMD        │      62697.98046875       │
+│        val/RBF_MMD        │    0.4522387981414795     │
+│      val/loss_epoch       │    0.06941049546003342    │
+└───────────────────────────┴───────────────────────────┘
+Validation ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1/1 0:00:07 • 0:00:00 0.00it/s 
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+┏━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━┓
+┃    ┃ Name                      ┃ Type               ┃ Params ┃ Mode  ┃ FLOPs ┃
+┡━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━┩
+│ 0  │ net                       │ MyMLP              │ 99.1 K │ train │     0 │
+│ 1  │ net.time_mlp              │ PositionalEmbeddi… │      0 │ train │     0 │
+│ 2  │ net.time_mlp.layer        │ SinusoidalEmbeddi… │      0 │ train │     0 │
+│ 3  │ net.input_mlp0            │ PositionalEmbeddi… │      0 │ train │     0 │
+│ 4  │ net.input_mlp0.layer      │ SinusoidalEmbeddi… │      0 │ train │     0 │
+│ 5  │ net.input_mlp1            │ PositionalEmbeddi… │      0 │ train │     0 │
+│ 6  │ net.input_mlp1.layer      │ SinusoidalEmbeddi… │      0 │ train │     0 │
+│ 7  │ net.joint_mlp             │ Sequential         │ 99.1 K │ train │     0 │
+│ 8  │ net.joint_mlp.0           │ Linear             │ 49.3 K │ train │     0 │
+│ 9  │ net.joint_mlp.1           │ Block              │ 16.5 K │ train │     0 │
+│ 10 │ net.joint_mlp.1.ff        │ Linear             │ 16.5 K │ train │     0 │
+│ 11 │ net.joint_mlp.1.act       │ GELU               │      0 │ train │     0 │
+│ 12 │ net.joint_mlp.2           │ Block              │ 16.5 K │ train │     0 │
+│ 13 │ net.joint_mlp.2.ff        │ Linear             │ 16.5 K │ train │     0 │
+│ 14 │ net.joint_mlp.2.act       │ GELU               │      0 │ train │     0 │
+│ 15 │ net.joint_mlp.3           │ Block              │ 16.5 K │ train │     0 │
+│ 16 │ net.joint_mlp.3.ff        │ Linear             │ 16.5 K │ train │     0 │
+│ 17 │ net.joint_mlp.3.act       │ GELU               │      0 │ train │     0 │
+│ 18 │ net.joint_mlp.4           │ Linear             │    258 │ train │     0 │
+│ 19 │ cfm_net                   │ MyMLP              │ 99.1 K │ train │     0 │
+│ 20 │ cfm_net.time_mlp          │ PositionalEmbeddi… │      0 │ train │     0 │
+│ 21 │ cfm_net.time_mlp.layer    │ SinusoidalEmbeddi… │      0 │ train │     0 │
+│ 22 │ cfm_net.input_mlp0        │ PositionalEmbeddi… │      0 │ train │     0 │
+│ 23 │ cfm_net.input_mlp0.layer  │ SinusoidalEmbeddi… │      0 │ train │     0 │
+│ 24 │ cfm_net.input_mlp1        │ PositionalEmbeddi… │      0 │ train │     0 │
+│ 25 │ cfm_net.input_mlp1.layer  │ SinusoidalEmbeddi… │      0 │ train │     0 │
+│ 26 │ cfm_net.joint_mlp         │ Sequential         │ 99.1 K │ train │     0 │
+│ 27 │ cfm_net.joint_mlp.0       │ Linear             │ 49.3 K │ train │     0 │
+│ 28 │ cfm_net.joint_mlp.1       │ Block              │ 16.5 K │ train │     0 │
+│ 29 │ cfm_net.joint_mlp.1.ff    │ Linear             │ 16.5 K │ train │     0 │
+│ 30 │ cfm_net.joint_mlp.1.act   │ GELU               │      0 │ train │     0 │
+│ 31 │ cfm_net.joint_mlp.2       │ Block              │ 16.5 K │ train │     0 │
+│ 32 │ cfm_net.joint_mlp.2.ff    │ Linear             │ 16.5 K │ train │     0 │
+│ 33 │ cfm_net.joint_mlp.2.act   │ GELU               │      0 │ train │     0 │
+│ 34 │ cfm_net.joint_mlp.3       │ Block              │ 16.5 K │ train │     0 │
+│ 35 │ cfm_net.joint_mlp.3.ff    │ Linear             │ 16.5 K │ train │     0 │
+│ 36 │ cfm_net.joint_mlp.3.act   │ GELU               │      0 │ train │     0 │
+│ 37 │ cfm_net.joint_mlp.4       │ Linear             │    258 │ train │     0 │
+│ 38 │ dem_cnf                   │ CNF                │ 99.1 K │ train │     0 │
+│ 39 │ cfm_cnf                   │ CNF                │ 99.1 K │ train │     0 │
+│ 40 │ reverse_sde               │ VEReverseSDE       │ 99.1 K │ train │     0 │
+│ 41 │ dem_train_loss            │ MeanMetric         │      0 │ train │     0 │
+│ 42 │ cfm_train_loss            │ MeanMetric         │      0 │ train │     0 │
+│ 43 │ val_loss                  │ MeanMetric         │      0 │ train │     0 │
+│ 44 │ test_loss                 │ MeanMetric         │      0 │ train │     0 │
+│ 45 │ val_nll_logdetjac         │ MeanMetric         │      0 │ train │     0 │
+│ 46 │ test_nll_logdetjac        │ MeanMetric         │      0 │ train │     0 │
+│ 47 │ val_nll_log_p_1           │ MeanMetric         │      0 │ train │     0 │
+│ 48 │ test_nll_log_p_1          │ MeanMetric         │      0 │ train │     0 │
+│ 49 │ val_nll                   │ MeanMetric         │      0 │ train │     0 │
+│ 50 │ test_nll                  │ MeanMetric         │      0 │ train │     0 │
+│ 51 │ val_nfe                   │ MeanMetric         │      0 │ train │     0 │
+│ 52 │ test_nfe                  │ MeanMetric         │      0 │ train │     0 │
+│ 53 │ val_energy_w2             │ MeanMetric         │      0 │ train │     0 │
+│ 54 │ val_dist_w2               │ MeanMetric         │      0 │ train │     0 │
+│ 55 │ val_dist_total_var        │ MeanMetric         │      0 │ train │     0 │
+│ 56 │ val_dem_nll_logdetjac     │ MeanMetric         │      0 │ train │     0 │
+│ 57 │ test_dem_nll_logdetjac    │ MeanMetric         │      0 │ train │     0 │
+│ 58 │ val_dem_nll_log_p_1       │ MeanMetric         │      0 │ train │     0 │
+│ 59 │ test_dem_nll_log_p_1      │ MeanMetric         │      0 │ train │     0 │
+│ 60 │ val_dem_nll               │ MeanMetric         │      0 │ train │     0 │
+│ 61 │ test_dem_nll              │ MeanMetric         │      0 │ train │     0 │
+│ 62 │ val_dem_nfe               │ MeanMetric         │      0 │ train │     0 │
+│ 63 │ test_dem_nfe              │ MeanMetric         │      0 │ train │     0 │
+│ 64 │ val_dem_logz              │ MeanMetric         │      0 │ train │     0 │
+│ 65 │ val_logz                  │ MeanMetric         │      0 │ train │     0 │
+│ 66 │ val_big_batch_logz        │ MeanMetric         │      0 │ train │     0 │
+│ 67 │ test_dem_logz             │ MeanMetric         │      0 │ train │     0 │
+│ 68 │ test_logz                 │ MeanMetric         │      0 │ train │     0 │
+│ 69 │ val_dem_ess               │ MeanMetric         │      0 │ train │     0 │
+│ 70 │ val_ess                   │ MeanMetric         │      0 │ train │     0 │
+│ 71 │ val_big_batch_ess         │ MeanMetric         │      0 │ train │     0 │
+│ 72 │ test_dem_ess              │ MeanMetric         │      0 │ train │     0 │
+│ 73 │ test_ess                  │ MeanMetric         │      0 │ train │     0 │
+│ 74 │ val_buffer_nll_logdetjac  │ MeanMetric         │      0 │ train │     0 │
+│ 75 │ val_buffer_nll_log_p_1    │ MeanMetric         │      0 │ train │     0 │
+│ 76 │ val_buffer_nll            │ MeanMetric         │      0 │ train │     0 │
+│ 77 │ val_buffer_nfe            │ MeanMetric         │      0 │ train │     0 │
+│ 78 │ val_buffer_logz           │ MeanMetric         │      0 │ train │     0 │
+│ 79 │ val_buffer_ess            │ MeanMetric         │      0 │ train │     0 │
+│ 80 │ test_buffer_nll_logdetjac │ MeanMetric         │      0 │ train │     0 │
+│ 81 │ test_buffer_nll_log_p_1   │ MeanMetric         │      0 │ train │     0 │
+│ 82 │ test_buffer_nll           │ MeanMetric         │      0 │ train │     0 │
+│ 83 │ test_buffer_nfe           │ MeanMetric         │      0 │ train │     0 │
+│ 84 │ test_buffer_logz          │ MeanMetric         │      0 │ train │     0 │
+│ 85 │ test_buffer_ess           │ MeanMetric         │      0 │ train │     0 │
+│ 86 │ val_train_nll_logdetjac   │ MeanMetric         │      0 │ train │     0 │
+│ 87 │ val_train_nll_log_p_1     │ MeanMetric         │      0 │ train │     0 │
+│ 88 │ val_train_nll             │ MeanMetric         │      0 │ train │     0 │
+│ 89 │ val_train_nfe             │ MeanMetric         │      0 │ train │     0 │
+│ 90 │ val_train_logz            │ MeanMetric         │      0 │ train │     0 │
+│ 91 │ val_train_ess             │ MeanMetric         │      0 │ train │     0 │
+│ 92 │ test_train_nll_logdetjac  │ MeanMetric         │      0 │ train │     0 │
+│ 93 │ test_train_nll_log_p_1    │ MeanMetric         │      0 │ train │     0 │
+│ 94 │ test_train_nll            │ MeanMetric         │      0 │ train │     0 │
+│ 95 │ test_train_nfe            │ MeanMetric         │      0 │ train │     0 │
+│ 96 │ test_train_logz           │ MeanMetric         │      0 │ train │     0 │
+│ 97 │ test_train_ess            │ MeanMetric         │      0 │ train │     0 │
+└────┴───────────────────────────┴────────────────────┴────────┴───────┴───────┘
+Trainable params: 198 K                                                         
+Non-trainable params: 0                                                         
+Total params: 198 K                                                             
+Total estimated model params size (MB): 0                                       
+Modules in train mode: 98                                                       
+Modules in eval mode: 0                                                         
+Total FLOPs: 0                                                                  
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/lightning/pytorch/trainer/connectors/data_connector.py:434: The 'train_dataloader' does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` to `num_workers=95` in the `DataLoader` to improve performance.
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/lightning/pytorch/trainer/connectors/data_connector.py:434: The 'val_dataloader' does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` to `num_workers=95` in the `DataLoader` to improve performance.
+[[36m2026-04-07 13:11:41,256[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Epoch 9, global step 1000: 'val/2-Wasserstein' reached 16.59096 (best 16.59096), saving model to '/home/RESEARCH/Stein_ASBS/results/grid25_idem/checkpoints/epoch_009-v1.ckpt' as top 5[[[[[36m2026-04-07 13:13:19,465[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Epoch 19, global step 2000: 'val/2-Wasserstein' reached 16.10713 (best 16.10713), saving model to '/home/RESEARCH/Stein_ASBS/results/grid25_idem/checkpoints/epoch_019-v1.ckpt' as top [[36m[[36m2026-04-07 13:14:57,892[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Epoch 29, global step 3000: 'val/2-Wasserstein' reached 16.04154 (best 16.04154), saving model to '/home/RESEARCH/Stein_ASBS/results/grid25_idem/checkpoints/epoch_029-v1.ckpt' as t[[36m202[[36m2026-04-07 13:16:36,430[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Epoch 39, global step 4000: 'val/2-Wasserstein' reached 16.32767 (best 16.04154), saving model to '/home/RESEARCH/Stein_ASBS/results/grid25_idem/checkpoints/epoch_039-v1.ckpt' a[[36m2026-0[[36m2026-04-07 13:18:14,870[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Epoch 49, global step 5000: 'val/2-Wasserstein' reached 15.84035 (best 15.84035), saving model to '/home/RESEARCH/Stein_ASBS/results/grid25_idem/checkpoints/epoch_049-v1.ckpt[[36m2026-04-0[[36m2026-04-07 13:19:53,340[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Epoch 59, global step 6000: 'val/2-Wasserstein' reached 15.70875 (best 15.70875), saving model to '/home/RESEARCH/Stein_ASBS/results/grid25_idem/checkpoints/epoch_059-v1.c[[36m2026-04-07 1[[36m2026-04-07 13:21:31,893[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Epoch 69, global step 7000: 'val/2-Wasserstein' reached 16.28480 (best 15.70875), saving model to '/home/RESEARCH/Stein_ASBS/results/grid25_idem/checkpoints/epoch_069-v[[36m2026-04-07 13:2[[36m2026-04-07 13:23:10,881[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Epoch 79, global step 8000: 'val/2-Wasserstein' [[36m2026-04-07 13:2[[36m2026-04-07 13:25:10,720[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Epoch 89, global step 9000: 'val/2-Wasserstein' [[36m2026-04-07 13:2[[36m2026-04-07 13:27:10,501[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Epoch 99, global step 10000: 'val/2-Wasserstein' reached 16.15973 (best 15.70875), saving model to '/home/RESEARCH/Stein_ASBS/results/grid25_idem/checkpoints/epoch_09[[36m2026-04-07 13:29:0[[36m2026-04-07 13:29:10,055[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Epoch 109, global step 11000: 'val/2-Wasserstei[[36m2026-04-07 13:30:39,525[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Epoch 119, global step 12000: 'val/2-Wasserstein' was not in top 5[0m
+[[36m2026-04-07 13:31:57,199[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Epoch 129, global step 13000: 'val/2-Wasserstein' was not in top 5[0m
+[[36m2026-04-07 13:33:14,907[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Epoch 139, global step 14000: 'val/2-Wasserstein' reached 16.10234 (best 15.70875), saving model to '/home/RESEARCH/Stein_ASBS/results/grid25_idem/checkpoints/epoch_139.ckpt' as top 5[0m
+[[36m2026-04-07 13:34:32,826[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Epoch 149, global step 15000: 'val/2-Wasserstein' was not in top 5[0m
+[[36m2026-04-07 13:35:50,531[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Epoch 159, global step 16000: 'val/2-Wasserstein' reached 15.99472 (best 15.70875), saving model to '/home/RESEARCH/Stein_ASBS/results/grid25_idem/checkpoints/epoch_159.ckpt' as top 5[0m
+[[36m2026-04-07 13:37:08,207[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Epoch 169, global step 17000: 'val/2-Wasserstein' was not in top 5[0m
+[[36m2026-04-07 13:38:25,844[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Epoch 179, global step 18000: 'val/2-Wasserstein' was not in top 5[0m
+[[36m2026-04-07 13:39:43,375[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Epoch 189, global step 19000: 'val/2-Wasserstein' was not in top 5[0m
+[[36m2026-04-07 13:40:51,081[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Epoch 199, global step 20000: 'val/2-Wasserstein' reached 16.07782 (best 15.70875), saving model to '/home/RESEARCH/Stein_ASBS/results/grid25_idem/checkpoints/epoch_199.ckpt' as top 5[0m
+[rank: 0] Received SIGTERM: 15
+Epoch 208/999 ━━━━━━━━━━━━━━━ 100/100 0:00:01 •       63.03it/s v_num: 0.000    
+                                      0:00:00                   train/dem_loss: 
+                                                                0.002           
+                                                                val/energy_w2:  
+                                                                0.279           
+                                                                val/loss_step:  
+                                                                0.003           
+                                                                val/loss_epoch: 
+                                                                0.003           
+[[36m2026-04-07 13:41:49,294[0m][[34mdem.utils.utils[0m][[32mINFO[0m] - [rank: 0] Output dir: /home/RESEARCH/Stein_ASBS/results/grid25_idem[0m
