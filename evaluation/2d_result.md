@@ -202,6 +202,18 @@ Evaluated: 2026-04-08 07:12:34 KST
 
 ---
 
+## 25-Mode Grid — ASBS Seed 5 (Diverged)
+
+Evaluated: 2026-04-08 23:14 KST | Checkpoint: 800 (last valid before divergence at ~epoch 867)
+
+Seed 5 diverged during training — adjoint loss exploded from ~8 to 1e15 then NaN at epoch ~867.
+Below is the marginal evolution from checkpoint_800.pt, the last valid checkpoint.
+
+#### Marginal Evolution: ASBS Seed 5 (ckpt 800)
+![grid25 seed5 marginal](figures_2d/grid25_seed5_marginal_ckpt800.png)
+
+---
+
 ## 25-Mode Grid — Baseline Comparison
 
 Evaluated: 2026-04-07 23:06:56 KST
