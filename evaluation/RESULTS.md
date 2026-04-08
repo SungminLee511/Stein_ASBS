@@ -1,6 +1,6 @@
 # Results: KSD-Augmented ASBS — Comprehensive Evaluation
 
-**Last updated:** 2026-04-08 17:05 KST
+**Last updated:** 2026-04-08 18:45 KST
 
 ---
 
@@ -124,10 +124,11 @@ See `.claude/skills/references_and_equations.md` for full derivation.
 
 ### 1.2 LJ13 (13 particles × 3D = 39D, Lennard-Jones)
 
-**Status: ✅ COMPLETE (λ=1.0, checkpoint 1550)**
+**Status: ✅ COMPLETE (λ=1.0, checkpoint 1550) + ASBS ckpt 2150 added**
 
 **Setup:**
 - Baseline: ASBS (AdjointVEMatcher) — `results/lj13_asbs/seed_0/`, checkpoint_latest.pt
+- ASBS (ckpt 2150): Same model, longer training — `results/lj13_asbs/seed_0/`, checkpoint_2150.pt
 - KSD-ASBS: KSDAdjointVEMatcher, λ=1.0, checkpoint_1550 (best before NaN divergence) — `results/lj13_ksd_asbs/seed_0/`
 - Evaluation: 2000 samples × 5 sampling seeds (0–4)
 - Metrics: Wasserstein-2 distances (lower is better), KSD²
@@ -135,19 +136,26 @@ See `.claude/skills/references_and_equations.md` for full derivation.
 
 **Note on KSD-ASBS training:** KSD-ASBS diverged to NaN after epoch ~1550. Checkpoint 50 (early) was also evaluated but is far too undertrained (mean energy ≈ -27 vs reference ≈ -43). Checkpoint 1550 is the best available.
 
+**Note on ASBS ckpt 2150:** Longer training of the baseline ASBS model dramatically improves all metrics. At ckpt 2150, ASBS now surpasses KSD-ASBS (ckpt 1550) on energy_W2 and dist_W2, while KSD-ASBS retains a slight edge on KSD².
+
 #### Per-Seed Results
 
 | Seed | Method | energy_W2 | eq_W2 | dist_W2 | KSD² | mean_energy |
 |------|--------|-----------|-------|---------|------|-------------|
 | 0 | Baseline | 9.5254 | 1.8950 | 0.004423 | 39.95 | -37.31 |
+| 0 | ASBS (ckpt 2150) | 2.7548 | 1.8665 | 0.001948 | 4.10 | -40.40 |
 | 0 | KSD-ASBS | 3.3215 | 1.8585 | 0.002350 | 3.25 | -39.83 |
 | 1 | Baseline | 6.3781 | 1.8694 | 0.004500 | 15.13 | -37.54 |
+| 1 | ASBS (ckpt 2150) | 2.8176 | 1.8484 | 0.002200 | 4.20 | -40.36 |
 | 1 | KSD-ASBS | 3.3027 | 1.8533 | 0.002475 | 3.71 | -39.87 |
 | 2 | Baseline | 5.6544 | 1.8663 | 0.003607 | 12.56 | -37.80 |
+| 2 | ASBS (ckpt 2150) | 2.4991 | 1.8296 | 0.001480 | 3.64 | -40.53 |
 | 2 | KSD-ASBS | 2.9974 | 1.8335 | 0.001822 | 2.82 | -40.03 |
 | 3 | Baseline | 9.1923 | 1.8881 | 0.004613 | 36.92 | -37.21 |
+| 3 | ASBS (ckpt 2150) | 2.9647 | 1.8697 | 0.002497 | 3.88 | -39.94 |
 | 3 | KSD-ASBS | 3.3234 | 1.8639 | 0.002518 | 3.14 | -39.58 |
 | 4 | Baseline | 30.2574 | 1.8358 | 0.004272 | 402.70 | -36.92 |
+| 4 | ASBS (ckpt 2150) | 2.9558 | 1.8236 | 0.002067 | 4.24 | -40.32 |
 | 4 | KSD-ASBS | 3.4888 | 1.8123 | 0.002365 | 3.48 | -39.78 |
 
 #### Summary Statistics
@@ -155,16 +163,17 @@ See `.claude/skills/references_and_equations.md` for full derivation.
 | Method | energy_W2 (mean±std) | eq_W2 (mean±std) | dist_W2 (mean±std) | KSD² (mean±std) | mean_energy |
 |--------|----------------------|-------------------|---------------------|-----------------|-------------|
 | **Baseline** | 12.201 ± 9.154 | 1.871 ± 0.021 | 0.00428 ± 0.00036 | 101.45 ± 151.03 | -37.35 ± 0.30 |
-| **KSD-ASBS** (ckpt 1550) | **3.287 ± 0.160** | **1.844 ± 0.019** | **0.00231 ± 0.00025** | **3.278 ± 0.304** | -39.82 ± 0.14 |
+| **ASBS** (ckpt 2150) | **2.798 ± 0.170** | 1.848 ± 0.019 | **0.00204 ± 0.00033** | 4.013 ± 0.224 | -40.31 ± 0.20 |
+| **KSD-ASBS** (ckpt 1550) | 3.287 ± 0.160 | **1.844 ± 0.019** | 0.00231 ± 0.00025 | **3.278 ± 0.304** | -39.82 ± 0.14 |
 
 #### Best Seed Comparison
 
-| Metric | Baseline (best) | KSD-ASBS (best) | Winner |
-|--------|-----------------|-----------------|--------|
-| energy_W2 | 5.6544 (seed 2) | **2.9974** (seed 2) | **KSD-ASBS** |
-| eq_W2 | 1.8358 (seed 4) | **1.8123** (seed 4) | **KSD-ASBS** |
-| dist_W2 | 0.003607 (seed 2) | **0.001822** (seed 2) | **KSD-ASBS** |
-| KSD² | 12.56 (seed 2) | **2.82** (seed 2) | **KSD-ASBS** |
+| Metric | Baseline (best) | ASBS ckpt 2150 (best) | KSD-ASBS (best) | Winner |
+|--------|-----------------|----------------------|-----------------|--------|
+| energy_W2 | 5.6544 (seed 2) | **2.4991** (seed 2) | 2.9974 (seed 2) | **ASBS ckpt 2150** |
+| eq_W2 | 1.8358 (seed 4) | 1.8236 (seed 4) | **1.8123** (seed 4) | **KSD-ASBS** |
+| dist_W2 | 0.003607 (seed 2) | **0.001480** (seed 2) | 0.001822 (seed 2) | **ASBS ckpt 2150** |
+| KSD² | 12.56 (seed 2) | 3.64 (seed 2) | **2.82** (seed 2) | **KSD-ASBS** |
 
 #### Relative Change (mean)
 
