@@ -1,0 +1,55 @@
+# @package _global_
+
+defaults:
+  - /problem: aldp
+  - /source: gauss
+  - /sde@ref_sde: ve
+  - /model@controller: fouriermlp
+  - /state_cost: zero
+  - /term_cost: corrector_term_cost
+  - /matcher@adjoint_matcher: adjoint_ve
+  - /model@corrector: fouriermlp
+  - /matcher@corrector_matcher: corrector
+
+exp_name: aldp_asbs
+
+# === source ===
+# NOTE: gauss source with scale=sigma_max. If training diverges (NaN energies),
+# consider switching to a delta source centered at minimized PDB coordinates.
+scale: 0.1
+
+# === sde ===
+# IMPORTANT: coordinates are in NANOMETERS. sigma_max=0.1 is ~1 bond length.
+# Do NOT use large sigma_max (e.g., 2) -- it would blow the molecule apart.
+nfe: 200
+sigma_max: 0.1
+sigma_min: 0.001
+rescale_t: null
+
+# === training ===
+num_epochs: 5000
+max_grad_E_norm: 100
+adj_num_epochs_per_stage: 200
+ctr_num_epochs_per_stage: 20
+
+adjoint_matcher:
+  buffer_size: 10000
+  duplicates: 10
+  resample_size: 500  # Reduced from 1000 -- OpenMM energy calls are slow
+  num_epochs_per_stage: ${adj_num_epochs_per_stage}
+  optim:
+    lr: 1e-4
+    weight_decay: 0
+
+corrector_matcher:
+  buffer_size: 10000
+  duplicates: 10
+  resample_size: 500
+  num_epochs_per_stage: ${ctr_num_epochs_per_stage}
+  optim:
+    lr: 1e-4
+    weight_decay: 0
+
+# === eval & logging ===
+use_wandb: false
+eval_freq: 200

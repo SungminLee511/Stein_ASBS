@@ -1,0 +1,139 @@
+======================================================================
+LJ13 Unified Evaluation — ASBS, iDEM, pDEM
+Metrics: energy_W2, Rg_W2, dist_W2 (fixed √), KSD²
+Started: 2026-04-09 08:56:58 KST
+N_SAMPLES=2000, N_EVAL_SEEDS=5, DEVICE=cuda
+======================================================================
+Reference: torch.Size([10000, 39])
+ASBS config: /home/RESEARCH/Stein_ASBS/PORTAL/lj13_asbs/seed_0/.hydra/config.yaml
+ASBS ckpt:   /home/RESEARCH/Stein_ASBS/PORTAL/lj13_asbs/seed_0/checkpoints/checkpoint_latest.pt
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.CenteredParticlesHarmonic'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.CenteredParticlesGauss'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+
+======================================================================
+  ASBS (lj13_asbs)
+======================================================================
+
+  Seed 0:
+    energy_w2=2.8522 | rg_w2=0.0301 | dist_w2=0.0458 | KSD²=3.40 | <E>=-40.30  [89.1s]
+
+  Seed 1:
+    energy_w2=2.8341 | rg_w2=0.0305 | dist_w2=0.0464 | KSD²=3.91 | <E>=-40.34  [88.4s]
+
+  Seed 2:
+    energy_w2=2.4913 | rg_w2=0.0258 | dist_w2=0.0394 | KSD²=2.74 | <E>=-40.53  [88.7s]
+
+  Seed 3:
+    energy_w2=2.8274 | rg_w2=0.0320 | dist_w2=0.0481 | KSD²=3.39 | <E>=-40.08  [88.4s]
+
+  Seed 4:
+    energy_w2=2.9428 | rg_w2=0.0297 | dist_w2=0.0447 | KSD²=3.96 | <E>=-40.33  [88.5s]
+
+  --- ASBS (lj13_asbs) mean±std ---
+    energy_w2: 2.789581 ± 0.154796
+    rg_w2: 0.029614 ± 0.002039
+    dist_w2: 0.044870 ± 0.002954
+    ksd_squared: 3.480512 ± 0.442409
+    mean_energy: -40.316505 ± 0.144497
+Buffer not initialised, expected that checkpoint will be loaded.
+  checkpoint: last.ckpt
+
+======================================================================
+  iDEM
+======================================================================
+
+  Seed 0:
+    energy_w2=41.6775 | rg_w2=0.0640 | dist_w2=0.0932 | KSD²=994.39 | <E>=-35.70  [74.5s]
+
+  Seed 1:
+    energy_w2=237.8629 | rg_w2=0.0621 | dist_w2=0.0914 | KSD²=31966.42 | <E>=-26.44  [74.3s]
+
+  Seed 2:
+    energy_w2=28.3280 | rg_w2=0.0643 | dist_w2=0.0955 | KSD²=376.30 | <E>=-36.31  [74.0s]
+
+  Seed 3:
+    energy_w2=26.8615 | rg_w2=0.0666 | dist_w2=0.0979 | KSD²=314.58 | <E>=-36.71  [74.6s]
+
+  Seed 4:
+    energy_w2=3176.9423 | rg_w2=0.0679 | dist_w2=0.0988 | KSD²=9429674.00 | <E>=34.99  [74.5s]
+
+  --- iDEM mean±std ---
+    energy_w2: 702.334452 ± 1239.873704
+    rg_w2: 0.064963 ± 0.002021
+    dist_w2: 0.095371 ± 0.002778
+    ksd_squared: 1892665.137958 ± 3768524.066669
+    mean_energy: -20.034936 ± 27.775117
+Buffer not initialised, expected that checkpoint will be loaded.
+  checkpoint: last.ckpt
+
+======================================================================
+  pDEM
+======================================================================
+
+  Seed 0:
+    energy_w2=239.6991 | rg_w2=0.1079 | dist_w2=0.1642 | KSD²=33335.12 | <E>=-33.52  [73.9s]
+
+  Seed 1:
+    energy_w2=221.1846 | rg_w2=0.1059 | dist_w2=0.1616 | KSD²=29464.61 | <E>=-36.00  [74.5s]
+
+  Seed 2:
+    energy_w2=85.5241 | rg_w2=0.1086 | dist_w2=0.1668 | KSD²=3907.36 | <E>=-39.82  [74.0s]
+
+  Seed 3:
+    energy_w2=43.2831 | rg_w2=0.1094 | dist_w2=0.1675 | KSD²=1024.58 | <E>=-42.45  [74.1s]
+
+  Seed 4:
+    energy_w2=266.8220 | rg_w2=0.1102 | dist_w2=0.1673 | KSD²=49730.48 | <E>=-29.82  [74.2s]
+
+  --- pDEM mean±std ---
+    energy_w2: 171.302581 ± 89.484305
+    rg_w2: 0.108430 ± 0.001465
+    dist_w2: 0.165485 ± 0.002287
+    ksd_squared: 23492.428735 ± 18489.781508
+    mean_energy: -36.318476 ± 4.472640
+
+
+================================================================================
+SUMMARY — LJ13 Unified Evaluation (fixed metrics)
+================================================================================
+
+Method     Seed   energy_W2      Rg_W2    dist_W2         KSD²        <E>
+─────────────────────────────────────────────────────────────────────────
+ASBS       0         2.8522     0.0301     0.0458         3.40     -40.30
+ASBS       1         2.8341     0.0305     0.0464         3.91     -40.34
+ASBS       2         2.4913     0.0258     0.0394         2.74     -40.53
+ASBS       3         2.8274     0.0320     0.0481         3.39     -40.08
+ASBS       4         2.9428     0.0297     0.0447         3.96     -40.33
+           μ±σ   energy_w2: 2.789581 ± 0.154796
+           μ±σ   rg_w2: 0.029614 ± 0.002039
+           μ±σ   dist_w2: 0.044870 ± 0.002954
+           μ±σ   ksd_squared: 3.480512 ± 0.442409
+           μ±σ   mean_energy: -40.316505 ± 0.144497
+
+iDEM       0        41.6775     0.0640     0.0932       994.39     -35.70
+iDEM       1       237.8629     0.0621     0.0914     31966.42     -26.44
+iDEM       2        28.3280     0.0643     0.0955       376.30     -36.31
+iDEM       3        26.8615     0.0666     0.0979       314.58     -36.71
+iDEM       4      3176.9423     0.0679     0.0988   9429674.00      34.99
+           μ±σ   energy_w2: 702.334452 ± 1239.873704
+           μ±σ   rg_w2: 0.064963 ± 0.002021
+           μ±σ   dist_w2: 0.095371 ± 0.002778
+           μ±σ   ksd_squared: 1892665.137958 ± 3768524.066669
+           μ±σ   mean_energy: -20.034936 ± 27.775117
+
+pDEM       0       239.6991     0.1079     0.1642     33335.12     -33.52
+pDEM       1       221.1846     0.1059     0.1616     29464.61     -36.00
+pDEM       2        85.5241     0.1086     0.1668      3907.36     -39.82
+pDEM       3        43.2831     0.1094     0.1675      1024.58     -42.45
+pDEM       4       266.8220     0.1102     0.1673     49730.48     -29.82
+           μ±σ   energy_w2: 171.302581 ± 89.484305
+           μ±σ   rg_w2: 0.108430 ± 0.001465
+           μ±σ   dist_w2: 0.165485 ± 0.002287
+           μ±σ   ksd_squared: 23492.428735 ± 18489.781508
+           μ±σ   mean_energy: -36.318476 ± 4.472640
+
+
+Results saved to /home/RESEARCH/Stein_ASBS/evaluation/eval_lj13_all_results.json
+Finished: 2026-04-09 09:16:49 KST

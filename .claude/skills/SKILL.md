@@ -43,7 +43,8 @@ Stein_ASBS/
 │   │   ├── rotated_gmm_energy.py # NEW — RotatedGMMEnergy (synthetic CV-unknown)
 │   │   ├── muller_brown_energy.py # NEW — MullerBrownEnergy (2D visualization)
 │   │   ├── bayesian_logreg_energy.py # NEW — BayesianLogRegEnergy (non-molecular)
-│   │   └── viz_energies.py       # NEW — GMM9Energy, Ring8Energy, BananaEnergy (2D viz benchmarks)
+│   │   ├── viz_energies.py       # NEW — GMM9Energy, Ring8Energy, BananaEnergy (2D viz benchmarks)
+│   │   └── new_benchmarks.py     # NEW — UnequalGMMEnergy (2D), ManyWell5DEnergy (5D), ManyWell32DEnergy (32D)
 │   └── utils/
 │       ├── train_utils.py        # get_timesteps, training helpers
 │       ├── eval_utils.py         # interatomic_dist, dist_point_clouds
@@ -165,6 +166,9 @@ Stein_ASBS/
 | `RotatedGMMEnergy` | `energies/rotated_gmm_energy.py` | **NEW** — synthetic CV-unknown benchmark |
 | `MullerBrownEnergy` | `energies/muller_brown_energy.py` | **NEW** — 2D visualization benchmark |
 | `BayesianLogRegEnergy` | `energies/bayesian_logreg_energy.py` | **NEW** — non-molecular posterior sampling |
+| `UnequalGMMEnergy` | `energies/new_benchmarks.py` | **NEW** — 2D 5-mode unequal-weight GMM |
+| `ManyWell5DEnergy` | `energies/new_benchmarks.py` | **NEW** — 5D double-well (32 modes) |
+| `ManyWell32DEnergy` | `energies/new_benchmarks.py` | **NEW** — 32D double-well (65536 modes, PIS/DDS/DGFS benchmark) |
 
 ### Benchmarks
 
@@ -174,6 +178,9 @@ Stein_ASBS/
 | LJ13 | 39 | 13 × 3D | Lennard-Jones | **Medium** — Stein kernel still works at 39D |
 | LJ38 | 114 | 38 × 3D | Lennard-Jones (double funnel) | **High** — IMQ kernel, double-funnel mode collapse test |
 | LJ55 | 165 | 55 × 3D | Lennard-Jones | **Low** — RBF kernel degrades at 165D |
+| Unequal GMM | 2 | 1 (non-particle) | 5-mode unequal-weight GMM | **High** — minority mode death test |
+| MW5 | 5 | 1 (non-particle) | 5D double-well (32 modes) | **High** — combinatorial mode coverage |
+| ManyWell32 | 32 | 1 (non-particle) | 32D double-well (65536 modes) | **High** — standard PIS/DDS/DGFS benchmark |
 
 ### Hyperparameters (KSD-specific)
 

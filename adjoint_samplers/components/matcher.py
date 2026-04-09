@@ -103,6 +103,7 @@ class AdjointMatcher(Matcher):
             x0: torch.Tensor,
             timesteps: torch.Tensor,
             is_asbs_init_stage: bool,
+            epoch: int = -1,
     ):
         (B, D), T = x0.shape, len(timesteps)
         assert x0.device == timesteps.device
@@ -176,6 +177,7 @@ class AdjointVEMatcher(AdjointMatcher):
             x0: torch.Tensor,
             timesteps: torch.Tensor,
             is_asbs_init_stage: bool,
+            epoch: int = -1,
     ):
         (x0, x1) = sdeint(
             self.sde,
@@ -248,6 +250,7 @@ class CorrectorMatcher(Matcher):
             x0: torch.Tensor,
             timesteps: torch.Tensor,
             is_asbs_init_stage: bool,
+            epoch: int = -1,
     ):
         # IPF init: First Corrector Matching stage
         # of ASBS uses zero controller (i.e., ref_sde)

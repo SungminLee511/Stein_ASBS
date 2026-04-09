@@ -1,0 +1,40 @@
+======================================================================
+LJ13 KSD-ASBS Evaluation (PORTAL checkpoint, epoch 1300)
+Metrics: energy_W2, Rg_W2, dist_W2 (fixed √), KSD²
+Started: 2026-04-09 10:03:01 KST
+N_SAMPLES=2000, N_EVAL_SEEDS=5, DEVICE=cuda
+======================================================================
+Reference: torch.Size([10000, 39])
+Config: /home/RESEARCH/Stein_ASBS/PORTAL/lj13_ksd_asbs/seed_0/.hydra/config.yaml
+Ckpt:   /home/RESEARCH/Stein_ASBS/PORTAL/lj13_ksd_asbs/seed_0/checkpoints/checkpoint_1100.pt
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.CenteredParticlesHarmonic'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.CenteredParticlesGauss'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+
+  Seed 0:
+    energy_w2=5.1050 | rg_w2=0.0512 | dist_w2=0.0780 | KSD²=4.07 | <E>=-38.05  [89.2s]
+
+  Seed 1:
+    energy_w2=5.0876 | rg_w2=0.0513 | dist_w2=0.0784 | KSD²=4.25 | <E>=-38.10  [88.6s]
+
+  Seed 2:
+    energy_w2=4.6764 | rg_w2=0.0464 | dist_w2=0.0708 | KSD²=2.93 | <E>=-38.34  [88.7s]
+
+  Seed 3:
+    energy_w2=5.1124 | rg_w2=0.0539 | dist_w2=0.0808 | KSD²=3.32 | <E>=-37.82  [88.5s]
+
+  Seed 4:
+    energy_w2=5.2121 | rg_w2=0.0505 | dist_w2=0.0762 | KSD²=4.13 | <E>=-38.10  [88.6s]
+
+======================================================================
+KSD-ASBS (LJ13) — mean±std
+======================================================================
+  energy_w2: 5.038699 ± 0.186293
+  rg_w2: 0.050659 ± 0.002399
+  dist_w2: 0.076837 ± 0.003359
+  ksd_squared: 3.740342 ± 0.518796
+  mean_energy: -38.083350 ± 0.164565
+
+Results saved to /home/RESEARCH/Stein_ASBS/evaluation/eval_lj13_ksd_asbs_results.json
+Finished: 2026-04-09 10:10:26 KST

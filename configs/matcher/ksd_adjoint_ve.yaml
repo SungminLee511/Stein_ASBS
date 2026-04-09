@@ -5,6 +5,7 @@ ksd_bandwidth: null  # null = median heuristic
 ksd_max_particles: 2048
 ksd_efficient_threshold: 1024
 ksd_score_beta: 1.0  # Temperature-scaled score: s(x) = -β∇E(x). Override in experiment config for smoothing
+ksd_warmup_epochs: 0  # Number of epochs to train pure AS/ASBS before enabling KSD
 
 grad_state_cost:
   _target_: adjoint_samplers.components.state_cost.ZeroGradStateCost

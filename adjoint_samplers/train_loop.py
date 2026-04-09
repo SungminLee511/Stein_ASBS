@@ -37,7 +37,7 @@ def train_one_epoch(
     for _ in range(M):
         x0 = source.sample([B,]).to(device)
         timesteps = train_utils.get_timesteps(**cfg.timesteps).to(device)
-        matcher.populate_buffer(x0, timesteps, is_asbs_init_stage)
+        matcher.populate_buffer(x0, timesteps, is_asbs_init_stage, epoch=epoch)
 
     dataloader = matcher.build_dataloader(cfg.train_batch_size)
     epoch_loss = MeanMetric().to(device, non_blocking=True)
@@ -57,7 +57,8 @@ def train_one_epoch(
         loss.backward()
 
         if cfg.clip_grad_norm:
-            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1e20)
+            max_norm = float(cfg.clip_grad_norm) if isinstance(cfg.clip_grad_norm, (int, float)) and cfg.clip_grad_norm > 1 else 1.0
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=max_norm)
 
         optimizer.step()
 

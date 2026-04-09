@@ -1,0 +1,39 @@
+======================================================================
+LJ13 AS Evaluation — checkpoint_3250.pt
+Metrics: energy_W2, Rg_W2, dist_W2 (fixed √), KSD²
+Started: 2026-04-09 10:50:52 KST
+N_SAMPLES=2000, N_EVAL_SEEDS=5, DEVICE=cuda
+======================================================================
+Reference: torch.Size([10000, 39])
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.Delta'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.CenteredParticlesGauss'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+Loading checkpoint: /home/RESEARCH/Stein_ASBS/results/lj13_as/seed_0/checkpoints/checkpoint_3250.pt
+
+  Seed 0:
+    energy_w2=5.9729 | rg_w2=0.0585 | dist_w2=0.0891 | KSD²=3.47 | <E>=-37.04  [89.1s]
+
+  Seed 1:
+    energy_w2=6.1026 | rg_w2=0.0625 | dist_w2=0.0942 | KSD²=4.11 | <E>=-37.10  [88.1s]
+
+  Seed 2:
+    energy_w2=5.6690 | rg_w2=0.0576 | dist_w2=0.0871 | KSD²=3.69 | <E>=-37.47  [88.5s]
+
+  Seed 3:
+    energy_w2=6.0541 | rg_w2=0.0645 | dist_w2=0.0983 | KSD²=3.46 | <E>=-37.15  [88.5s]
+
+  Seed 4:
+    energy_w2=5.9380 | rg_w2=0.0611 | dist_w2=0.0926 | KSD²=3.95 | <E>=-37.05  [88.7s]
+
+======================================================================
+AS (LJ13) checkpoint_3250.pt — mean±std
+======================================================================
+  energy_w2: 5.947312 ± 0.150826
+  rg_w2: 0.060830 ± 0.002537
+  dist_w2: 0.092246 ± 0.003931
+  ksd_squared: 3.733285 ± 0.258153
+  mean_energy: -37.164220 ± 0.157562
+
+Results saved to /home/RESEARCH/Stein_ASBS/evaluation/eval_lj13_as_results.json
+Finished: 2026-04-09 10:58:16 KST

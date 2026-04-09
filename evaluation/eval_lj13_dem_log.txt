@@ -1,0 +1,108 @@
+======================================================================
+LJ13 DEM Baseline Evaluation — energy_W2, eq_W2, dist_W2, KSD²
+Methods: iDEM, pDEM
+Started: 2026-04-08 22:54:53 KST
+N_SAMPLES=2000, N_EVAL_SEEDS=5, DEVICE=cuda
+======================================================================
+Reference: torch.Size([10000, 39])
+
+======================================================================
+  iDEM
+======================================================================
+Buffer not initialised, expected that checkpoint will be loaded.
+  lj13_idem checkpoint: last.ckpt
+
+  Seed 0:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=41.8283  eq_W2=1.5352  dist_W2=0.008511  KSD²=994.586121  [462.6s]
+
+  Seed 1:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=31.3477  eq_W2=1.5461  dist_W2=0.009849  KSD²=417.454498  [479.9s]
+
+  Seed 2:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=80.8036  eq_W2=1.5353  dist_W2=0.009597  KSD²=3541.898193  [457.6s]
+
+  Seed 3:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=300.9680  eq_W2=1.5384  dist_W2=0.009357  KSD²=52069.550781  [454.4s]
+
+  Seed 4:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=489.5107  eq_W2=1.5507  dist_W2=0.010161  KSD²=165586.140625  [451.4s]
+    energy_w2: 188.891661 ± 179.479081
+    eq_w2: 1.541124 ± 0.006233
+    dist_w2: 0.009495 ± 0.000560
+    ksd_squared: 44521.926044 ± 63612.431340
+
+======================================================================
+  pDEM
+======================================================================
+Buffer not initialised, expected that checkpoint will be loaded.
+  lj13_pdem checkpoint: last.ckpt
+
+  Seed 0:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=239.8396  eq_W2=1.4978  dist_W2=0.026552  KSD²=33347.378906  [449.6s]
+
+  Seed 1:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=35.8311  eq_W2=1.5068  dist_W2=0.028136  KSD²=702.917969  [450.5s]
+
+  Seed 2:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=77.7806  eq_W2=1.5055  dist_W2=0.027155  KSD²=3647.989258  [450.7s]
+
+  Seed 3:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=52.5180  eq_W2=1.5012  dist_W2=0.027313  KSD²=1202.836914  [546.9s]
+
+  Seed 4:
+    Computing W2 metrics...
+    Computing KSD²...
+    energy_W2=865.5920  eq_W2=1.5194  dist_W2=0.028801  KSD²=565667.375000  [449.3s]
+    energy_w2: 254.312240 ± 314.162610
+    eq_w2: 1.506144 ± 0.007372
+    dist_w2: 0.027591 ± 0.000788
+    ksd_squared: 120913.699609 ± 222713.386122
+
+
+======================================================================
+SUMMARY — LJ13 DEM Baseline Evaluation
+======================================================================
+
+Method       Seed    energy_W2      eq_W2    dist_W2       KSD²
+───────────────────────────────────────────────────────────────
+iDEM         0         41.8283     1.5352   0.008511 994.586121
+iDEM         1         31.3477     1.5461   0.009849 417.454498
+iDEM         2         80.8036     1.5353   0.009597 3541.898193
+iDEM         3        300.9680     1.5384   0.009357 52069.550781
+iDEM         4        489.5107     1.5507   0.010161 165586.140625
+             mean±std energy_w2: 188.891661 ± 179.479081
+             mean±std eq_w2: 1.541124 ± 0.006233
+             mean±std dist_w2: 0.009495 ± 0.000560
+             mean±std ksd_squared: 44521.926044 ± 63612.431340
+
+pDEM         0        239.8396     1.4978   0.026552 33347.378906
+pDEM         1         35.8311     1.5068   0.028136 702.917969
+pDEM         2         77.7806     1.5055   0.027155 3647.989258
+pDEM         3         52.5180     1.5012   0.027313 1202.836914
+pDEM         4        865.5920     1.5194   0.028801 565667.375000
+             mean±std energy_w2: 254.312240 ± 314.162610
+             mean±std eq_w2: 1.506144 ± 0.007372
+             mean±std dist_w2: 0.027591 ± 0.000788
+             mean±std ksd_squared: 120913.699609 ± 222713.386122
+
+
+Results saved to /home/RESEARCH/Stein_ASBS/evaluation/eval_lj13_dem_results.json
+Finished: 2026-04-09 00:12:32 KST

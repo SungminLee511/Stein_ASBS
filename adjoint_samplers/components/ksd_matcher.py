@@ -40,6 +40,7 @@ class KSDAdjointVEMatcher(AdjointVEMatcher):
         ksd_kernel: str = "rbf",
         ksd_score_beta: float = 1.0,
         ksd_imq_c: float | None = None,
+        ksd_warmup_epochs: int = 0,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -50,6 +51,7 @@ class KSDAdjointVEMatcher(AdjointVEMatcher):
         self.ksd_kernel = ksd_kernel
         self.ksd_score_beta = ksd_score_beta
         self.ksd_imq_c = ksd_imq_c
+        self.ksd_warmup_epochs = ksd_warmup_epochs
 
         # Logging
         self._last_ksd = 0.0
@@ -60,6 +62,7 @@ class KSDAdjointVEMatcher(AdjointVEMatcher):
             x0: torch.Tensor,
             timesteps: torch.Tensor,
             is_asbs_init_stage: bool,
+            epoch: int = -1,
     ):
         """Override to add KSD correction to the adjoint."""
 
@@ -74,8 +77,10 @@ class KSDAdjointVEMatcher(AdjointVEMatcher):
         # Step 2: Standard adjoint computation (unchanged)
         adjoint1 = self._compute_adjoint1(x1, is_asbs_init_stage).clone()
 
-        # Step 3: KSD correction (NEW)
-        if self.ksd_lambda > 0 and not is_asbs_init_stage:
+        # Step 3: KSD correction — skip during init stage AND warmup
+        in_warmup = (self.ksd_warmup_epochs > 0 and epoch >= 0
+                     and epoch < self.ksd_warmup_epochs)
+        if self.ksd_lambda > 0 and not is_asbs_init_stage and not in_warmup:
             adjoint1 = self._apply_ksd_correction(x1, adjoint1)
 
         # Step 4: Store in buffer (unchanged)
@@ -115,19 +120,26 @@ class KSDAdjointVEMatcher(AdjointVEMatcher):
 
         N_sub = x1_sub.shape[0]
 
+        # Determine clip norm for scores and KSD correction
+        if hasattr(self.grad_term_cost, 'max_grad_E_norm') and self.grad_term_cost.max_grad_E_norm is not None:
+            clip_norm = self.grad_term_cost.max_grad_E_norm
+        elif hasattr(self, '_ksd_clip_norm'):
+            clip_norm = self._ksd_clip_norm
+        else:
+            clip_norm = None
+
         # Compute scores at terminal samples
-        # energy(x) returns {"forces": -∇E(x), ...}
-        # score sₚ(x) = -∇E(x) = forces
-        # Temperature-scaled KSD: s(x) = -β∇E(x) = β·forces
-        # At β=1.0 (default), this is the standard score.
-        # At β<1 (e.g. 0.1), the score is smoothed — the KSD kernel
-        # "sees" a flatter landscape, enabling cross-funnel gradients.
-        # Only the inter-particle KSD correction uses the smoothed score;
-        # the SDE dynamics and per-particle adjoint use the true score.
         with torch.enable_grad():
             x1_req = x1_sub.clone().detach().requires_grad_(True)
             energy_out = self.grad_term_cost.energy(x1_req)
             scores = self.ksd_score_beta * energy_out["forces"].detach()
+
+        # Sanitize scores: replace NaN/Inf with zero, then clip norms
+        scores = torch.nan_to_num(scores, nan=0.0, posinf=0.0, neginf=0.0)
+        if clip_norm is not None:
+            s_norms = torch.linalg.vector_norm(scores, dim=-1, keepdim=True)
+            s_clip = torch.clamp(clip_norm / (s_norms + 1e-6), max=1.0)
+            scores = scores * s_clip
 
         # Bandwidth / IMQ scale parameter
         if self.ksd_imq_c is not None and self.ksd_kernel == "imq":
@@ -151,6 +163,12 @@ class KSDAdjointVEMatcher(AdjointVEMatcher):
 
         # KSD correction: (λ / N²) * Σⱼ ∇ₓkₚ(xᵢ, xⱼ)
         ksd_correction = (self.ksd_lambda / (N_sub ** 2)) * grad_sum
+
+        # Clip KSD correction per-sample
+        if clip_norm is not None:
+            norms = torch.linalg.vector_norm(ksd_correction, dim=-1, keepdim=True)
+            clip_coeff = torch.clamp(clip_norm / (norms + 1e-6), max=1.0)
+            ksd_correction = ksd_correction * clip_coeff
 
         # Logging
         self._last_ksd = compute_ksd_squared(
@@ -180,6 +198,7 @@ class KSDAdjointVPMatcher(AdjointVPMatcher):
         ksd_kernel: str = "rbf",
         ksd_score_beta: float = 1.0,
         ksd_imq_c: float | None = None,
+        ksd_warmup_epochs: int = 0,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -190,6 +209,7 @@ class KSDAdjointVPMatcher(AdjointVPMatcher):
         self.ksd_kernel = ksd_kernel
         self.ksd_score_beta = ksd_score_beta
         self.ksd_imq_c = ksd_imq_c
+        self.ksd_warmup_epochs = ksd_warmup_epochs
         self._last_ksd = 0.0
         self._last_ksd_grad_norm = 0.0
 
@@ -198,6 +218,7 @@ class KSDAdjointVPMatcher(AdjointVPMatcher):
             x0: torch.Tensor,
             timesteps: torch.Tensor,
             is_asbs_init_stage: bool,
+            epoch: int = -1,
     ):
         (x0, x1) = sdeint(
             self.sde,
@@ -207,7 +228,9 @@ class KSDAdjointVPMatcher(AdjointVPMatcher):
         )
         adjoint1 = self._compute_adjoint1(x1, is_asbs_init_stage).clone()
 
-        if self.ksd_lambda > 0 and not is_asbs_init_stage:
+        in_warmup = (self.ksd_warmup_epochs > 0 and epoch >= 0
+                     and epoch < self.ksd_warmup_epochs)
+        if self.ksd_lambda > 0 and not is_asbs_init_stage and not in_warmup:
             # Reuse KSDAdjointVEMatcher's correction logic
             adjoint1 = KSDAdjointVEMatcher._apply_ksd_correction(self, x1, adjoint1)
 

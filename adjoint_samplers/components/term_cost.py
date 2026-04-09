@@ -29,6 +29,21 @@ class GradEnergy:
         return self.grad_E(x1)
 
 
+# Zero terminal cost — adjoint1 = 0. Use with KSD-only experiments.
+class ZeroGradTermCost:
+    """Returns zero adjoint. When paired with KSD matcher, the adjoint
+    is purely the inter-particle KSD gradient (equivalent to λ=∞)."""
+    def __init__(self, energy, max_grad_E_norm=None, **kwargs):
+        self.energy = energy  # kept for KSD matcher's score computation
+        self.max_grad_E_norm = max_grad_E_norm  # used by KSD matcher for clipping
+
+    def grad_E(self, x1):
+        return torch.zeros_like(x1)
+
+    def __call__(self, x1):
+        return torch.zeros_like(x1)
+
+
 # For AS.
 class ScoreGradTermCost(GradEnergy):
     """ Compute (∇E + ∇log p^base_1)(X_1)
