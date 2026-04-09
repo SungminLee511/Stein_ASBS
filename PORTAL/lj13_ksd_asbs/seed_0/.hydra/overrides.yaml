@@ -1,0 +1,5 @@
+- experiment=lj13_ksd_asbs
+- seed=0
+- use_wandb=false
+- skip_eval=true
+- ksd_lambda=0.5
