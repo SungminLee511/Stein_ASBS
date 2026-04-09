@@ -162,7 +162,7 @@ Stein_ASBS/
 | `BatchBuffer` | `components/buffer.py` | Stores trajectory samples for AM regression |
 | `EGNN` | `components/model.py` | Equivariant GNN for graph problems (DW4/LJ) |
 | `FourierMLP` | `components/model.py` | MLP with Fourier time embedding (demo) |
-| `GenericEnergyEvaluator` | `components/generic_evaluator.py` | **NEW** — energy W2 eval for non-particle systems |
+| `GenericEnergyEvaluator` | `components/generic_evaluator.py` | **NEW** — energy W2 + debiased Sinkhorn divergence eval for non-particle systems |
 | `RotatedGMMEvaluator` | `components/generic_evaluator.py` | **NEW** — adds mode coverage to GenericEnergyEvaluator |
 | `RotatedGMMEnergy` | `energies/rotated_gmm_energy.py` | **NEW** — synthetic CV-unknown benchmark |
 | `MullerBrownEnergy` | `energies/muller_brown_energy.py` | **NEW** — 2D visualization benchmark |
