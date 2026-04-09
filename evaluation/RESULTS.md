@@ -756,20 +756,20 @@ The Bayesian logistic regression results confirm that **KSD-ASBS generalizes bey
 
 #### Metric Comparison (5 eval seeds, mean ± std)
 
-| Method | Modes Covered (of 32) | Weight TV ↓ | Mean Energy | Mean Marginal W1 ↓ | Energy W2 ↓ |
-|--------|:---:|---|---|---|---|
-| **ASBS** (ckpt 4500) | 27.6 ± 1.4 | 0.527 ± 0.005 | 💥 unstable | 💥 unstable | 💥 unstable |
-| **KSD-ASBS (λ=0.5)** | **32.0 ± 0.0** | **0.139 ± 0.011** | **-42.63 ± 0.03** | **0.983 ± 0.014** | **2.852 ± 0.029** |
+| Method | Modes Covered (of 32) | Weight TV ↓ | Mean Energy | Mean Marginal W1 ↓ | Energy W2 ↓ | Sinkhorn Div ↓ |
+|--------|:---:|---|---|---|---|---|
+| **ASBS** (ckpt 4500) | 27.6 ± 1.4 | 0.527 ± 0.005 | 💥 unstable | 💥 unstable | 💥 unstable | 💥 unstable |
+| **KSD-ASBS (λ=0.5)** | **32.0 ± 0.0** | **0.139 ± 0.011** | **-42.63 ± 0.03** | **0.974 ± 0.014** | **2.821 ± 0.029** | **13.486 ± 0.234** |
 
 #### KSD-ASBS Per-Seed Details
 
-| Seed | Modes | Weight TV | Energy Mean | Mean W1 | Energy W2 |
-|------|:---:|---|---|---|---|
-| 0 | 32 | 0.1316 | -42.62 | 0.9896 | 2.8441 |
-| 1 | 32 | 0.1254 | -42.62 | 0.9868 | 2.8345 |
-| 2 | 32 | 0.1487 | -42.59 | 0.9701 | 2.8203 |
-| 3 | 32 | 0.1386 | -42.67 | 1.0068 | 2.9001 |
-| 4 | 32 | 0.1517 | -42.62 | 0.9619 | 2.8619 |
+| Seed | Modes | Weight TV | Energy Mean | Mean W1 | Energy W2 | Sinkhorn Div |
+|------|:---:|---|---|---|---|---|
+| 0 | 32 | 0.1528 | -42.64 | 0.9704 | 2.8077 | 13.4127 |
+| 1 | 32 | 0.1268 | -42.63 | 0.9867 | 2.8182 | 13.7037 |
+| 2 | 32 | 0.1338 | -42.66 | 0.9673 | 2.7803 | 13.3776 |
+| 3 | 32 | 0.1310 | -42.58 | 0.9920 | 2.8685 | 13.7897 |
+| 4 | 32 | 0.1517 | -42.62 | 0.9527 | 2.8303 | 13.1446 |
 
 #### Per-Dimension Marginal Analysis (KSD-ASBS, seed 0)
 
@@ -782,6 +782,8 @@ The Bayesian logistic regression results confirm that **KSD-ASBS generalizes bey
 | 4 | 0.97 | 0.443 | 0.154 |
 
 **Note:** The reference has asymmetric wells due to the -0.5a term: ~15% of reference mass is in the left well. KSD-ASBS distributes ~37–51% of mass to the left well — it discovers both wells in all dimensions but doesn't capture the asymmetry perfectly. This is a known limitation of the score-based terminal cost, which is local and may not fully resolve global weight imbalances.
+
+**Sinkhorn divergence note:** Computed on the full 5D sample space with entropic regularization ε=0.1, squared Euclidean cost, using `ot.sinkhorn2()`. ASBS's Sinkhorn is numerically unstable (seed 2 produces outlier samples causing divide-by-zero in the Sinkhorn iterations). KSD-ASBS's higher absolute Sinkhorn value (13.49) reflects its tendency to over-distribute mass to left wells (~40–50% vs reference's ~15%), which increases transport cost despite achieving perfect mode coverage. The metric captures this coverage-vs-fidelity tradeoff.
 
 #### Key Findings
 
