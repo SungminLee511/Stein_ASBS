@@ -799,6 +799,10 @@ The Bayesian logistic regression results confirm that **KSD-ASBS generalizes bey
 
 ![MW5 Marginals](../results/mw5_eval/mw5_marginals.png)
 
+**PCA Mode Coverage** — PCA projection (5D → 2D) of reference, ASBS (ckpt 4600, last pre-spike), and KSD-ASBS (λ=0.5). Red stars mark the 32 mode centers. ASBS misses 1 mode (31/32) and concentrates mass unevenly. KSD-ASBS covers all 32 modes with more uniform spread, demonstrating the KSD repulsive force distributing particles across all modes.
+
+![MW5 PCA Mode Coverage](../results/mw5_eval/mw5_pca_mode_coverage.png)
+
 ---
 
 ## 8. Computational Overhead
