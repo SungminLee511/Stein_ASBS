@@ -1,0 +1,82 @@
+MW5 ASBS Re-eval (ckpt 4500) — 2026-04-10 05:05:02 KST
+======================================================================
+Loading from results/mw5_asbs/seed_0/checkpoints/checkpoint_4500.pt...
+/home/sky/miniconda3/envs/adjoint_samplers/lib/python3.11/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.Gauss'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+Loaded epoch 4500
+Reference samples: torch.Size([10000, 5])
+
+--- Eval seed 0 ---
+Generated 2000 samples
+Modes covered: 27/32
+Weight TV: 0.5302
+Mean energy: -40.7446
+  dim0: W1=0.8926  frac_left=0.428 (ref=0.156)
+  dim1: W1=0.6091  frac_left=0.332 (ref=0.155)
+  dim2: W1=2.4118  frac_left=0.868 (ref=0.148)
+  dim3: W1=0.2079  frac_left=0.099 (ref=0.159)
+  dim4: W1=0.8556  frac_left=0.400 (ref=0.154)
+Mean marginal W1: 0.9954
+Energy W2: 5.4313
+
+--- Eval seed 1 ---
+Generated 2000 samples
+Modes covered: 26/32
+Weight TV: 0.5190
+Mean energy: 90978377156790321152.0000
+  dim0: W1=86.5570  frac_left=0.444 (ref=0.156)
+  dim1: W1=439.1313  frac_left=0.353 (ref=0.155)
+  dim2: W1=427.8507  frac_left=0.859 (ref=0.148)
+  dim3: W1=275.3336  frac_left=0.111 (ref=0.159)
+  dim4: W1=168.1642  frac_left=0.408 (ref=0.154)
+Mean marginal W1: 279.4073
+Energy W2: 3214750486453542191104.0000
+
+--- Eval seed 2 ---
+Generated 2000 samples
+Modes covered: 28/32
+Weight TV: 0.5328
+Mean energy: 45131164.0000
+  dim0: W1=0.9876  frac_left=0.417 (ref=0.156)
+  dim1: W1=0.8707  frac_left=0.347 (ref=0.155)
+  dim2: W1=2.7352  frac_left=0.859 (ref=0.148)
+  dim3: W1=0.3999  frac_left=0.089 (ref=0.159)
+  dim4: W1=1.0967  frac_left=0.427 (ref=0.154)
+Mean marginal W1: 1.2180
+Energy W2: 1909675516.0472
+
+--- Eval seed 3 ---
+Generated 2000 samples
+Modes covered: 30/32
+Weight TV: 0.5250
+Mean energy: 289990286245888.0000
+  dim0: W1=3.0241  frac_left=0.427 (ref=0.156)
+  dim1: W1=10.8463  frac_left=0.338 (ref=0.155)
+  dim2: W1=14.9212  frac_left=0.848 (ref=0.148)
+  dim3: W1=4.2080  frac_left=0.100 (ref=0.159)
+  dim4: W1=4.1328  frac_left=0.415 (ref=0.154)
+Mean marginal W1: 7.4265
+Energy W2: 12968759665131780.0000
+
+--- Eval seed 4 ---
+Generated 2000 samples
+Modes covered: 27/32
+Weight TV: 0.5295
+Mean energy: -40.4901
+  dim0: W1=0.8636  frac_left=0.419 (ref=0.156)
+  dim1: W1=0.6507  frac_left=0.343 (ref=0.155)
+  dim2: W1=2.4154  frac_left=0.861 (ref=0.148)
+  dim3: W1=0.2142  frac_left=0.099 (ref=0.159)
+  dim4: W1=0.9050  frac_left=0.417 (ref=0.154)
+Mean marginal W1: 1.0098
+Energy W2: 7.2803
+
+==================================================
+AGGREGATE (5 seeds) for ASBS @ ckpt 4500:
+  modes_covered: 27.6000 ± 1.3565
+  weight_TV: 0.5273 ± 0.0048
+  energy_mean: 18195733429424340992.0000 ± 36391321863856300032.0000
+  mean_W1: 58.0114 ± 110.7253
+  energy_w2: 642952691043023454208.0000 ± 1285898897715068928000.0000
+==================================================
+Done! — 2026-04-10 05:05:04 KST

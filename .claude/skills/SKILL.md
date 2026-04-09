@@ -111,7 +111,8 @@ Stein_ASBS/
 │   ├── run_phase4b_cvunknown.sh  # NEW — Müller-Brown experiments (Phase 4b)
 │   ├── run_phase4c_nonmolecular.sh # NEW — BLogReg experiments (Phase 4c)
 │   ├── run_phase5_evaluate.sh    # NEW — full evaluation + report (Phase 5)
-│   └── eval_2d_viz.py            # NEW — 2D viz eval + figure generation (terminal dist + trajectories)
+│   ├── eval_2d_viz.py            # NEW — 2D viz eval + figure generation (terminal dist + trajectories)
+│   └── eval_mw5.py              # NEW — MW5 evaluation (ASBS vs KSD-ASBS): mode coverage, marginal W1, energy W2, 5-panel marginal plot
 ├── evaluation/                   # All evaluation-related files
 │   ├── evaluate_comparison.py    # DW4 baseline vs KSD comparison (early eval)
 │   ├── evaluate_all.py           # Master evaluation script (Phase 5)
