@@ -157,6 +157,30 @@ def evaluate_energy_w2(samples, ref_samples, energy):
     return float(w2)
 
 
+def evaluate_sinkhorn(samples, ref_samples, reg=0.1):
+    """Sinkhorn divergence on the full sample space (5D).
+
+    Uses debiased Sinkhorn divergence: S(a,b) = OT_eps(a,b) - 0.5*OT_eps(a,a) - 0.5*OT_eps(b,b)
+    via ot.sinkhorn2 with default parameters.
+
+    Args:
+        samples: generated samples (N, D) on GPU or CPU
+        ref_samples: reference samples (M, D) on GPU or CPU
+        reg: entropic regularization parameter (default 0.1)
+
+    Returns:
+        sinkhorn_div: float, the Sinkhorn divergence
+    """
+    import ot
+    x = samples.cpu().numpy().astype(np.float64)
+    y = ref_samples.cpu().numpy().astype(np.float64)
+    a = np.ones(len(x)) / len(x)
+    b = np.ones(len(y)) / len(y)
+    M = ot.dist(x, y)  # squared Euclidean cost matrix
+    sinkhorn_val = ot.sinkhorn2(a, b, M, reg=reg)
+    return float(sinkhorn_val)
+
+
 # ====================================================================
 # Visualization
 # ====================================================================
@@ -251,18 +275,23 @@ def main():
             ew2 = evaluate_energy_w2(samples, ref_samples, energy)
             print(f"  Energy W2: {ew2:.4f}")
 
+            # Sinkhorn divergence (full 5D sample space)
+            sinkhorn = evaluate_sinkhorn(samples, ref_samples, reg=0.1)
+            print(f"  Sinkhorn div: {sinkhorn:.4f}")
+
             seed_results.append({
                 'modes_covered': mode_res['modes_covered'],
                 'weight_TV': mode_res['weight_TV'],
                 'energy_mean': mode_res['energy_mean'],
                 'mean_W1': marg_res['mean_W1'],
                 'energy_w2': ew2,
+                'sinkhorn_div': sinkhorn,
             })
 
         # Aggregate across seeds
         print(f"\n  {'=' * 50}")
         print(f"  AGGREGATE ({N_EVAL_SEEDS} seeds) for {name}:")
-        for key in ['modes_covered', 'weight_TV', 'energy_mean', 'mean_W1', 'energy_w2']:
+        for key in ['modes_covered', 'weight_TV', 'energy_mean', 'mean_W1', 'energy_w2', 'sinkhorn_div']:
             vals = [r[key] for r in seed_results]
             mean = np.mean(vals)
             std = np.std(vals)
@@ -287,7 +316,7 @@ def main():
     print(header)
     print("-" * len(header))
 
-    for key in ['modes_covered', 'weight_TV', 'energy_mean', 'mean_W1', 'energy_w2']:
+    for key in ['modes_covered', 'weight_TV', 'energy_mean', 'mean_W1', 'energy_w2', 'sinkhorn_div']:
         row = f"{key:<20}"
         for name in EXPERIMENTS:
             vals = [r[key] for r in all_results[name]]
