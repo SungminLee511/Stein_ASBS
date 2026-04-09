@@ -258,3 +258,87 @@ Methods: ASBS, SDR-ASBS (λ=0.1), AS (Adjoint Sampler), DGFS (GFlowNet), iDEM, p
 ![grid25 baselines](figures_2d/grid25_baselines_terminal.png)
 
 ---
+
+## Unequal-Weight GMM (5 modes, unequal weights) — 2-Way (Baseline vs λ=1.0)
+
+Evaluated: 2026-04-09 23:30:34 KST
+
+Target weights: [0.50, 0.25, 0.15, 0.07, 0.03]
+
+| Metric | ASBS (Baseline) | KSD-ASBS (λ=1.0) |
+|---|---|---|
+| Modes covered (of 5) | 3 | 2 |
+| Mode weight TV ↓ | 0.1850 | 0.6000 |
+| Weight KL ↓ | 1.9536 | 12.8157 |
+| Minority mode weight (target: 0.03) | 0.0000 | 0.0000 |
+| Minority mode alive? | False | False |
+| Mean energy | 2.1481 | 2.5903 |
+| Std energy | 1.0643 | 1.1631 |
+| Empirical weights | ['0.4150', '0.3875', '0.1975', '0.0000', '0.0000'] | ['0.0000', '0.6960', '0.3040', '0.0000', '0.0000'] |
+| Per-mode counts | [830, 775, 395, 0, 0] | [0, 1392, 608, 0, 0] |
+
+### Mode Weight Recovery
+
+![unequal_gmm weights](figures_2d/unequal_gmm_weights.png)
+
+### Terminal Distribution
+
+![unequal_gmm terminal](figures_2d/unequal_gmm_terminal.png)
+
+### Marginal Evolution: ASBS
+
+![unequal_gmm marginal asbs](figures_2d/unequal_gmm_marginal_asbs.png)
+
+### Marginal Evolution: KSD-ASBS
+
+![unequal_gmm marginal ksd](figures_2d/unequal_gmm_marginal_ksd.png)
+
+---
+
+## Unequal-Weight GMM — 3-Way Comparison (Baseline / λ=1.0 / λ=5.0)
+
+Evaluated: 2026-04-10 00:12:19 KST
+
+Target weights: [0.50, 0.25, 0.15, 0.07, 0.03]
+
+| Metric | ASBS (Baseline) | KSD-ASBS (λ=1.0) | KSD-ASBS (λ=5.0) |
+|---|---|---|---|
+| Modes covered (of 5) | 3 | 2 | **5** ✓ |
+| Mode weight TV ↓ | 0.1850 | 0.6000 | **0.2125** |
+| Weight KL ↓ | 1.9536 | 12.8157 | **0.1829** |
+| Minority mode weight (target: 0.03) | 0.0000 | 0.0000 | **0.2340** |
+| Minority mode alive? | False | False | **True** ✓ |
+| Mean energy | 2.1481 | 2.5903 | 2.7289 |
+| Std energy | 1.0643 | 1.1631 | 1.5417 |
+| Empirical weights | ['0.4150', '0.3875', '0.1975', '0.0000', '0.0000'] | ['0.0000', '0.6960', '0.3040', '0.0000', '0.0000'] | ['0.4155', '0.1915', '0.0805', '0.0785', '0.2340'] |
+| Per-mode counts | [830, 775, 395, 0, 0] | [0, 1392, 608, 0, 0] | [831, 383, 161, 157, 468] |
+
+**Key findings:**
+- **λ=5.0 recovers ALL 5 modes** — the only configuration to do so
+- **Weight KL improves by 10×** (1.95 → 0.18) vs baseline, and 70× vs λ=1.0
+- The minority mode (3% target) is now alive with 23.4% empirical weight — over-represented but present
+- λ=1.0 was actually *worse* than baseline (mode collapse to 2 modes), while λ=5.0 shows strong anti-collapse behavior
+- Trade-off: slightly higher energy (2.73 vs 2.15) and wider energy spread, suggesting the KSD penalty pushes particles toward minority modes at the cost of sample quality near dominant modes
+
+### Mode Weight Recovery (3-Way)
+
+![unequal_gmm_l5 weights](figures_2d/unequal_gmm_l5_weights.png)
+
+### Terminal Distribution (4-panel)
+
+![unequal_gmm_l5 terminal](figures_2d/unequal_gmm_l5_terminal.png)
+
+### Marginal Evolution: ASBS
+
+![unequal_gmm marginal asbs](figures_2d/unequal_gmm_marginal_asbs.png)
+
+### Marginal Evolution: KSD-ASBS (λ=1.0)
+
+![unequal_gmm marginal ksd](figures_2d/unequal_gmm_marginal_ksd.png)
+
+### Marginal Evolution: KSD-ASBS (λ=5.0)
+
+![unequal_gmm marginal ksd l5](figures_2d/unequal_gmm_marginal_ksd_l5.png)
+
+---
+

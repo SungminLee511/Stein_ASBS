@@ -1,0 +1,41 @@
+=== Unequal-Weight GMM Evaluation ===
+Time: 2026-04-09 23:30:34 KST
+Loading baseline ASBS...
+/root/miniconda3/envs/Sampling_env/lib/python3.10/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.Gauss'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+Loading KSD-ASBS (lambda=1.0)...
+Generating 2000 terminal samples...
+Computing metrics...
+
+==================================================
+  ASBS Baseline:
+    Modes covered: 3/5
+    Empirical weights: ['0.4150', '0.3875', '0.1975', '0.0000', '0.0000']
+    True weights:      [0.5, 0.25, 0.15000000596046448, 0.07000000029802322, 0.029999999329447746]
+    Weight TV: 0.1850
+    Weight KL: 1.9536
+    Minority mode (3%): weight=0.0000, alive=False
+    Mean energy: 2.1481
+    Per-mode counts: [830, 775, 395, 0, 0]
+
+  KSD-ASBS (lambda=1.0):
+    Modes covered: 2/5
+    Empirical weights: ['0.0000', '0.6960', '0.3040', '0.0000', '0.0000']
+    True weights:      [0.5, 0.25, 0.15000000596046448, 0.07000000029802322, 0.029999999329447746]
+    Weight TV: 0.6000
+    Weight KL: 12.8157
+    Minority mode (3%): weight=0.0000, alive=False
+    Mean energy: 2.5903
+    Per-mode counts: [0, 1392, 608, 0, 0]
+==================================================
+
+Generating figures...
+  Saved: /home/RESEARCH/Stein_ASBS/evaluation/figures_2d/unequal_gmm_terminal.png
+  Saved: /home/RESEARCH/Stein_ASBS/evaluation/figures_2d/unequal_gmm_weights.png
+Generating marginal evolution figures...
+  Saved: /home/RESEARCH/Stein_ASBS/evaluation/figures_2d/unequal_gmm_marginal_asbs.png
+  Saved: /home/RESEARCH/Stein_ASBS/evaluation/figures_2d/unequal_gmm_marginal_ksd.png
+Appending results to 2d_result.md...
+  Appended to /home/RESEARCH/Stein_ASBS/evaluation/2d_result.md
+
+=== Done! ===
