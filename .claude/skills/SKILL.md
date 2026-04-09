@@ -84,7 +84,9 @@ Stein_ASBS/
 │   │   ├── gmm9_asbs.yaml        # NEW — 2D GMM9 baseline
 │   │   ├── gmm9_ksd_asbs.yaml    # NEW — 2D GMM9 + KSD
 │   │   ├── banana_asbs.yaml      # NEW — 2D Banana baseline
-│   │   └── banana_ksd_asbs.yaml  # NEW — 2D Banana + KSD
+│   │   ├── banana_ksd_asbs.yaml  # NEW — 2D Banana + KSD
+│   │   ├── manywell32_asbs.yaml  # NEW — MW32 baseline (32D, 65536 modes)
+│   │   └── manywell32_ksd_asbs.yaml # NEW — MW32 + KSD (λ=1.0)
 │   ├── matcher/
 │   │   ├── adjoint_ve.yaml       # EXISTING — VE adjoint matcher
 │   │   ├── adjoint_vp.yaml       # EXISTING — VP adjoint matcher
@@ -121,6 +123,7 @@ Stein_ASBS/
 │   ├── run_phase5_evaluate.sh    # Evaluation run script
 │   ├── RESULTS.md                # Results (auto-generated + manually edited)
 │   ├── eval_blogreg.py            # NEW — Evaluate BLogReg Australian (d=15) & German (d=25)
+│   ├── eval_mw32.py              # NEW — Evaluate MW32 (ASBS vs KSD-ASBS): mode coverage, marginal W1, energy W2, energy histograms
 │   ├── eval_imq_ablation.py      # NEW — Evaluate all 4 IMQ experiments (d=10,30,50,100)
 │   ├── plot_imq_ablation.py      # NEW — 3-way comparison figures (Baseline/RBF/IMQ)
 │   ├── eval_results_dw4.json     # DW4 eval metrics
