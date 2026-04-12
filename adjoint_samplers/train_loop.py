@@ -51,9 +51,26 @@ def train_one_epoch(
         data = next(loader)
 
         input, target = matcher.prepare_target(data, device)
+
+        # Sanitize targets: replace NaN/Inf, then clip per-sample norms
+        target = torch.nan_to_num(target, nan=0.0, posinf=0.0, neginf=0.0)
+        if cfg.get("clip_target_norm", None):
+            t_norms = torch.linalg.vector_norm(target, dim=-1, keepdim=True)
+            t_clip = torch.clamp(
+                float(cfg.clip_target_norm) / (t_norms + 1e-6), max=1.0
+            )
+            target = target * t_clip
+
         output = model(*input)
+        output = torch.nan_to_num(output, nan=0.0, posinf=0.0, neginf=0.0)
 
         loss = loss_scale * ((output - target)**2).mean()
+
+        if torch.isnan(loss) or torch.isinf(loss):
+            optimizer.zero_grad()          # discard any stale grads
+            epoch_loss.update(float('nan'))
+            continue                       # skip this batch entirely
+
         loss.backward()
 
         if cfg.clip_grad_norm:

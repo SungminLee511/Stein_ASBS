@@ -199,6 +199,18 @@ Stein_ASBS/
 | `ksd_score_beta` | 1.0 | Temperature-scaled score: s(x) = -β∇E(x). At β<1, the Stein kernel sees a flatter landscape (smoothed score), enabling cross-barrier gradients. SDE dynamics still use the true score. |
 | `ksd_imq_c` | null (uses bandwidth) | Fixed IMQ scale parameter c in k(x,x') = (c² + ‖x-x'‖²)^{-1/2}. Overrides bandwidth for IMQ kernel when set. |
 
+### Training Stability (train.yaml)
+
+| Parameter | Default | Notes |
+|-----------|---------|-------|
+| `clip_grad_norm` | false | Gradient norm clipping. Set to a float (e.g. 1.0) to enable |
+| `clip_target_norm` | null | Per-sample target norm clipping. Set to a float (e.g. 200.0) to clip regression targets |
+
+`train_loop.py` also has built-in NaN protection:
+- Targets are sanitized via `nan_to_num` before loss
+- Model outputs are sanitized via `nan_to_num`
+- If loss is NaN/Inf, the optimizer step is skipped entirely (no weight corruption)
+
 ## Conventions
 - Conda env: **`Sampling_env`** (NOT `SML_env` — this project needs bgflow + einops)
 - Run scripts: `conda run -n Sampling_env python -u <script>.py`
@@ -214,7 +226,7 @@ Stein_ASBS/
 - **SVGD connection**: KSD gradient = SVGD update direction
 
 ## Gotchas
-1. **DO NOT modify existing files** (`matcher.py`, `train.py`, `evaluator.py`, etc.). New code inherits/extends only.
+1. **DO NOT modify existing files** (`matcher.py`, `evaluator.py`, etc.). New code inherits/extends only. Exception: `train_loop.py` has NaN-safety guards and clipping support added.
 2. **Device consistency** — all tensors in `stein_kernel.py` must stay on same device (CUDA).
 3. **COM-free coordinates** — DW4/LJ samples are already center-of-mass free; no special handling needed for Stein kernel.
 4. **Gradient detaching** — `_apply_ksd_correction` runs under `@torch.no_grad()`. The KSD correction modifies the adjoint *target* (fixed regression target), NOT the loss. This is by design.

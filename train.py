@@ -138,7 +138,10 @@ def main(cfg):
         print("Instantiating evaluator...")
         eval_dir = Path("eval_figs")
         eval_dir.mkdir(exist_ok=True)
-        evaluator = hydra.utils.instantiate(cfg.evaluator, energy=energy)
+        if cfg.skip_eval:
+            evaluator = None
+        else:
+            evaluator = hydra.utils.instantiate(cfg.evaluator, energy=energy)
 
 
         best_eval_metric = float('inf')  # track best for checkpoint_best.pt
