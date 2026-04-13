@@ -203,12 +203,14 @@ def _stein_grad_rbf(delta, sq_dists, ss, s_dot_delta, sp_dot_delta, s_diff, ell,
     ell4 = ell ** 4
     K = torch.exp(-sq_dists / (2 * ell2))  # (N, N)
     Gamma = ss + s_dot_delta / ell2 - sp_dot_delta / ell2 + D / ell2 - sq_dists / ell4
+    Gamma = Gamma.clamp(-1e4, 1e4)  # prevent overflow in partA
 
     partA = -delta / ell2 * Gamma.unsqueeze(-1)
     partB = s_diff / ell2
     partC = -2 * delta / ell4
 
     grad_kp = K.unsqueeze(-1) * (partA + partB + partC)  # (N, N, D)
+    grad_kp = torch.nan_to_num(grad_kp, nan=0.0, posinf=0.0, neginf=0.0)
     return grad_kp.sum(dim=1)
 
 
@@ -306,12 +308,14 @@ def compute_stein_kernel_gradient_efficient(
             ell4 = ell ** 4
             K = torch.exp(-sq_dists / (2 * ell2))
             Gamma = ss + s_dot_d / ell2 - sp_dot_d / ell2 + D / ell2 - sq_dists / ell4
+            Gamma = Gamma.clamp(-1e4, 1e4)
 
             partA = -delta / ell2 * Gamma.unsqueeze(-1)
             partB = s_diff / ell2
             partC = -2 * delta / ell4
 
             grad_chunk = K.unsqueeze(-1) * (partA + partB + partC)
+            grad_chunk = torch.nan_to_num(grad_chunk, nan=0.0, posinf=0.0, neginf=0.0)
 
         elif kernel == "imq":
             c2 = ell ** 2

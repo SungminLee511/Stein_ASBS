@@ -192,6 +192,7 @@ class SDRAdjointVEMatcher(AdjointVEMatcher):
             )
 
         # SDR correction: (λ / N²) * Σⱼ ∇ₓkₚ(xᵢ, xⱼ)
+        grad_sum = torch.nan_to_num(grad_sum, nan=0.0, posinf=0.0, neginf=0.0)
         sdr_correction = (self.sdr_lambda / (N_sub ** 2)) * grad_sum
 
         # Clip SDR correction per-sample
@@ -267,21 +268,24 @@ class SDRAdjointVEMatcher(AdjointVEMatcher):
             energy_out = self.grad_term_cost.energy(x1_req)
         energies = energy_out["energy"].detach()             # (N,)
 
-        # Stabilize: shift energies by min to avoid exp underflow
+        # Stabilize: compute log-ratios in log-space to prevent exp overflow
+        # log(p̃/q̂) = -E - log(q̂),  shifted by min energy for stability
         energies = energies - energies.min()
-        p_tilde = torch.exp(-energies)                       # (N,)
+        log_ratios = -energies - torch.log(q_hat)            # (N,)
 
-        # 4. Raw importance ratios
-        ratios = p_tilde / q_hat                             # (N,)
-
-        # 5. Soft power clipping with β
-        ratios_beta = ratios ** self.sdr_beta                # (N,)
+        # 4-5. Soft power clipping with β (in log-space)
+        # ratios_beta = (p̃/q̂)^β = exp(β * log(p̃/q̂))
+        log_ratios_beta = self.sdr_beta * log_ratios
+        # Clamp log-ratios to prevent exp overflow (equivalent to ratio clamp)
+        log_ratios_beta = log_ratios_beta.clamp(-20.0, 20.0)
+        ratios_beta = torch.exp(log_ratios_beta)             # (N,)
 
         # 6. Hard clip for stability
         ratios_beta = ratios_beta.clamp(max=self.sdr_weight_clip)
 
         # 7. Self-normalize so mean = 1
-        weights = ratios_beta / ratios_beta.mean()           # (N,), mean ≈ 1
+        ratios_beta = torch.nan_to_num(ratios_beta, nan=1.0, posinf=1.0, neginf=0.0)
+        weights = ratios_beta / ratios_beta.mean().clamp(min=1e-10)  # (N,), mean ≈ 1
 
         # Logging
         self._last_sdr_weight_max = weights.max().item()

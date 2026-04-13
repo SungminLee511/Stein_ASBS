@@ -145,7 +145,9 @@ Stein_ASBS/
 | `sdr_kernel` | "rbf" | "rbf" or "imq" |
 | `sdr_beta` | 0.0 (disabled) | SDR DARW reweighting strength. Ablate: {0.3, 0.5, 0.7, 1.0} |
 | `sdr_weight_clip` | 10.0 | Max DARW weight before normalization |
-| `clip_grad_norm` | false | Gradient norm clipping (set to 1.0 for SDR) |
+| `clip_grad_norm` | false (MW5: 1.0) | Model gradient norm clipping. Accepts any float. |
+| `max_grad_E_norm` | 50 | Score/force clipping norm before Stein kernel. MW5 and Grid25 both use 50. |
+| `sigma_min` | 0.01 | Noise floor for SDE. MW5 changed from 0.001 to 0.01 for stability. |
 
 ## Multi-Server Setup
 - **This server**: Grid25 and MW5 experiments (2D/5D)
@@ -160,3 +162,5 @@ Stein_ASBS/
 4. **SDR backward compat** — with `sdr_beta: 0`, SDR DARW is disabled and all weights are 1.0.
 5. **`prepare_target` return signature** — SDR matchers return 3 values `(input, target, weights)`. Base matchers return 2 values. `train_loop.py` handles both via `len(result)` check.
 6. **`results/` is gitignored** — checkpoints are local only.
+7. **NaN prevention (MW5)** — MW5 5D energy has extreme gradients (±72.5/dim). Multiple safeguards added: (a) Gamma clamped to ±1e4 in `_stein_grad_rbf`, (b) DARW weights computed in log-space with clamped log-ratios, (c) `nan_to_num` on Stein grad output and DARW weights, (d) `clip_grad_norm: 1.0` default in MW5 config.
+8. **`clip_grad_norm` accepts any float** — previously values <1 were silently overridden to 1.0 (bug fixed).
