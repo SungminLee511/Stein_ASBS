@@ -1,7 +1,7 @@
 """
 scripts/eval_grid25_sdr.py
 
-Evaluate Grid25: Vanilla ASBS vs SDR β={0.3, 0.5, 0.7}
+Evaluate Grid25: Vanilla ASBS vs SDR β={0.5, 0.7, 1.0}
 Metrics: Mode Weight TV, Energy W2, Sinkhorn, W2, KL, Std Energy, ESS
 Figure: Single stacked marginal evolution (NeurIPS style)
 """
@@ -77,9 +77,9 @@ YLIM = (-6, 6)
 
 C_REF = '#555555'
 C_ASBS = '#c0392b'
-C_SDR03 = '#2980b9'   # blue
-C_SDR05 = '#27ae60'   # green
-C_SDR07 = '#8e44ad'   # purple
+C_SDR05 = '#2980b9'   # blue
+C_SDR07 = '#27ae60'   # green
+C_SDR10 = '#8e44ad'   # purple
 C_CONTOUR = '#2c3e50'
 C_BG = '#fafafa'
 
@@ -392,14 +392,6 @@ def main():
             ],
             'color': C_ASBS,
         },
-        r'SDR $\beta$=0.3': {
-            'seeds': [
-                RESULTS_DIR / 'grid25_darw_b0.3_s0' / 'seed_0',
-                RESULTS_DIR / 'grid25_darw_b0.3_s1' / 'seed_1',
-                RESULTS_DIR / 'grid25_darw_b0.3_s2' / 'seed_2',
-            ],
-            'color': C_SDR03,
-        },
         r'SDR $\beta$=0.5': {
             'seeds': [
                 RESULTS_DIR / 'grid25_darw_b0.5_s0' / 'seed_0',
@@ -415,6 +407,14 @@ def main():
                 RESULTS_DIR / 'grid25_darw_b0.7_s2' / 'seed_2',
             ],
             'color': C_SDR07,
+        },
+        r'SDR $\beta$=1.0': {
+            'seeds': [
+                RESULTS_DIR / 'grid25_sdr_b1.0_s0' / 'seed_0',
+                RESULTS_DIR / 'grid25_sdr_b1.0_s1' / 'seed_1',
+                RESULTS_DIR / 'grid25_sdr_b1.0_s2' / 'seed_2',
+            ],
+            'color': C_SDR10,
         },
     }
 
@@ -464,16 +464,13 @@ def main():
 
     # ---- Print results table ----
     print("\n" + "=" * 100)
-    metric_keys = ['mode_weight_tv', 'energy_w2', 'w2', 'sinkhorn', 'kl', 'std_energy', 'ess', 'ess_pct']
+    metric_keys = ['mode_weight_tv', 'energy_w2', 'w2', 'sinkhorn', 'kl']
     metric_labels = {
         'mode_weight_tv': 'Mode Weight TV ↓',
         'energy_w2': 'Energy W2 ↓',
         'w2': 'W2 Distance ↓',
         'sinkhorn': 'Sinkhorn Div ↓',
         'kl': 'KL Divergence ↓',
-        'std_energy': 'Std Energy',
-        'ess': 'ESS ↑',
-        'ess_pct': 'ESS % ↑',
     }
 
     method_names = list(methods.keys())
