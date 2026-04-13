@@ -2,7 +2,7 @@
 scripts/eval_grid25_sdr.py
 
 Evaluate Grid25: Vanilla ASBS vs SDR β={0.3, 0.5, 0.7}
-Metrics: Mode Weight TV, Energy W2, Sinkhorn, W2, KL, Mean Energy (+ ref), Std Energy, ESS
+Metrics: Mode Weight TV, Energy W2, Sinkhorn, W2, KL, Std Energy, ESS
 Figure: Single stacked marginal evolution (NeurIPS style)
 """
 
@@ -251,13 +251,10 @@ def compute_ess_from_samples(samples, energy, source):
 def compute_all_metrics(samples, energy, centers, std, ref_samples, source):
     assignments, counts = assign_modes(samples, centers.to(samples.device), std=std)
     E_gen = energy.eval(samples)
-    E_ref = energy.eval(ref_samples[:len(samples)])
     counts_list = counts.cpu().tolist()
 
     metrics = {
-        'mean_energy': E_gen.mean().item(),
         'std_energy': E_gen.std().item(),
-        'ref_mean_energy': E_ref.mean().item(),
         'mode_weight_tv': compute_mode_weight_tv(counts_list),
         'energy_w2': compute_energy_w2(samples, ref_samples, energy),
         'w2': compute_w2_distance(samples, ref_samples),
@@ -432,10 +429,6 @@ def main():
     std = energy.get_std()
     ref_samples = energy.get_ref_samples(5000).to(device)
 
-    # Reference mean energy
-    ref_mean_energy = energy.eval(ref_samples).mean().item()
-    print(f"\n  Reference mean energy: {ref_mean_energy:.4f}")
-
     # ---- Compute metrics per method (mean ± std over seeds) ----
     all_results = {}
 
@@ -467,20 +460,17 @@ def main():
             else:
                 agg[f'{k}_mean'] = float('nan')
                 agg[f'{k}_std'] = float('nan')
-        agg['ref_mean_energy'] = ref_mean_energy
-
         all_results[method_name] = agg
 
     # ---- Print results table ----
     print("\n" + "=" * 100)
-    metric_keys = ['mode_weight_tv', 'energy_w2', 'w2', 'sinkhorn', 'kl', 'mean_energy', 'std_energy', 'ess', 'ess_pct']
+    metric_keys = ['mode_weight_tv', 'energy_w2', 'w2', 'sinkhorn', 'kl', 'std_energy', 'ess', 'ess_pct']
     metric_labels = {
         'mode_weight_tv': 'Mode Weight TV ↓',
         'energy_w2': 'Energy W2 ↓',
         'w2': 'W2 Distance ↓',
         'sinkhorn': 'Sinkhorn Div ↓',
         'kl': 'KL Divergence ↓',
-        'mean_energy': f'Mean Energy (ref={ref_mean_energy:.4f})',
         'std_energy': 'Std Energy',
         'ess': 'ESS ↑',
         'ess_pct': 'ESS % ↑',
@@ -509,7 +499,6 @@ def main():
     json_results = {}
     for m_name, agg in all_results.items():
         json_results[m_name] = {k: v for k, v in agg.items()}
-    json_results['ref_mean_energy'] = ref_mean_energy
     with open(json_path, 'w') as f:
         json.dump(json_results, f, indent=2)
     print(f"\n  Saved metrics: {json_path}")

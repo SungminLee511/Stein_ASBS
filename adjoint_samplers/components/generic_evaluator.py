@@ -51,7 +51,6 @@ class GenericEnergyEvaluator:
         result = {
             "energy_w2": energy_w2,
             "sinkhorn_div": sinkhorn_div,
-            "mean_energy": gen_energy.mean().item(),
         }
 
         return result
