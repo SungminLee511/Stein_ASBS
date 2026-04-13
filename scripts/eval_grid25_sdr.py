@@ -1,7 +1,7 @@
 """
-scripts/eval_grid25_darw.py
+scripts/eval_grid25_sdr.py
 
-Evaluate Grid25: Vanilla ASBS vs DARW β={0.3, 0.5, 0.7}
+Evaluate Grid25: Vanilla ASBS vs SDR β={0.3, 0.5, 0.7}
 Metrics: Mode Weight TV, Energy W2, Sinkhorn, W2, KL, Mean Energy (+ ref), Std Energy, ESS
 Figure: Single stacked marginal evolution (NeurIPS style)
 """
@@ -77,9 +77,9 @@ YLIM = (-6, 6)
 
 C_REF = '#555555'
 C_ASBS = '#c0392b'
-C_DARW03 = '#2980b9'   # blue
-C_DARW05 = '#27ae60'   # green
-C_DARW07 = '#8e44ad'   # purple
+C_SDR03 = '#2980b9'   # blue
+C_SDR05 = '#27ae60'   # green
+C_SDR07 = '#8e44ad'   # purple
 C_CONTOUR = '#2c3e50'
 C_BG = '#fafafa'
 
@@ -318,9 +318,6 @@ def plot_marginal_stacked(
 
             ax.set_facecolor(C_BG)
 
-            # Density contour background
-            _plot_density_bg(ax, energy)
-
             # Mode center markers
             c = centers.cpu().numpy()
             ax.scatter(c[:, 0], c[:, 1], marker='+', s=10, c='black',
@@ -398,34 +395,34 @@ def main():
             ],
             'color': C_ASBS,
         },
-        r'DARW $\beta$=0.3': {
+        r'SDR $\beta$=0.3': {
             'seeds': [
                 RESULTS_DIR / 'grid25_darw_b0.3_s0' / 'seed_0',
                 RESULTS_DIR / 'grid25_darw_b0.3_s1' / 'seed_1',
                 RESULTS_DIR / 'grid25_darw_b0.3_s2' / 'seed_2',
             ],
-            'color': C_DARW03,
+            'color': C_SDR03,
         },
-        r'DARW $\beta$=0.5': {
+        r'SDR $\beta$=0.5': {
             'seeds': [
                 RESULTS_DIR / 'grid25_darw_b0.5_s0' / 'seed_0',
                 RESULTS_DIR / 'grid25_darw_b0.5_s1' / 'seed_1',
                 RESULTS_DIR / 'grid25_darw_b0.5_s2' / 'seed_2',
             ],
-            'color': C_DARW05,
+            'color': C_SDR05,
         },
-        r'DARW $\beta$=0.7': {
+        r'SDR $\beta$=0.7': {
             'seeds': [
                 RESULTS_DIR / 'grid25_darw_b0.7_s0' / 'seed_0',
                 RESULTS_DIR / 'grid25_darw_b0.7_s1' / 'seed_1',
                 RESULTS_DIR / 'grid25_darw_b0.7_s2' / 'seed_2',
             ],
-            'color': C_DARW07,
+            'color': C_SDR07,
         },
     }
 
     print("=" * 70)
-    print("  Grid25 — DARW Evaluation (NeurIPS style)")
+    print("  Grid25 — SDR Evaluation (NeurIPS style)")
     print("=" * 70)
 
     # Load energy from first available model
@@ -507,7 +504,7 @@ def main():
     print("=" * 100)
 
     # ---- Save metrics JSON ----
-    json_path = EVAL_DIR / 'grid25_darw_results.json'
+    json_path = EVAL_DIR / 'grid25_sdr_results.json'
     # Convert for JSON serialization
     json_results = {}
     for m_name, agg in all_results.items():
@@ -546,7 +543,7 @@ def main():
     plot_marginal_stacked(
         energy, all_states_list, all_ts_list, centers,
         fig_method_names, fig_method_colors,
-        FIG_DIR / 'grid25_darw_marginal_neurips.png',
+        FIG_DIR / 'grid25_sdr_marginal_neurips.png',
         n_snapshots=6,
     )
 

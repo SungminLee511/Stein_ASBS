@@ -4,7 +4,7 @@
 
 ## Metrics (mean ± std over 3 seeds)
 
-| Metric | ASBS | DARW β=0.5 | DARW β=0.7 |
+| Metric | ASBS | SDR β=0.5 | SDR β=0.7 |
 |---|---|---|---|
 | Mode Weight TV ↓ | 0.2537 ± 0.0748 | 0.1623 ± 0.0362 | **0.0950 ± 0.0153** |
 | Energy W2 ↓ | **0.1002 ± 0.0337** | 0.1901 ± 0.0208 | 0.3059 ± 0.0290 |
@@ -15,4 +15,4 @@
 
 ## Marginal Evolution
 
-![Grid25 Marginal Evolution](figures_2d/grid25_darw_marginal_neurips_no_b03.png)
+(figures pending regeneration)
