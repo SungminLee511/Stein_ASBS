@@ -1,69 +1,0 @@
-Reference samples: (10000, 39)
-
-============================================================
-Evaluating: LJ13 ASBS (checkpoint_2150, new run)
-  Config: results/lj13_asbs/seed_0/config.yaml
-  Checkpoint: results/lj13_asbs/seed_0/checkpoints/checkpoint_2150.pt
-============================================================
-/home/sky/miniconda3/envs/adjoint_samplers/lib/python3.11/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.CenteredParticlesHarmonic'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
-  warnings.warn(
-/home/sky/miniconda3/envs/adjoint_samplers/lib/python3.11/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.CenteredParticlesGauss'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
-  warnings.warn(
-
-  Seed 0/5:
-  Generated 500/2000 samples  Generated 1000/2000 samples  Generated 1500/2000 samples  Generated 2000/2000 samples
-    energy_w2: 2.7548317779495255
-    eq_w2: 1.8664617538452148
-    dist_w2: 0.0019481125638093582
-    ksd_squared: 4.098374366760254
-    mean_energy: -40.39613723754883
-    valid_count: 2000
-
-  Seed 1/5:
-  Generated 500/2000 samples  Generated 1000/2000 samples  Generated 1500/2000 samples  Generated 2000/2000 samples
-    energy_w2: 2.8176009782381954
-    eq_w2: 1.84841787815094
-    dist_w2: 0.0022002316928603593
-    ksd_squared: 4.199512958526611
-    mean_energy: -40.364219665527344
-    valid_count: 2000
-
-  Seed 2/5:
-  Generated 500/2000 samples  Generated 1000/2000 samples  Generated 1500/2000 samples  Generated 2000/2000 samples
-    energy_w2: 2.499063959806148
-    eq_w2: 1.8296095132827759
-    dist_w2: 0.0014804352613236559
-    ksd_squared: 3.6391005516052246
-    mean_energy: -40.53416442871094
-    valid_count: 2000
-
-  Seed 3/5:
-  Generated 500/2000 samples  Generated 1000/2000 samples  Generated 1500/2000 samples  Generated 2000/2000 samples
-    energy_w2: 2.964733896062106
-    eq_w2: 1.869717001914978
-    dist_w2: 0.0024965477412135146
-    ksd_squared: 3.8832619190216064
-    mean_energy: -39.939186096191406
-    valid_count: 2000
-
-  Seed 4/5:
-  Generated 500/2000 samples  Generated 1000/2000 samples  Generated 1500/2000 samples  Generated 2000/2000 samples
-    energy_w2: 2.955759270807771
-    eq_w2: 1.8235702514648438
-    dist_w2: 0.0020668836211911114
-    ksd_squared: 4.2435221672058105
-    mean_energy: -40.32176208496094
-    valid_count: 2000
-
-================================================================================
-SUMMARY — LJ13 ASBS checkpoint_2150
-================================================================================
-Metric                       Mean          Std
-----------------------------------------------
-energy_w2                  2.7984       0.1699
-eq_w2                      1.8476       0.0187
-dist_w2                    0.0020       0.0003
-ksd_squared                4.0128       0.2244
-mean_energy              -40.3111       0.1991
-
-Results saved to evaluation/eval_results_lj13_asbs_ckpt2150.json

@@ -1,79 +1,0 @@
-=== LJ13 KSD-ASBS Checkpoint 1100 Evaluation ===
-Device: cuda
-Reference samples: (10000, 39)
-Checkpoint: /home/sky/SML/Stein_ASBS/results/lj13_ksd_asbs/seed_0/checkpoints/checkpoint_1100.pt
-/home/sky/miniconda3/envs/adjoint_samplers/lib/python3.11/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.CenteredParticlesHarmonic'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
-  warnings.warn(
-/home/sky/miniconda3/envs/adjoint_samplers/lib/python3.11/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.CenteredParticlesGauss'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
-  warnings.warn(
-Model loaded successfully.
-
---- Seed 0/5 ---
-  Generating samples...
-  Generated 500/2000 samples  Generated 1000/2000 samples  Generated 1500/2000 samples  Generated 2000/2000 samples
-  Computing metrics...
-    energy_w2: 5.019098521907854
-    eq_w2: 1.8996071815490723
-    dist_w2: 0.005917545684416176
-    ksd_squared: 4.552107334136963
-    mean_energy: -38.12990188598633
-    valid_count: 2000
-
---- Seed 1/5 ---
-  Generating samples...
-  Generated 500/2000 samples  Generated 1000/2000 samples  Generated 1500/2000 samples  Generated 2000/2000 samples
-  Computing metrics...
-    energy_w2: 5.050877301683956
-    eq_w2: 1.8861323595046997
-    dist_w2: 0.006180175366896223
-    ksd_squared: 3.9266176223754883
-    mean_energy: -38.1406364440918
-    valid_count: 2000
-
---- Seed 2/5 ---
-  Generating samples...
-  Generated 500/2000 samples  Generated 1000/2000 samples  Generated 1500/2000 samples  Generated 2000/2000 samples
-  Computing metrics...
-    energy_w2: 4.6060046480023855
-    eq_w2: 1.8684537410736084
-    dist_w2: 0.004816049603780124
-    ksd_squared: 4.11226749420166
-    mean_energy: -38.41604232788086
-    valid_count: 2000
-
---- Seed 3/5 ---
-  Generating samples...
-  Generated 500/2000 samples  Generated 1000/2000 samples  Generated 1500/2000 samples  Generated 2000/2000 samples
-  Computing metrics...
-    energy_w2: 5.2726712280804175
-    eq_w2: 1.909867525100708
-    dist_w2: 0.006829437008962591
-    ksd_squared: 3.6414389610290527
-    mean_energy: -37.66581344604492
-    valid_count: 2000
-
---- Seed 4/5 ---
-  Generating samples...
-  Generated 500/2000 samples  Generated 1000/2000 samples  Generated 1500/2000 samples  Generated 2000/2000 samples
-  Computing metrics...
-    energy_w2: 5.175250320758231
-    eq_w2: 1.857122778892517
-    dist_w2: 0.005940750655251114
-    ksd_squared: 4.821575164794922
-    mean_energy: -38.13090515136719
-    valid_count: 2000
-
-============================================================
-AGGREGATED RESULTS (mean +/- std over 5 seeds)
-============================================================
-  energy_w2: 5.0248 +/- 0.2281
-  eq_w2: 1.8842 +/- 0.0194
-  dist_w2: 0.0059 +/- 0.0007
-  ksd_squared: 4.2108 +/- 0.4252
-  mean_energy: -38.0967 +/- 0.2416
-  std_energy: 7.5429 +/- 0.1880
-  min_energy: -59.0268 +/- 1.0034
-  max_energy: 0.5187 +/- 5.1407
-  valid_count: 2000.0000 +/- 0.0000
-  nan_count: 0.0000 +/- 0.0000
-Done!
