@@ -15,4 +15,4 @@
 
 ## Marginal Evolution
 
-(figures pending regeneration)
+![Grid25 Marginal Evolution](figures_2d/grid25_sdr_marginal_neurips.png)
