@@ -1,0 +1,212 @@
+/home/sky/miniconda3/envs/adjoint_samplers/lib/python3.11/site-packages/hydra/_internal/hydra.py:119: UserWarning: Future Hydra versions will no longer change working directory at job runtime by default.
+See https://hydra.cc/docs/1.2/upgrades/1.1_to_1.2/changes_to_job_working_dir/ for more information.
+  ret = run_job(
+Found 1 CUDA devices.
+NVIDIA A100 80GB PCIe 	 Memory: 79.25GB
+{'CUDA_VISIBLE_DEVICES': '1', 'SHELL': '/bin/bash', 'COREPACK_ENABLE_AUTO_PIN': '0', 'NV_LIBCUBLAS_VERSION': '12.1.3.1-1', 'KUBERNETES_SERVICE_PORT_HTTPS': '443', 'NVIDIA_VISIBLE_DEVICES': 'void', 'COLORTERM': 'truecolor', 'KUBERNETES_SERVICE_PORT': '443', 'PYTHONUNBUFFERED': '1', 'TERM_PROGRAM_VERSION': '1.113.0', 'ASKIL_825209AB_HEAD_SSH_PORT_22_TCP_PORT': '22', 'ASKIL_825209AB_HEAD_SSH_SERVICE_HOST': '10.43.127.81', 'CONDA_EXE': '/home/sky/miniconda3/bin/conda', '_CE_M': '', 'HOSTNAME': 'sungmin-cluster-for-sdr-ef307c6f-head', 'NVIDIA_REQUIRE_CUDA': 'cuda>=12.1 brand=tesla,driver>=470,driver<471 brand=unknown,driver>=470,driver<471 brand=nvidia,driver>=470,driver<471 brand=nvidiartx,driver>=470,driver<471 brand=geforce,driver>=470,driver<471 brand=geforcertx,driver>=470,driver<471 brand=quadro,driver>=470,driver<471 brand=quadrortx,driver>=470,driver<471 brand=titan,driver>=470,driver<471 brand=titanrtx,driver>=470,driver<471 brand=tesla,driver>=525,driver<526 brand=unknown,driver>=525,driver<526 brand=nvidia,driver>=525,driver<526 brand=nvidiartx,driver>=525,driver<526 brand=geforce,driver>=525,driver<526 brand=geforcertx,driver>=525,driver<526 brand=quadro,driver>=525,driver<526 brand=quadrortx,driver>=525,driver<526 brand=titan,driver>=525,driver<526 brand=titanrtx,driver>=525,driver<526', 'CLAUDE_MAX_COST_PER_USER': '1000.0', 'NV_NVTX_VERSION': '12.1.105-1', 'SKYPILOT_IN_CLUSTER_CONTEXT_NAME': 'ssh-azure-vm5', 'NV_LIBCUSPARSE_VERSION': '12.1.0.106-1', 'SUNGMIN_CLUSTER_FOR_SDR_EF307C6F_HEAD_SSH_PORT_22_TCP_ADDR': '10.43.99.171', 'CLAUDE_MAX_TURNS': '50', 'NV_LIBNPP_VERSION': '12.1.0.40-1', 'NCCL_VERSION': '2.17.1-1', 'PWD': '/home/sky/SML/Stein_ASBS', 'LOGNAME': 'sky', 'ASKIL_825209AB_HEAD_SSH_SERVICE_PORT': '22', 'CONDA_PREFIX': '/home/sky/miniconda3/envs/adjoint_samplers', 'NVIDIA_DRIVER_CAPABILITIES': 'compute,utility', 'NV_LIBNPP_PACKAGE': 'libnpp-12-1=12.1.0.40-1', 'RAY_memory_monitor_refresh_ms': '0', 'NoDefaultCurrentDirectoryInExePath': '1', 'VSCODE_GIT_ASKPASS_NODE': '/home/sky/.vscode-server/cli/servers/Stable-cfbea10c5ffb233ea9177d34726e6056e89913dc/server/node', 'CLAUDE_TIMEOUT_SECONDS': '900', 'ASKIL_825209AB_HEAD_SSH_PORT_22_TCP_PROTO': 'tcp', 'NVIDIA_PRODUCT_NAME': 'CUDA', 'CLAUDECODE': '1', 'MOTD_SHOWN': 'pam', 'NV_CUDA_CUDART_VERSION': '12.1.105-1', 'ASKIL_825209AB_HEAD_SSH_PORT_22_TCP_ADDR': '10.43.127.81', 'HOME': '/home/sky', 'CLAUDE_AGENT_SDK_VERSION': '0.1.56', 'LANG': 'C.UTF-8', 'TELEGRAM_BOT_TOKEN': '8533217731:AAHFZyArAZhB4lRnpCbsY8PlLVSLTDqJs3c', 'KUBERNETES_PORT_443_TCP': 'tcp://10.43.0.1:443', 'APPROVED_DIRECTORY': '/home/sky/SML', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'SUNGMIN_CLUSTER_FOR_SDR_EF307C6F_HEAD_SSH_PORT_22_TCP_PORT': '22', 'CUDA_VERSION': '12.1.1', 'NV_LIBCUBLAS_PACKAGE': 'libcublas-12-1=12.1.3.1-1', 'CONDA_PROMPT_MODIFIER': '(Claude_bot) ', 'GIT_ASKPASS': '/home/sky/.vscode-server/cli/servers/Stable-cfbea10c5ffb233ea9177d34726e6056e89913dc/server/extensions/git/dist/askpass.sh', 'SSH_CONNECTION': '10.42.0.26 60184 10.42.0.26 22', 'ASKIL_825209AB_HEAD_SSH_PORT_22_TCP': 'tcp://10.43.127.81:22', 'NV_LIBCUBLAS_PACKAGE_NAME': 'libcublas-12-1', 'VSCODE_GIT_ASKPASS_EXTRA_ARGS': '', 'CLAUDE_MAX_COST_PER_REQUEST': '1000.0', 'VSCODE_PYTHON_AUTOACTIVATE_GUARD': '1', 'CLAUDE_CODE_SSE_PORT': '17088', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'SKYPILOT_POD_NODE_TYPE': 'head', 'TERM': 'xterm-256color', '_CE_CONDA': '', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'sky', 'VSCODE_GIT_IPC_HANDLE': '/tmp/vscode-git-36b2b393c8.sock', 'SUNGMIN_CLUSTER_FOR_SDR_EF307C6F_HEAD_SSH_SERVICE_PORT': '22', 'CONDA_SHLVL': '2', 'SHLVL': '1', 'GIT_EDITOR': 'true', 'NV_CUDA_LIB_VERSION': '12.1.1-1', 'NVARCH': 'x86_64', 'KUBERNETES_PORT_443_TCP_PROTO': 'tcp', 'SKYPILOT_POD_MEMORY_BYTES_LIMIT': '32000000000', 'KUBERNETES_PORT_443_TCP_ADDR': '10.43.0.1', 'NV_CUDA_COMPAT_PACKAGE': 'cuda-compat-12-1', 'SUNGMIN_CLUSTER_FOR_SDR_EF307C6F_HEAD_SSH_PORT': 'tcp://10.43.99.171:22', 'OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE': 'delta', 'CONDA_PYTHON_EXE': '/home/sky/miniconda3/bin/python', 'NV_LIBNCCL_PACKAGE': 'libnccl2=2.17.1-1+cuda12.1', 'LD_LIBRARY_PATH': '/usr/local/nvidia/lib:/usr/local/nvidia/lib64', 'ALLOWED_USERS': '8610757705', 'LC_CTYPE': 'C.UTF-8', 'SSH_CLIENT': '10.42.0.26 60184 22', 'CONDA_DEFAULT_ENV': 'Claude_bot', 'CLAUDE_CODE_ENTRYPOINT': 'sdk-py', 'SUNGMIN_CLUSTER_FOR_SDR_EF307C6F_HEAD_SSH_PORT_22_TCP_PROTO': 'tcp', 'NVIDIA_CTK_LIBCUDA_DIR': '/usr/lib/x86_64-linux-gnu', 'SKYPILOT_POD_CPU_CORE_LIMIT': '8', 'KUBERNETES_SERVICE_HOST': '10.43.0.1', 'KUBERNETES_PORT': 'tcp://10.43.0.1:443', 'KUBERNETES_PORT_443_TCP_PORT': '443', 'VSCODE_GIT_ASKPASS_MAIN': '/home/sky/.vscode-server/cli/servers/Stable-cfbea10c5ffb233ea9177d34726e6056e89913dc/server/extensions/git/dist/askpass-main.js', 'CLAUDE_CODE_EXECPATH': '/home/sky/miniconda3/envs/Claude_bot/lib/python3.11/site-packages/claude_agent_sdk/_bundled/claude', 'BROWSER': '/home/sky/.vscode-server/cli/servers/Stable-cfbea10c5ffb233ea9177d34726e6056e89913dc/server/bin/helpers/browser.sh', 'PATH': '/home/sky/miniconda3/envs/adjoint_samplers/bin:/home/sky/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand:/home/sky/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli:/home/sky/.vscode-server/cli/servers/Stable-cfbea10c5ffb233ea9177d34726e6056e89913dc/server/bin/remote-cli:/home/sky/.local/bin:/home/sky/.local/bin:/home/sky/miniconda3/envs/Claude_bot/bin:/home/sky/miniconda3/condabin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/sky/.local/bin:/home/sky/.local/bin', 'NV_LIBNCCL_PACKAGE_NAME': 'libnccl2', 'SUNGMIN_CLUSTER_FOR_SDR_EF307C6F_HEAD_SSH_PORT_22_TCP': 'tcp://10.43.99.171:22', 'NV_LIBNCCL_PACKAGE_VERSION': '2.17.1-1', 'ASKIL_825209AB_HEAD_SSH_PORT': 'tcp://10.43.127.81:22', 'CONDA_PREFIX_1': '/home/sky/miniconda3', 'TELEGRAM_BOT_USERNAME': 'claudecodeonskypilot2bot', 'OLDPWD': '/home/sky/SML', 'SUNGMIN_CLUSTER_FOR_SDR_EF307C6F_HEAD_SSH_SERVICE_HOST': '10.43.99.171', 'TERM_PROGRAM': 'vscode', 'VSCODE_IPC_HOOK_CLI': '/tmp/vscode-ipc-07e27381-dcaf-46f0-a936-4caca2b6073a.sock', '_': '/home/sky/miniconda3/envs/adjoint_samplers/bin/python', 'CUDA_MODULE_LOADING': 'LAZY'}
+job dir: /home/sky/SML/Stein_ASBS/adjoint_samplers/utils
+Not using distributed mode
+Saving cfg to cfg.yaml
+{'project': 'adjoint_sampler', 'train_itr_per_epoch': 100, 'init_stage': 'adjoint', 'seed': 0, 'clip_grad_norm': 1.0, 'clip_target_norm': 200.0, 'checkpoint': None, 'save_freq': 100, 'skip_eval': True, 'timesteps': {'t0': 0.0, 't1': 1.0, 'steps': '${nfe}', 'rescale_t': '${rescale_t}'}, 'resample_batch_size': 512, 'train_batch_size': 512, 'eval_batch_size': 2000, 'num_eval_samples': '${eval_batch_size}', 'dim': 39, 'n_particles': 13, 'spatial_dim': 3, 'energy': {'_target_': 'adjoint_samplers.energies.lennard_jones_energy.LennardJonesEnergy', 'dim': '${dim}', 'n_particles': '${n_particles}'}, 'evaluator': {'_target_': 'adjoint_samplers.components.evaluator.SyntheticEenergyEvaluator', 'ref_samples_path': 'data/test_split_LJ13-1000.npy'}, 'source': {'_target_': 'adjoint_samplers.utils.dist_utils.CenteredParticlesHarmonic', 'n_particles': '${n_particles}', 'spatial_dim': '${spatial_dim}', 'scale': '${scale}'}, 'ref_sde': {'_target_': 'adjoint_samplers.components.sde.GraphVESDE', 'n_particles': '${n_particles}', 'spatial_dim': '${spatial_dim}', 'sigma_max': '${sigma_max}', 'sigma_min': '${sigma_min}'}, 'controller': {'_target_': 'adjoint_samplers.components.model.EGNN_dynamics', 'n_particles': '${n_particles}', 'spatial_dim': '${spatial_dim}', 'hidden_nf': 128, 'n_layers': 5, 'act_fn': {'_target_': 'torch.nn.SiLU'}, 'recurrent': True, 'tanh': True, 'attention': True, 'condition_time': True, 'agg': 'sum'}, 'state_cost': {'_target_': 'adjoint_samplers.components.state_cost.ZeroGradStateCost'}, 'term_cost': {'_target_': 'adjoint_samplers.components.term_cost.GraphCorrectorGradTermCost', 'max_grad_E_norm': '${max_grad_E_norm}'}, 'adjoint_matcher': {'_target_': 'adjoint_samplers.components.ksd_matcher.KSDAdjointVEMatcher', 'ksd_lambda': '${ksd_lambda}', 'ksd_bandwidth': None, 'ksd_max_particles': 2048, 'ksd_efficient_threshold': 1024, 'ksd_score_beta': 1.0, 'ksd_warmup_epochs': 0, 'grad_state_cost': {'_target_': 'adjoint_samplers.components.state_cost.ZeroGradStateCost'}, 'buffer': {'_target_': 'adjoint_samplers.components.buffer.BatchBuffer', 'buffer_size': '${adjoint_matcher.buffer_size}'}, 'buffer_size': 10000, 'duplicates': 25, 'resample_size': 1000, 'num_epochs_per_stage': '${adj_num_epochs_per_stage}', 'optim': {'lr': 0.0001, 'weight_decay': 0}}, 'corrector': {'_target_': 'adjoint_samplers.components.model.EGNN_dynamics', 'n_particles': '${n_particles}', 'spatial_dim': '${spatial_dim}', 'hidden_nf': 128, 'n_layers': 5, 'act_fn': {'_target_': 'torch.nn.SiLU'}, 'recurrent': True, 'tanh': True, 'attention': True, 'condition_time': True, 'agg': 'sum'}, 'corrector_matcher': {'_target_': 'adjoint_samplers.components.matcher.CorrectorMatcher', 'buffer': {'_target_': 'adjoint_samplers.components.buffer.BatchBuffer', 'buffer_size': '${adjoint_matcher.buffer_size}'}, 'buffer_size': 10000, 'duplicates': 25, 'resample_size': 1000, 'num_epochs_per_stage': '${ctr_num_epochs_per_stage}', 'optim': {'lr': 0.0001, 'weight_decay': 0}}, 'exp_name': 'lj13_ksd_asbs', 'scale': 2, 'nfe': 1000, 'sigma_max': 1, 'sigma_min': 0.001, 'rescale_t': None, 'ksd_lambda': 5.0, 'num_epochs': 5000, 'max_grad_E_norm': 100, 'adj_num_epochs_per_stage': 300, 'ctr_num_epochs_per_stage': 20, 'use_wandb': False, 'eval_freq': 50, 'shared_dir': '/checkpoint', 'distributed': False, 'rank': 0, 'world_size': 1}
+Instantiating energy...
+[2026-04-12 11:16:52,712][numexpr.utils][INFO] - Note: detected 96 virtual cores but NumExpr set to maximum of 64, check "NUMEXPR_MAX_THREADS" environment variable.
+[2026-04-12 11:16:52,713][numexpr.utils][INFO] - Note: NumExpr detected 96 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 16.
+[2026-04-12 11:16:52,713][numexpr.utils][INFO] - NumExpr defaulting to 16 threads.
+Instantiating source...
+/home/sky/miniconda3/envs/adjoint_samplers/lib/python3.11/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.CenteredParticlesHarmonic'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+Instantiating model...
+/home/sky/miniconda3/envs/adjoint_samplers/lib/python3.11/site-packages/torch/distributions/distribution.py:56: UserWarning: <class 'adjoint_samplers.utils.dist_utils.CenteredParticlesGauss'> does not define `arg_constraints`. Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
+  warnings.warn(
+Instantiating corrector & corrector matcher...
+Instantiating grad of costs...
+Instantiating adjoint matcher...
+Instantiating optimizer...
+Instantiating writer...
+Instantiating evaluator...
+Starting from 0/5000 epochs...
+[adjoint | ep=0000] loss=332.2358 | gpu=1963MiB(rsv=2186MiB) | dt=33.7s | t=20:17:27
+[adjoint | ep=0001] loss=181.0384 | gpu=1963MiB(rsv=2192MiB) | dt=42.7s | t=20:18:09
+[adjoint | ep=0002] loss=408.7809 | gpu=1963MiB(rsv=2192MiB) | dt=42.6s | t=20:18:52
+[adjoint | ep=0003] loss=360.3256 | gpu=1963MiB(rsv=2192MiB) | dt=42.5s | t=20:19:35
+[adjoint | ep=0004] loss=311.9405 | gpu=1963MiB(rsv=2192MiB) | dt=42.6s | t=20:20:17
+[adjoint | ep=0005] loss=324.1973 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=20:21:00
+[adjoint | ep=0006] loss=309.1084 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=20:21:43
+[adjoint | ep=0007] loss=308.8690 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=20:22:26
+[adjoint | ep=0008] loss=309.8024 | gpu=1963MiB(rsv=2192MiB) | dt=42.6s | t=20:23:08
+[adjoint | ep=0009] loss=268.9001 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=20:23:51
+[adjoint | ep=0010] loss=217.4953 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=20:24:34
+[adjoint | ep=0011] loss=185.1795 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=20:25:17
+[adjoint | ep=0012] loss=170.9678 | gpu=1963MiB(rsv=2192MiB) | dt=42.7s | t=20:26:00
+[adjoint | ep=0013] loss=158.9630 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=20:26:43
+[adjoint | ep=0014] loss=149.9156 | gpu=1963MiB(rsv=2192MiB) | dt=42.6s | t=20:27:25
+[adjoint | ep=0015] loss=140.5819 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=20:28:08
+[adjoint | ep=0016] loss=134.1019 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=20:28:51
+[adjoint | ep=0017] loss=128.0608 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=20:29:34
+[adjoint | ep=0018] loss=124.1449 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=20:30:17
+[adjoint | ep=0019] loss=117.1758 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=20:30:59
+[adjoint | ep=0020] loss=112.7992 | gpu=1963MiB(rsv=2192MiB) | dt=42.5s | t=20:31:42
+[adjoint | ep=0021] loss=100.3301 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=20:32:25
+[adjoint | ep=0022] loss=85.0970 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=20:33:08
+[adjoint | ep=0023] loss=86.9372 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=20:33:51
+[adjoint | ep=0024] loss=88.4233 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=20:34:34
+[adjoint | ep=0025] loss=77.5742 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=20:35:17
+[adjoint | ep=0026] loss=68.6537 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=20:36:00
+[adjoint | ep=0027] loss=56.3635 | gpu=1963MiB(rsv=2192MiB) | dt=42.5s | t=20:36:42
+[adjoint | ep=0028] loss=51.5100 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=20:37:25
+[adjoint | ep=0029] loss=61.3437 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=20:38:08
+[adjoint | ep=0030] loss=69.9395 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=20:38:51
+[adjoint | ep=0031] loss=72.9087 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=20:39:34
+[adjoint | ep=0032] loss=80.1567 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=20:40:17
+[adjoint | ep=0033] loss=90.2724 | gpu=1963MiB(rsv=2192MiB) | dt=42.6s | t=20:40:59
+[adjoint | ep=0034] loss=100.6131 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=20:41:42
+[adjoint | ep=0035] loss=102.1626 | gpu=1963MiB(rsv=2192MiB) | dt=42.7s | t=20:42:25
+[adjoint | ep=0036] loss=107.0168 | gpu=1963MiB(rsv=2192MiB) | dt=42.6s | t=20:43:07
+[adjoint | ep=0037] loss=110.2266 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=20:43:50
+[adjoint | ep=0038] loss=108.3623 | gpu=1963MiB(rsv=2192MiB) | dt=43.2s | t=20:44:33
+[adjoint | ep=0039] loss=110.6456 | gpu=1963MiB(rsv=2192MiB) | dt=42.6s | t=20:45:16
+[adjoint | ep=0040] loss=120.4303 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=20:45:59
+[adjoint | ep=0041] loss=121.7107 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=20:46:42
+[adjoint | ep=0042] loss=121.2931 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=20:47:25
+[adjoint | ep=0043] loss=114.3082 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=20:48:08
+[adjoint | ep=0044] loss=110.2750 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=20:48:51
+[adjoint | ep=0045] loss=115.8086 | gpu=1963MiB(rsv=2192MiB) | dt=42.7s | t=20:49:33
+[adjoint | ep=0046] loss=113.5150 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=20:50:16
+[adjoint | ep=0047] loss=120.1919 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=20:50:59
+[adjoint | ep=0048] loss=122.1054 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=20:51:42
+[adjoint | ep=0049] loss=118.3683 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=20:52:25
+[adjoint | ep=0050] loss=112.5604 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=20:53:08
+[skip_eval] Skipping evaluation @ epoch 50
+Saving checkpoint ... 
+[adjoint | ep=0051] loss=113.0547 | gpu=1963MiB(rsv=2192MiB) | dt=42.7s | t=20:53:50
+[adjoint | ep=0052] loss=106.4584 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=20:54:33
+[adjoint | ep=0053] loss=100.1287 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=20:55:16
+[adjoint | ep=0054] loss=103.8462 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=20:55:59
+[adjoint | ep=0055] loss=106.6550 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=20:56:42
+[adjoint | ep=0056] loss=107.3093 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=20:57:25
+[adjoint | ep=0057] loss=110.2204 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=20:58:08
+[adjoint | ep=0058] loss=108.6947 | gpu=1963MiB(rsv=2192MiB) | dt=42.5s | t=20:58:50
+[adjoint | ep=0059] loss=106.9271 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=20:59:33
+[adjoint | ep=0060] loss=108.6972 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=21:00:16
+[adjoint | ep=0061] loss=108.8129 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=21:00:59
+[adjoint | ep=0062] loss=111.4043 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=21:01:42
+[adjoint | ep=0063] loss=115.3612 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=21:02:25
+[adjoint | ep=0064] loss=117.9967 | gpu=1963MiB(rsv=2192MiB) | dt=42.7s | t=21:03:07
+[adjoint | ep=0065] loss=117.1738 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=21:03:50
+[adjoint | ep=0066] loss=115.2000 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=21:04:33
+[adjoint | ep=0067] loss=110.9486 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=21:05:16
+[adjoint | ep=0068] loss=108.1572 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=21:05:59
+[adjoint | ep=0069] loss=109.7834 | gpu=1963MiB(rsv=2192MiB) | dt=43.1s | t=21:06:42
+[adjoint | ep=0070] loss=117.3221 | gpu=1963MiB(rsv=2192MiB) | dt=42.5s | t=21:07:24
+[adjoint | ep=0071] loss=114.2207 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=21:08:07
+[adjoint | ep=0072] loss=112.7289 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=21:08:50
+[adjoint | ep=0073] loss=113.6213 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=21:09:33
+[adjoint | ep=0074] loss=115.6192 | gpu=1963MiB(rsv=2192MiB) | dt=42.7s | t=21:10:16
+[adjoint | ep=0075] loss=109.8788 | gpu=1963MiB(rsv=2192MiB) | dt=43.1s | t=21:10:59
+[adjoint | ep=0076] loss=111.1325 | gpu=1963MiB(rsv=2192MiB) | dt=42.7s | t=21:11:42
+[adjoint | ep=0077] loss=112.8546 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=21:12:25
+[adjoint | ep=0078] loss=112.0783 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=21:13:08
+[adjoint | ep=0079] loss=112.7685 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=21:13:51
+[adjoint | ep=0080] loss=114.3076 | gpu=1963MiB(rsv=2192MiB) | dt=43.1s | t=21:14:34
+[adjoint | ep=0081] loss=114.3898 | gpu=1963MiB(rsv=2192MiB) | dt=43.1s | t=21:15:17
+[adjoint | ep=0082] loss=114.1949 | gpu=1963MiB(rsv=2192MiB) | dt=43.1s | t=21:16:00
+[adjoint | ep=0083] loss=110.9720 | gpu=1963MiB(rsv=2192MiB) | dt=42.6s | t=21:16:42
+[adjoint | ep=0084] loss=112.2556 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=21:17:25
+[adjoint | ep=0085] loss=115.4650 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=21:18:08
+[adjoint | ep=0086] loss=113.1701 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=21:18:51
+[adjoint | ep=0087] loss=113.4367 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=21:19:34
+[adjoint | ep=0088] loss=116.7445 | gpu=1963MiB(rsv=2192MiB) | dt=43.1s | t=21:20:17
+[adjoint | ep=0089] loss=115.3467 | gpu=1963MiB(rsv=2192MiB) | dt=42.5s | t=21:21:00
+[adjoint | ep=0090] loss=110.3214 | gpu=1963MiB(rsv=2192MiB) | dt=42.7s | t=21:21:43
+[adjoint | ep=0091] loss=115.7046 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=21:22:25
+[adjoint | ep=0092] loss=117.1840 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=21:23:08
+[adjoint | ep=0093] loss=112.4284 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=21:23:51
+[adjoint | ep=0094] loss=110.4140 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=21:24:34
+[adjoint | ep=0095] loss=114.5180 | gpu=1963MiB(rsv=2192MiB) | dt=42.5s | t=21:25:17
+[adjoint | ep=0096] loss=112.3530 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=21:26:00
+[adjoint | ep=0097] loss=113.4306 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=21:26:43
+[adjoint | ep=0098] loss=114.0611 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=21:27:26
+[adjoint | ep=0099] loss=113.2161 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=21:28:08
+[adjoint | ep=0100] loss=115.3275 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=21:28:51
+[skip_eval] Skipping evaluation @ epoch 100
+Saving checkpoint ... 
+Periodic save @ epoch 100 (save_freq=100)
+[adjoint | ep=0101] loss=115.1068 | gpu=1963MiB(rsv=2192MiB) | dt=42.5s | t=21:29:34
+[adjoint | ep=0102] loss=113.3045 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=21:30:17
+[adjoint | ep=0103] loss=115.8214 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=21:31:00
+[adjoint | ep=0104] loss=118.6843 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=21:31:43
+[adjoint | ep=0105] loss=113.8472 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=21:32:26
+[adjoint | ep=0106] loss=116.9253 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=21:33:09
+[adjoint | ep=0107] loss=116.8283 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=21:33:52
+[adjoint | ep=0108] loss=120.7836 | gpu=1963MiB(rsv=2192MiB) | dt=42.5s | t=21:34:34
+[adjoint | ep=0109] loss=119.5035 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=21:35:17
+[adjoint | ep=0110] loss=119.3922 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=21:36:00
+[adjoint | ep=0111] loss=117.8925 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=21:36:43
+[adjoint | ep=0112] loss=116.4988 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=21:37:26
+[adjoint | ep=0113] loss=118.7810 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=21:38:09
+[adjoint | ep=0114] loss=117.0650 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=21:38:52
+[adjoint | ep=0115] loss=117.7410 | gpu=1963MiB(rsv=2192MiB) | dt=43.1s | t=21:39:35
+[adjoint | ep=0116] loss=119.3476 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=21:40:17
+[adjoint | ep=0117] loss=116.2749 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=21:41:01
+[adjoint | ep=0118] loss=114.3770 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=21:41:43
+[adjoint | ep=0119] loss=115.0905 | gpu=1963MiB(rsv=2192MiB) | dt=43.1s | t=21:42:26
+[adjoint | ep=0120] loss=112.6444 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=21:43:09
+[adjoint | ep=0121] loss=113.2069 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=21:43:52
+[adjoint | ep=0122] loss=110.7932 | gpu=1963MiB(rsv=2192MiB) | dt=42.7s | t=21:44:35
+[adjoint | ep=0123] loss=109.4364 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=21:45:18
+[adjoint | ep=0124] loss=110.0766 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=21:46:01
+[adjoint | ep=0125] loss=109.5005 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=21:46:44
+[adjoint | ep=0126] loss=125.8294 | gpu=1963MiB(rsv=2192MiB) | dt=42.6s | t=21:47:26
+[adjoint | ep=0127] loss=124.8771 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=21:48:09
+[adjoint | ep=0128] loss=119.0805 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=21:48:52
+[adjoint | ep=0129] loss=121.4670 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=21:49:35
+[adjoint | ep=0130] loss=119.6179 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=21:50:18
+[adjoint | ep=0131] loss=119.7658 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=21:51:01
+[adjoint | ep=0132] loss=119.6592 | gpu=1963MiB(rsv=2192MiB) | dt=43.2s | t=21:51:44
+[adjoint | ep=0133] loss=118.6165 | gpu=1963MiB(rsv=2192MiB) | dt=42.6s | t=21:52:27
+[adjoint | ep=0134] loss=118.3260 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=21:53:10
+[adjoint | ep=0135] loss=116.2145 | gpu=1963MiB(rsv=2192MiB) | dt=43.1s | t=21:53:53
+[adjoint | ep=0136] loss=111.0968 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=21:54:36
+[adjoint | ep=0137] loss=114.8176 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=21:55:18
+[adjoint | ep=0138] loss=112.5505 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=21:56:01
+[adjoint | ep=0139] loss=112.6287 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=21:56:44
+[adjoint | ep=0140] loss=112.9718 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=21:57:27
+[adjoint | ep=0141] loss=112.0447 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=21:58:10
+[adjoint | ep=0142] loss=114.4057 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=21:58:53
+[adjoint | ep=0143] loss=112.1557 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=21:59:36
+[adjoint | ep=0144] loss=112.7564 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=22:00:19
+[adjoint | ep=0145] loss=109.8862 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=22:01:01
+[adjoint | ep=0146] loss=100.3891 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=22:01:44
+[adjoint | ep=0147] loss=98.0540 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=22:02:27
+[adjoint | ep=0148] loss=104.3768 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=22:03:10
+[adjoint | ep=0149] loss=109.8742 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=22:03:53
+[adjoint | ep=0150] loss=111.9101 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=22:04:36
+[skip_eval] Skipping evaluation @ epoch 150
+Saving checkpoint ... 
+[adjoint | ep=0151] loss=110.0194 | gpu=1963MiB(rsv=2192MiB) | dt=42.7s | t=22:05:19
+[adjoint | ep=0152] loss=113.4183 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=22:06:02
+[adjoint | ep=0153] loss=113.1283 | gpu=1963MiB(rsv=2192MiB) | dt=43.1s | t=22:06:45
+[adjoint | ep=0154] loss=113.9429 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=22:07:28
+[adjoint | ep=0155] loss=114.9252 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=22:08:10
+[adjoint | ep=0156] loss=115.3801 | gpu=1963MiB(rsv=2192MiB) | dt=42.7s | t=22:08:53
+[adjoint | ep=0157] loss=113.5528 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=22:09:36
+[adjoint | ep=0158] loss=113.0037 | gpu=1963MiB(rsv=2192MiB) | dt=42.7s | t=22:10:19
+[adjoint | ep=0159] loss=115.7803 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=22:11:02
+[adjoint | ep=0160] loss=113.9978 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=22:11:45
+[adjoint | ep=0161] loss=115.6296 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=22:12:28
+[adjoint | ep=0162] loss=114.4510 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=22:13:10
+[adjoint | ep=0163] loss=112.6486 | gpu=1963MiB(rsv=2192MiB) | dt=43.0s | t=22:13:53
+[adjoint | ep=0164] loss=108.8160 | gpu=1963MiB(rsv=2192MiB) | dt=42.7s | t=22:14:36
+[adjoint | ep=0165] loss=107.9910 | gpu=1963MiB(rsv=2192MiB) | dt=42.6s | t=22:15:19
+[adjoint | ep=0166] loss=112.9305 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=22:16:02
+[adjoint | ep=0167] loss=110.3339 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=22:16:44
+[adjoint | ep=0168] loss=107.5753 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=22:17:27
+[adjoint | ep=0169] loss=102.8140 | gpu=1963MiB(rsv=2192MiB) | dt=43.2s | t=22:18:10
+[adjoint | ep=0170] loss=103.5799 | gpu=1963MiB(rsv=2192MiB) | dt=42.6s | t=22:18:53
+[adjoint | ep=0171] loss=108.4978 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=22:19:36
+[adjoint | ep=0172] loss=105.1768 | gpu=1963MiB(rsv=2192MiB) | dt=42.8s | t=22:20:19
+[adjoint | ep=0173] loss=106.8772 | gpu=1963MiB(rsv=2192MiB) | dt=42.7s | t=22:21:01
+[adjoint | ep=0174] loss=106.7654 | gpu=1963MiB(rsv=2192MiB) | dt=42.7s | t=22:21:44
+[adjoint | ep=0175] loss=104.6204 | gpu=1963MiB(rsv=2192MiB) | dt=43.2s | t=22:22:27
+[adjoint | ep=0176] loss=104.9465 | gpu=1963MiB(rsv=2192MiB) | dt=42.6s | t=22:23:10
+[adjoint | ep=0177] loss=106.0745 | gpu=1963MiB(rsv=2192MiB) | dt=42.9s | t=22:23:53

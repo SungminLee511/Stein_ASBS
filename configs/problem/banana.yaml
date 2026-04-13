@@ -1,0 +1,12 @@
+# @package _global_
+
+dim: 2
+n_particles: 1
+spatial_dim: 2
+
+energy:
+  _target_: adjoint_samplers.energies.viz_energies.BananaEnergy
+  dim: ${dim}
+
+evaluator:
+  _target_: adjoint_samplers.components.generic_evaluator.GenericEnergyEvaluator

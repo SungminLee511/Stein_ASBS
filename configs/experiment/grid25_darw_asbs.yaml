@@ -39,4 +39,5 @@ adjoint_matcher:
 
 # === eval & logging ===
 use_wandb: false
+skip_eval: true
 eval_freq: 200
