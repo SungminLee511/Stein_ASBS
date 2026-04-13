@@ -36,4 +36,5 @@ class BaseEnergy:
         # forces: ∇E = - ∇ log p, as p(x) = C exp(-E(x))
         output_dict = {}
         output_dict["forces"] = self.grad_E(x)
+        output_dict["energy"] = self.eval(x)
         return output_dict

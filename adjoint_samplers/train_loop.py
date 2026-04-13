@@ -50,7 +50,12 @@ def train_one_epoch(
 
         data = next(loader)
 
-        input, target = matcher.prepare_target(data, device)
+        result = matcher.prepare_target(data, device)
+        if len(result) == 3:
+            input, target, weights = result
+        else:
+            input, target = result
+            weights = None
 
         # Sanitize targets: replace NaN/Inf, then clip per-sample norms
         target = torch.nan_to_num(target, nan=0.0, posinf=0.0, neginf=0.0)
@@ -64,7 +69,11 @@ def train_one_epoch(
         output = model(*input)
         output = torch.nan_to_num(output, nan=0.0, posinf=0.0, neginf=0.0)
 
-        loss = loss_scale * ((output - target)**2).mean()
+        per_sample_loss = ((output - target) ** 2).mean(dim=-1)  # (B,)
+        if weights is not None:
+            loss = loss_scale * (weights * per_sample_loss).mean()
+        else:
+            loss = loss_scale * per_sample_loss.mean()
 
         if torch.isnan(loss) or torch.isinf(loss):
             optimizer.zero_grad()          # discard any stale grads

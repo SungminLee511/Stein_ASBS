@@ -167,10 +167,18 @@ def main(cfg):
                 cfg
             )
 
-            writer.log({
+            log_dict = {
                 f"{stage}_loss": loss,
                 f"{stage}_buffer_size": len(matcher.buffer),
-            }, step=epoch)
+            }
+
+            # DARW weight logging (if matcher has DARW enabled)
+            if hasattr(matcher, '_last_darw_weight_max') and hasattr(matcher, 'darw_beta') and matcher.darw_beta > 0:
+                log_dict["darw_weight_max"] = matcher._last_darw_weight_max
+                log_dict["darw_weight_min"] = matcher._last_darw_weight_min
+                log_dict["darw_weight_std"] = matcher._last_darw_weight_std
+
+            writer.log(log_dict, step=epoch)
 
             # Timestamp and GPU memory info
             now_kst = datetime.now(KST).strftime("%H:%M:%S")

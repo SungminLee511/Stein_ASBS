@@ -5,6 +5,8 @@ Forked from [facebookresearch/adjoint_samplers](https://github.com/facebookresea
 
 **Core Idea:** Add an inter-particle KSD term to the terminal cost of the stochastic optimal control (SOC) problem. This modifies only the adjoint terminal condition — everything else (SDE integration, backward sim, buffer, AM regression, training loop) stays identical.
 
+**DARW Extension:** Density-Adaptive Regression Reweighting (DARW) reweights the AM loss per-sample using importance weights `ŵ_i = (p̃(x1_i) / q̂(x1_i))^β`, where `q̂` is a KDE using the same kernel as KSD. This amplifies loss for under-represented modes and attenuates over-represented ones.
+
 **Key equation (the only change to ASBS):**
 ```
 Y₁ⁱ = -(1/N)∇Φ₀(X₁ⁱ) - (λ/N²) Σⱼ ∇ₓ kₚ(X₁ⁱ, X₁ʲ)
@@ -92,7 +94,9 @@ Stein_ASBS/
 │   │   ├── adjoint_vp.yaml       # EXISTING — VP adjoint matcher
 │   │   ├── corrector.yaml        # EXISTING — corrector matcher
 │   │   ├── ksd_adjoint_ve.yaml   # NEW — KSD VE matcher (RBF kernel)
-│   │   └── ksd_imq_adjoint_ve.yaml # NEW — KSD VE matcher (IMQ kernel)
+│   │   ├── ksd_imq_adjoint_ve.yaml # NEW — KSD VE matcher (IMQ kernel)
+│   │   ├── ksd_darw_adjoint_ve.yaml # NEW — KSD+DARW VE matcher (RBF kernel)
+│   │   └── ksd_imq_darw_adjoint_ve.yaml # NEW — KSD+DARW VE matcher (IMQ kernel)
 │   ├── sde/                      # ve.yaml, vp.yaml, graph_ve.yaml, etc.
 │   ├── problem/                  # dw4, lj13, lj38, lj55, muller, blogreg_*, rotgmm*, gmm9
 │   ├── source/                   # gauss.yaml, harmonic.yaml, delta.yaml, meanfree.yaml
@@ -144,8 +148,9 @@ Stein_ASBS/
 2. **Forward SDE** simulate each particle: `sdeint(sde, x0, timesteps)`
 3. **Adjoint terminal condition** compute Y₁ⁱ from terminal cost gradient
 4. **Backward** propagate adjoint (VP-SDE) or keep constant (VE-SDE)
-5. **Buffer** store (t, xₜ, Yₜ) tuples
-6. **AM Regression** train controller uθ(x,t) against -Yₜ via MSE
+5. **DARW weights** (optional) compute per-sample importance weights from p̃/q̂ ratio
+6. **Buffer** store (t, xₜ, Yₜ, weights) tuples
+7. **AM Regression** train controller uθ(x,t) against -Yₜ via weighted MSE (weights from DARW)
 
 ### KSD Modification (Steps 3–4 only)
 - After computing standard adjoint `a₀ⁱ = -∇Φ₀(x₁ⁱ)`, add KSD correction:
@@ -198,6 +203,8 @@ Stein_ASBS/
 | `ksd_kernel` | "rbf" | Kernel type: "rbf" (Gaussian) or "imq" (Inverse Multi-Quadric) |
 | `ksd_score_beta` | 1.0 | Temperature-scaled score: s(x) = -β∇E(x). At β<1, the Stein kernel sees a flatter landscape (smoothed score), enabling cross-barrier gradients. SDE dynamics still use the true score. |
 | `ksd_imq_c` | null (uses bandwidth) | Fixed IMQ scale parameter c in k(x,x') = (c² + ‖x-x'‖²)^{-1/2}. Overrides bandwidth for IMQ kernel when set. |
+| `darw_beta` | 0.0 (disabled) | DARW reweighting strength. 0 = uniform weights, 1 = full reweighting. Ablate over {0.3, 0.5, 0.7, 1.0} |
+| `darw_weight_clip` | 10.0 | Max allowed DARW weight before self-normalization (for stability) |
 
 ### Training Stability (train.yaml)
 
@@ -226,10 +233,15 @@ Stein_ASBS/
 - **SVGD connection**: KSD gradient = SVGD update direction
 
 ## Gotchas
-1. **DO NOT modify existing files** (`matcher.py`, `evaluator.py`, etc.). New code inherits/extends only. Exception: `train_loop.py` has NaN-safety guards and clipping support added.
+1. **DO NOT modify existing files** (`matcher.py`, `evaluator.py`, etc.). New code inherits/extends only. Exceptions: `train_loop.py` (NaN-safety + DARW weighted loss), `base_energy.py` (added `"energy"` key to `__call__`).
 2. **Device consistency** — all tensors in `stein_kernel.py` must stay on same device (CUDA).
 3. **COM-free coordinates** — DW4/LJ samples are already center-of-mass free; no special handling needed for Stein kernel.
 4. **Gradient detaching** — `_apply_ksd_correction` runs under `@torch.no_grad()`. The KSD correction modifies the adjoint *target* (fixed regression target), NOT the loss. This is by design.
 5. **Memory** — N²×D×4 bytes for pairwise tensors. N=512,D=8: 8MB (fine). N=512,D=165: 170MB (ok). N>1024 with high D: use chunked version.
 6. **λ tuning** — if `ksd_grad_norm >> adjoint_norm`, λ is too large. Start at 1.0, reduce to 0.1 if unstable.
 7. **Hydra `_target_`** — new matcher configs must point to `adjoint_samplers.components.ksd_matcher.KSDAdjointVEMatcher`.
+8. **DARW weight detaching** — DARW weights are computed in `populate_buffer` under `@torch.no_grad()` and stored as fixed buffer values. They do NOT participate in the computational graph.
+9. **DARW backward compat** — with `darw_beta: 0`, DARW is disabled and all weights are 1.0 (identical to non-DARW behavior). Existing KSD configs (without `darw_beta`) default to 0.
+10. **`BaseEnergy.__call__`** returns both `"forces"` and `"energy"` keys. All subclasses inherit this via `eval()` + `grad_E()`.
+11. **`prepare_target` return signature** — KSD matchers return 3 values `(input, target, weights)`. Base matchers return 2 values `(input, target)`. `train_loop.py` handles both via `len(result)` check.
+12. **`train_loop.py` loss** — uses `per_sample_loss.mean(dim=-1)` (not `sum`) to preserve scale when weighting.

@@ -1,0 +1,62 @@
+# @package _global_
+
+defaults:
+  - /problem: lj38
+  - /source: harmonic
+  - /sde@ref_sde: graph_ve
+  - /model@controller: egnn
+  - /state_cost: zero
+  - /term_cost: graph_corrector_term_cost
+  - /matcher@adjoint_matcher: ksd_darw_adjoint_ve
+  - /model@corrector: egnn
+  - /matcher@corrector_matcher: corrector
+
+exp_name: lj38_darw_asbs
+
+# === source ===
+scale: 1.5
+
+# === sde ===
+nfe: 1000
+sigma_max: 2
+sigma_min: 0.001
+rescale_t: null
+
+# === KSD parameters (RBF kernel) ===
+ksd_lambda: 1.0
+darw_beta: 0.5
+
+# === training ===
+num_epochs: 5000
+max_grad_E_norm: 100
+
+resample_batch_size: 256
+train_batch_size: 256
+eval_batch_size: 1000
+num_eval_samples: 2000
+
+adj_num_epochs_per_stage: 250
+ctr_num_epochs_per_stage: 20
+
+adjoint_matcher:
+  buffer_size: 10000
+  duplicates: 25
+  resample_size: 256
+  ksd_score_beta: 1.0  # No smoothing (standard score)
+  num_epochs_per_stage: ${adj_num_epochs_per_stage}
+  optim:
+    lr: 1e-4
+    weight_decay: 0
+
+corrector_matcher:
+  buffer_size: 10000
+  duplicates: 25
+  resample_size: 256
+  num_epochs_per_stage: ${ctr_num_epochs_per_stage}
+  optim:
+    lr: 1e-4
+    weight_decay: 0
+
+# === eval & logging ===
+use_wandb: true
+eval_freq: 100

@@ -1,0 +1,18 @@
+_target_: adjoint_samplers.components.ksd_matcher.KSDAdjointVEMatcher
+
+ksd_lambda: ${ksd_lambda}
+ksd_bandwidth: null  # null = median heuristic
+ksd_max_particles: 2048
+ksd_efficient_threshold: 1024
+ksd_score_beta: 1.0
+ksd_warmup_epochs: 0
+
+darw_beta: ${darw_beta}
+darw_weight_clip: 10.0
+
+grad_state_cost:
+  _target_: adjoint_samplers.components.state_cost.ZeroGradStateCost
+
+buffer:
+  _target_: adjoint_samplers.components.buffer.BatchBuffer
+  buffer_size: ${adjoint_matcher.buffer_size}
