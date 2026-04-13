@@ -77,6 +77,53 @@ All 32 mode centers shown as black `+` markers. PCA fit on reference samples.
 
 ---
 
+## Unequal-Weight GMM (5 modes, 2D)
+
+Target weights: [0.50, 0.25, 0.15, 0.07, 0.03]. Trained for 5000 epochs, no gradient clipping.
+
+**Diverged runs (excluded):** ASBS seed 0 (NaN), KSD λ=1.0 all 3 seeds (NaN or exploded to ~15k loss).
+
+### Metrics (checkpoint_latest, epoch 4900)
+
+| Experiment | Modes | W2 | Weight TV | Weight KL | Minority (3%) | E_mean |
+|---|---|---|---|---|---|---|
+| ASBS s1 | 5/5 | 3.181 | 0.3135 | 0.2827 | 0.1610 | 2.942 |
+| ASBS s2 | 1/5 | 4.879 | 0.5000 | 10.2439 | 0.0000 | 1.703 |
+| KSD λ=5 s0 | 2/5 | 7.219 | 0.7800 | 16.8489 | 0.0000 | 3.377 |
+| KSD λ=5 s1 | 1/5 | 5.231 | 0.7500 | 16.0003 | 0.0000 | 2.372 |
+| KSD λ=5 s2 | 2/5 | 6.565 | 0.9000 | 19.5223 | 0.4840 | 4.092 |
+
+### Aggregated (mean +/- std, latest checkpoint)
+
+| Method | Modes | W2 | Weight TV | Weight KL | Minority wt |
+|---|---|---|---|---|---|
+| ASBS (2 seeds) | 3.0 | 4.030 +/- 0.849 | 0.4067 +/- 0.0932 | 5.2633 +/- 4.9806 | 0.0805 +/- 0.0805 |
+| KSD λ=5 (3 seeds) | 1.7 | 6.338 +/- 0.827 | 0.8100 +/- 0.0648 | 17.4572 +/- 1.5008 | 0.1613 +/- 0.2282 |
+
+### Best Checkpoint Selection (via epoch sweep)
+
+Checkpoint sweep over epochs {500, 1000, ..., 4900} reveals that:
+- **ASBS s1** peaks at **epoch 3100** (5/5 modes, TV=0.194, KL=0.089, W2=1.713) then degrades
+- **ASBS s2** is stuck at 1/5 modes from epoch 500 through 4900 (full mode collapse to mode 0)
+- **KSD λ=5 all seeds** never exceed 2/5 modes across all checkpoints — persistent mode collapse
+
+| Experiment (best ckpt) | Epoch | Modes | W2 | Weight TV | Weight KL | Minority (3%) | E_mean |
+|---|---|---|---|---|---|---|---|
+| **ASBS s1** | **3100** | **5/5** | **1.713** | **0.1940** | **0.0888** | **0.0560** | 2.427 |
+| ASBS s2 | 4900 | 1/5 | 4.879 | 0.5000 | 10.2439 | 0.0000 | 1.703 |
+| KSD λ=5 s0 | 4900 | 2/5 | 7.219 | 0.7800 | 16.8489 | 0.0000 | 3.377 |
+| KSD λ=5 s1 | 4900 | 1/5 | 5.231 | 0.7500 | 16.0003 | 0.0000 | 2.372 |
+| KSD λ=5 s2 | 4900 | 2/5 | 6.565 | 0.9000 | 19.5223 | 0.4840 | 4.092 |
+
+### Notes
+
+- **KSD λ=1.0 is completely unstable** on this benchmark: all 3 seeds diverged (2 to NaN, 1 exploded to loss ~15k).
+- **KSD λ=5.0 shows persistent mode collapse** on these seeds, unlike the prior single-seed eval (from another server, seed 0) which recovered all 5 modes. This suggests high seed sensitivity.
+- **Baseline ASBS s1 is the only run to recover all 5 modes**, and only at an intermediate checkpoint (ep 2700–3500). Overtraining causes degradation.
+- The unequal-weight GMM appears to be a high-variance benchmark where mode coverage is extremely seed-dependent.
+
+---
+
 ## Key Findings
 
 1. **Grid25:** KSD lambda=5 is the clear winner with the best W2 (0.808), Sinkhorn (0.718), and weight TV (0.137) in its best seed, and the best aggregated metrics across all 3 seeds.
@@ -86,3 +133,5 @@ All 32 mode centers shown as black `+` markers. PCA fit on reference samples.
 3. **Training stability:** MW5 is prone to transient loss spikes across all methods. Gradient clipping (`clip_grad_norm=1.0`) and target clipping (`clip_target_norm=200.0`) are essential for reliable convergence. Without clipping, 7/18 MW5+Grid25 runs diverged; with clipping, all recovered.
 
 4. **KSD effect on mode uniformity:** The KSD penalty consistently improves weight TV (mode balance) at higher lambda. At lambda=5, MW5 weight TV drops from 0.316 (ASBS) to 0.238 (KSD), a 25% improvement in mode coverage uniformity.
+
+5. **Unequal-Weight GMM:** This benchmark is highly seed-sensitive. KSD λ=1.0 is completely unstable (all 3 seeds diverged). KSD λ=5.0 shows persistent mode collapse on all 3 seeds (1–2 modes only), contradicting the prior single-seed result. Baseline ASBS s1 is the only run to recover all 5 modes (at ep 3100: TV=0.194, KL=0.089), but overtraining degrades it. ASBS s2 and all KSD seeds mode-collapse from the start. This suggests the unequal-weight GMM needs either more seeds, gradient clipping, or a different λ schedule to achieve reliable mode recovery.
