@@ -378,7 +378,7 @@ eval_freq: 200
 
 IMPORTANT NOTE ON SIGMA_MAX: Alanine dipeptide coordinates are in NANOMETERS. Typical bond lengths are ~0.15 nm, and the molecule is ~1 nm across. sigma_max=0.1 nm is a reasonable starting point. Do NOT use sigma_max=2 like the LJ benchmarks — that would blow the molecule apart. You may need to tune this. Start with 0.1, and if training doesn’t converge, try 0.05 or 0.2.
 IMPORTANT NOTE ON ARCHITECTURE: Start with FourierMLP (non-graph). If results are poor, consider using EGNN with n_particles=22, spatial_dim=3 — but this requires the graph SDE and graph-aware configs. Try FourierMLP first since it’s simpler.
-configs/experiment/aldp_ksd_asbs.yaml: Same as aldp_asbs but change matcher to ksd_adjoint_ve and add ksd_lambda: 0.1. Start with small lambda — the energy scale for molecular systems in kBT units is very different from LJ.
+configs/experiment/aldp_ksd_asbs.yaml: Same as aldp_asbs but change matcher to ksd_adjoint_ve and add sdr_lambda: 0.1. Start with small lambda — the energy scale for molecular systems in kBT units is very different from LJ.
 Step 5: Train
 
 conda activate asbs_aldp
@@ -416,7 +416,7 @@ from pathlib import Path
 
 # Metrics:
 # - Count samples in each Ramachandran basin
-# - Energy W2, KSD², dist_W2 (same as other benchmarks)
+# - Energy W2, SDR², dist_W2 (same as other benchmarks)
 # - Dihedral coverage: number of occupied basins out of 5-6 known states
 
 

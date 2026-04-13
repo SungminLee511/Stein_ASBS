@@ -1,11 +1,10 @@
-# Copyright (c) SungminLee511. KSD-Augmented Adjoint Samplers.
+# Copyright (c) SungminLee511. SDR-Augmented Adjoint Samplers.
 
 """
-KSD-augmented adjoint matchers. Inherit from existing matchers and override
-only the populate_buffer method to add the inter-particle Stein kernel
-gradient correction to the adjoint terminal condition.
-
-See .claude/skills/math_specs.md Section 4, 6 for the math.
+SDR-augmented adjoint matchers. SDR (Stein Discrepancy Regularization)
+combines KSD penalty with DARW reweighting. Inherit from existing matchers
+and override only the populate_buffer method to add the inter-particle
+Stein kernel gradient correction to the adjoint terminal condition.
 """
 
 import torch
@@ -22,47 +21,49 @@ from adjoint_samplers.components.stein_kernel import (
 )
 
 
-class KSDAdjointVEMatcher(AdjointVEMatcher):
-    """AdjointVEMatcher with KSD correction on the adjoint terminal condition.
+class SDRAdjointVEMatcher(AdjointVEMatcher):
+    """AdjointVEMatcher with SDR correction on the adjoint terminal condition.
+
+    SDR = Stein Discrepancy Regularization (KSD penalty + DARW reweighting).
 
     For VE-SDE (no drift), the adjoint is constant in time:
         Y_t^i = Y_1^i = -(1/N) * ∇Φ₀(x₁ⁱ) - (λ/N²) * Σⱼ ∇ₓ kₚ(x₁ⁱ, x₁ʲ)
 
     The first term is the standard ASBS adjoint.
-    The second term is the KSD correction that prevents mode collapse.
+    The second term is the SDR correction that prevents mode collapse.
     """
     def __init__(
         self,
-        ksd_lambda: float = 1.0,
-        ksd_bandwidth: float | None = None,
-        ksd_max_particles: int = 2048,
-        ksd_efficient_threshold: int = 1024,
-        ksd_kernel: str = "rbf",
-        ksd_score_beta: float = 1.0,
-        ksd_imq_c: float | None = None,
-        ksd_warmup_epochs: int = 0,
-        darw_beta: float = 0.0,
-        darw_weight_clip: float = 10.0,
+        sdr_lambda: float = 1.0,
+        sdr_bandwidth: float | None = None,
+        sdr_max_particles: int = 2048,
+        sdr_efficient_threshold: int = 1024,
+        sdr_kernel: str = "rbf",
+        sdr_score_beta: float = 1.0,
+        sdr_imq_c: float | None = None,
+        sdr_warmup_epochs: int = 0,
+        sdr_beta: float = 0.0,
+        sdr_weight_clip: float = 10.0,
         **kwargs,
     ):
         super().__init__(**kwargs)
-        self.ksd_lambda = ksd_lambda
-        self.ksd_bandwidth = ksd_bandwidth
-        self.ksd_max_particles = ksd_max_particles
-        self.ksd_efficient_threshold = ksd_efficient_threshold
-        self.ksd_kernel = ksd_kernel
-        self.ksd_score_beta = ksd_score_beta
-        self.ksd_imq_c = ksd_imq_c
-        self.ksd_warmup_epochs = ksd_warmup_epochs
-        self.darw_beta = darw_beta
-        self.darw_weight_clip = darw_weight_clip
+        self.sdr_lambda = sdr_lambda
+        self.sdr_bandwidth = sdr_bandwidth
+        self.sdr_max_particles = sdr_max_particles
+        self.sdr_efficient_threshold = sdr_efficient_threshold
+        self.sdr_kernel = sdr_kernel
+        self.sdr_score_beta = sdr_score_beta
+        self.sdr_imq_c = sdr_imq_c
+        self.sdr_warmup_epochs = sdr_warmup_epochs
+        self.sdr_beta = sdr_beta
+        self.sdr_weight_clip = sdr_weight_clip
 
         # Logging
-        self._last_ksd = 0.0
-        self._last_ksd_grad_norm = 0.0
-        self._last_darw_weight_max = 0.0
-        self._last_darw_weight_min = 0.0
-        self._last_darw_weight_std = 0.0
+        self._last_sdr_ksd = 0.0
+        self._last_sdr_grad_norm = 0.0
+        self._last_sdr_weight_max = 0.0
+        self._last_sdr_weight_min = 0.0
+        self._last_sdr_weight_std = 0.0
 
     def populate_buffer(
             self,
@@ -71,7 +72,7 @@ class KSDAdjointVEMatcher(AdjointVEMatcher):
             is_asbs_init_stage: bool,
             epoch: int = -1,
     ):
-        """Override to add KSD correction to the adjoint."""
+        """Override to add SDR correction to the adjoint."""
 
         # Step 1: Standard forward simulation (unchanged)
         (x0, x1) = sdeint(
@@ -84,17 +85,17 @@ class KSDAdjointVEMatcher(AdjointVEMatcher):
         # Step 2: Standard adjoint computation (unchanged)
         adjoint1 = self._compute_adjoint1(x1, is_asbs_init_stage).clone()
 
-        # Step 3: KSD correction — skip during init stage AND warmup
-        in_warmup = (self.ksd_warmup_epochs > 0 and epoch >= 0
-                     and epoch < self.ksd_warmup_epochs)
-        if self.ksd_lambda > 0 and not is_asbs_init_stage and not in_warmup:
-            adjoint1 = self._apply_ksd_correction(x1, adjoint1)
+        # Step 3: SDR KSD correction — skip during init stage AND warmup
+        in_warmup = (self.sdr_warmup_epochs > 0 and epoch >= 0
+                     and epoch < self.sdr_warmup_epochs)
+        if self.sdr_lambda > 0 and not is_asbs_init_stage and not in_warmup:
+            adjoint1 = self._apply_sdr_correction(x1, adjoint1)
 
-        # Step 4: DARW weights
-        if self.darw_beta > 0 and not is_asbs_init_stage and not in_warmup:
-            darw_weights = self._compute_darw_weights(x1)
+        # Step 4: SDR DARW weights
+        if self.sdr_beta > 0 and not is_asbs_init_stage and not in_warmup:
+            sdr_weights = self._compute_sdr_weights(x1)
         else:
-            darw_weights = torch.ones(x1.shape[0], device=x1.device)
+            sdr_weights = torch.ones(x1.shape[0], device=x1.device)
 
         # Step 5: Store in buffer
         self._check_buffer_sample_shape(x0, x1, adjoint1)
@@ -102,7 +103,7 @@ class KSDAdjointVEMatcher(AdjointVEMatcher):
             "x0": x0.to("cpu"),
             "x1": x1.to("cpu"),
             "adjoint1": adjoint1.to("cpu"),
-            "darw_weights": darw_weights.to("cpu"),
+            "sdr_weights": sdr_weights.to("cpu"),
         })
 
     def prepare_target(self, data, device):
@@ -116,26 +117,25 @@ class KSDAdjointVEMatcher(AdjointVEMatcher):
 
         self._check_target_shape(t, xt, adjoint)
 
-        if "darw_weights" in data:
-            weights = data["darw_weights"].to(device)
+        if "sdr_weights" in data:
+            weights = data["sdr_weights"].to(device)
         else:
             weights = torch.ones(x0.shape[0], device=device)
 
         return (t, xt), -adjoint, weights
 
     @torch.no_grad()
-    def _apply_ksd_correction(
+    def _apply_sdr_correction(
         self,
         x1: torch.Tensor,
         adjoint1: torch.Tensor,
     ) -> torch.Tensor:
         """Add the KSD gradient correction to the adjoint.
 
-        From math_specs.md Section 4.1:
             Y₁ⁱ = -(1/N)∇Φ₀ - (λ/N²)Σⱼ ∇ₓkₚ
 
         The matcher stores adjoint1 = ∇Φ₀ (forces, positive sign) and
-        negates it in prepare_target. So we add the KSD correction with
+        negates it in prepare_target. So we add the correction with
         the same sign convention:
             adjoint1_corrected = adjoint1 + (λ/N²) * Σⱼ ∇ₓkₚ
         """
@@ -143,8 +143,8 @@ class KSDAdjointVEMatcher(AdjointVEMatcher):
         device = x1.device
 
         # Subsample if too many particles
-        if N > self.ksd_max_particles:
-            idx = torch.randperm(N, device=device)[:self.ksd_max_particles]
+        if N > self.sdr_max_particles:
+            idx = torch.randperm(N, device=device)[:self.sdr_max_particles]
             x1_sub = x1[idx]
         else:
             x1_sub = x1
@@ -152,11 +152,11 @@ class KSDAdjointVEMatcher(AdjointVEMatcher):
 
         N_sub = x1_sub.shape[0]
 
-        # Determine clip norm for scores and KSD correction
+        # Determine clip norm for scores and SDR correction
         if hasattr(self.grad_term_cost, 'max_grad_E_norm') and self.grad_term_cost.max_grad_E_norm is not None:
             clip_norm = self.grad_term_cost.max_grad_E_norm
-        elif hasattr(self, '_ksd_clip_norm'):
-            clip_norm = self._ksd_clip_norm
+        elif hasattr(self, '_sdr_clip_norm'):
+            clip_norm = self._sdr_clip_norm
         else:
             clip_norm = None
 
@@ -164,7 +164,7 @@ class KSDAdjointVEMatcher(AdjointVEMatcher):
         with torch.enable_grad():
             x1_req = x1_sub.clone().detach().requires_grad_(True)
             energy_out = self.grad_term_cost.energy(x1_req)
-            scores = self.ksd_score_beta * energy_out["forces"].detach()
+            scores = self.sdr_score_beta * energy_out["forces"].detach()
 
         # Sanitize scores: replace NaN/Inf with zero, then clip norms
         scores = torch.nan_to_num(scores, nan=0.0, posinf=0.0, neginf=0.0)
@@ -174,47 +174,45 @@ class KSDAdjointVEMatcher(AdjointVEMatcher):
             scores = scores * s_clip
 
         # Bandwidth / IMQ scale parameter
-        if self.ksd_imq_c is not None and self.ksd_kernel == "imq":
-            # For IMQ kernel, ksd_imq_c overrides the bandwidth as the
-            # scale parameter c in k(x,x') = (c² + ‖x-x'‖²)^{-1/2}
-            ell = torch.tensor(self.ksd_imq_c, device=device, dtype=x1.dtype)
-        elif self.ksd_bandwidth is not None:
-            ell = torch.tensor(self.ksd_bandwidth, device=device, dtype=x1.dtype)
+        if self.sdr_imq_c is not None and self.sdr_kernel == "imq":
+            ell = torch.tensor(self.sdr_imq_c, device=device, dtype=x1.dtype)
+        elif self.sdr_bandwidth is not None:
+            ell = torch.tensor(self.sdr_bandwidth, device=device, dtype=x1.dtype)
         else:
             ell = median_bandwidth(x1_sub)
 
         # Compute Stein kernel gradient sum
-        if N_sub > self.ksd_efficient_threshold:
+        if N_sub > self.sdr_efficient_threshold:
             grad_sum = compute_stein_kernel_gradient_efficient(
-                x1_sub, scores, ell, chunk_size=256, kernel=self.ksd_kernel
+                x1_sub, scores, ell, chunk_size=256, kernel=self.sdr_kernel
             )
         else:
             grad_sum = compute_stein_kernel_gradient(
-                x1_sub, scores, ell, kernel=self.ksd_kernel
+                x1_sub, scores, ell, kernel=self.sdr_kernel
             )
 
-        # KSD correction: (λ / N²) * Σⱼ ∇ₓkₚ(xᵢ, xⱼ)
-        ksd_correction = (self.ksd_lambda / (N_sub ** 2)) * grad_sum
+        # SDR correction: (λ / N²) * Σⱼ ∇ₓkₚ(xᵢ, xⱼ)
+        sdr_correction = (self.sdr_lambda / (N_sub ** 2)) * grad_sum
 
-        # Clip KSD correction per-sample
+        # Clip SDR correction per-sample
         if clip_norm is not None:
-            norms = torch.linalg.vector_norm(ksd_correction, dim=-1, keepdim=True)
+            norms = torch.linalg.vector_norm(sdr_correction, dim=-1, keepdim=True)
             clip_coeff = torch.clamp(clip_norm / (norms + 1e-6), max=1.0)
-            ksd_correction = ksd_correction * clip_coeff
+            sdr_correction = sdr_correction * clip_coeff
 
         # Logging
-        self._last_ksd = compute_ksd_squared(
-            x1_sub, scores, ell, kernel=self.ksd_kernel
+        self._last_sdr_ksd = compute_ksd_squared(
+            x1_sub, scores, ell, kernel=self.sdr_kernel
         ).item()
-        self._last_ksd_grad_norm = ksd_correction.norm(dim=-1).mean().item()
+        self._last_sdr_grad_norm = sdr_correction.norm(dim=-1).mean().item()
 
         # If we subsampled, only correct the subset
         if idx is not None:
             full_correction = torch.zeros_like(adjoint1)
-            full_correction[idx] = ksd_correction
+            full_correction[idx] = sdr_correction
             adjoint1 = adjoint1 + full_correction
         else:
-            adjoint1 = adjoint1 + ksd_correction
+            adjoint1 = adjoint1 + sdr_correction
 
         return adjoint1
 
@@ -236,25 +234,25 @@ class KSDAdjointVEMatcher(AdjointVEMatcher):
         return q_hat
 
     @torch.no_grad()
-    def _compute_darw_weights(self, x1: torch.Tensor) -> torch.Tensor:
+    def _compute_sdr_weights(self, x1: torch.Tensor) -> torch.Tensor:
         """Compute DARW importance weights for the terminal batch.
 
         ŵ_i = (exp(-E(x1_i)) / q̂(x1_i))^β, self-normalized
 
         where q̂(x1_i) = (1/N) Σ_j k(x1_i, x1_j) is the KDE using the
-        base kernel (same bandwidth as KSD).
+        base kernel (same bandwidth as the Stein kernel).
         """
         N, D = x1.shape
         device = x1.device
 
-        # 1. Bandwidth (same as KSD)
-        if self.ksd_bandwidth is not None:
-            ell = torch.tensor(self.ksd_bandwidth, device=device, dtype=x1.dtype)
+        # 1. Bandwidth (same as Stein kernel)
+        if self.sdr_bandwidth is not None:
+            ell = torch.tensor(self.sdr_bandwidth, device=device, dtype=x1.dtype)
         else:
             ell = median_bandwidth(x1)
 
         # 2. KDE: q̂(x1_i) = (1/N) Σ_j k(x1_i, x1_j)
-        if N > self.ksd_efficient_threshold:
+        if N > self.sdr_efficient_threshold:
             q_hat = self._compute_kde_chunked(x1, ell)
         else:
             diffs = x1.unsqueeze(0) - x1.unsqueeze(1)       # (N, N, D)
@@ -277,54 +275,54 @@ class KSDAdjointVEMatcher(AdjointVEMatcher):
         ratios = p_tilde / q_hat                             # (N,)
 
         # 5. Soft power clipping with β
-        ratios_beta = ratios ** self.darw_beta               # (N,)
+        ratios_beta = ratios ** self.sdr_beta                # (N,)
 
         # 6. Hard clip for stability
-        ratios_beta = ratios_beta.clamp(max=self.darw_weight_clip)
+        ratios_beta = ratios_beta.clamp(max=self.sdr_weight_clip)
 
         # 7. Self-normalize so mean = 1
         weights = ratios_beta / ratios_beta.mean()           # (N,), mean ≈ 1
 
         # Logging
-        self._last_darw_weight_max = weights.max().item()
-        self._last_darw_weight_min = weights.min().item()
-        self._last_darw_weight_std = weights.std().item()
+        self._last_sdr_weight_max = weights.max().item()
+        self._last_sdr_weight_min = weights.min().item()
+        self._last_sdr_weight_std = weights.std().item()
 
         return weights
 
 
-class KSDAdjointVPMatcher(AdjointVPMatcher):
-    """KSD-augmented matcher for VP-SDE. Same KSD logic, different base class."""
+class SDRAdjointVPMatcher(AdjointVPMatcher):
+    """SDR-augmented matcher for VP-SDE. Same SDR logic, different base class."""
     def __init__(
         self,
-        ksd_lambda: float = 1.0,
-        ksd_bandwidth: float | None = None,
-        ksd_max_particles: int = 2048,
-        ksd_efficient_threshold: int = 1024,
-        ksd_kernel: str = "rbf",
-        ksd_score_beta: float = 1.0,
-        ksd_imq_c: float | None = None,
-        ksd_warmup_epochs: int = 0,
-        darw_beta: float = 0.0,
-        darw_weight_clip: float = 10.0,
+        sdr_lambda: float = 1.0,
+        sdr_bandwidth: float | None = None,
+        sdr_max_particles: int = 2048,
+        sdr_efficient_threshold: int = 1024,
+        sdr_kernel: str = "rbf",
+        sdr_score_beta: float = 1.0,
+        sdr_imq_c: float | None = None,
+        sdr_warmup_epochs: int = 0,
+        sdr_beta: float = 0.0,
+        sdr_weight_clip: float = 10.0,
         **kwargs,
     ):
         super().__init__(**kwargs)
-        self.ksd_lambda = ksd_lambda
-        self.ksd_bandwidth = ksd_bandwidth
-        self.ksd_max_particles = ksd_max_particles
-        self.ksd_efficient_threshold = ksd_efficient_threshold
-        self.ksd_kernel = ksd_kernel
-        self.ksd_score_beta = ksd_score_beta
-        self.ksd_imq_c = ksd_imq_c
-        self.ksd_warmup_epochs = ksd_warmup_epochs
-        self.darw_beta = darw_beta
-        self.darw_weight_clip = darw_weight_clip
-        self._last_ksd = 0.0
-        self._last_ksd_grad_norm = 0.0
-        self._last_darw_weight_max = 0.0
-        self._last_darw_weight_min = 0.0
-        self._last_darw_weight_std = 0.0
+        self.sdr_lambda = sdr_lambda
+        self.sdr_bandwidth = sdr_bandwidth
+        self.sdr_max_particles = sdr_max_particles
+        self.sdr_efficient_threshold = sdr_efficient_threshold
+        self.sdr_kernel = sdr_kernel
+        self.sdr_score_beta = sdr_score_beta
+        self.sdr_imq_c = sdr_imq_c
+        self.sdr_warmup_epochs = sdr_warmup_epochs
+        self.sdr_beta = sdr_beta
+        self.sdr_weight_clip = sdr_weight_clip
+        self._last_sdr_ksd = 0.0
+        self._last_sdr_grad_norm = 0.0
+        self._last_sdr_weight_max = 0.0
+        self._last_sdr_weight_min = 0.0
+        self._last_sdr_weight_std = 0.0
 
     def populate_buffer(
             self,
@@ -341,24 +339,23 @@ class KSDAdjointVPMatcher(AdjointVPMatcher):
         )
         adjoint1 = self._compute_adjoint1(x1, is_asbs_init_stage).clone()
 
-        in_warmup = (self.ksd_warmup_epochs > 0 and epoch >= 0
-                     and epoch < self.ksd_warmup_epochs)
-        if self.ksd_lambda > 0 and not is_asbs_init_stage and not in_warmup:
-            # Reuse KSDAdjointVEMatcher's correction logic
-            adjoint1 = KSDAdjointVEMatcher._apply_ksd_correction(self, x1, adjoint1)
+        in_warmup = (self.sdr_warmup_epochs > 0 and epoch >= 0
+                     and epoch < self.sdr_warmup_epochs)
+        if self.sdr_lambda > 0 and not is_asbs_init_stage and not in_warmup:
+            adjoint1 = SDRAdjointVEMatcher._apply_sdr_correction(self, x1, adjoint1)
 
-        # DARW weights
-        if self.darw_beta > 0 and not is_asbs_init_stage and not in_warmup:
-            darw_weights = KSDAdjointVEMatcher._compute_darw_weights(self, x1)
+        # SDR DARW weights
+        if self.sdr_beta > 0 and not is_asbs_init_stage and not in_warmup:
+            sdr_weights = SDRAdjointVEMatcher._compute_sdr_weights(self, x1)
         else:
-            darw_weights = torch.ones(x1.shape[0], device=x1.device)
+            sdr_weights = torch.ones(x1.shape[0], device=x1.device)
 
         self._check_buffer_sample_shape(x0, x1, adjoint1)
         self.buffer.add({
             "x0": x0.to("cpu"),
             "x1": x1.to("cpu"),
             "adjoint1": adjoint1.to("cpu"),
-            "darw_weights": darw_weights.to("cpu"),
+            "sdr_weights": sdr_weights.to("cpu"),
         })
 
     def prepare_target(self, data, device):
@@ -373,8 +370,8 @@ class KSDAdjointVPMatcher(AdjointVPMatcher):
 
         self._check_target_shape(t, xt, adjoint)
 
-        if "darw_weights" in data:
-            weights = data["darw_weights"].to(device)
+        if "sdr_weights" in data:
+            weights = data["sdr_weights"].to(device)
         else:
             weights = torch.ones(x0.shape[0], device=device)
 

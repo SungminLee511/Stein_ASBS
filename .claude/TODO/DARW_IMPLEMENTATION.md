@@ -1,8 +1,8 @@
-# DARW Implementation Guide for Claude Code
+# SDR-DARW Implementation Guide for Claude Code
 
 ## Overview
 
-Add **Density-Adaptive Regression Reweighting (DARW)** to the existing KSD-ASBS codebase. DARW reweights the Adjoint Matching loss per-sample using importance weights derived from the same kernel matrix already computed for KSD. The goal is to amplify the loss contribution of particles in under-represented modes and attenuate over-represented ones.
+Add **Density-Adaptive Regression Reweighting (SDR-DARW)** to the existing SDR-ASBS codebase. SDR-DARW reweights the Adjoint Matching loss per-sample using importance weights derived from the same kernel matrix already computed for SDR. The goal is to amplify the loss contribution of particles in under-represented modes and attenuate over-represented ones.
 
 **Paper equation (reweighted AM loss):**
 ```
@@ -15,11 +15,11 @@ where `ŵ_i = (exp(-E(x1_i)) / q̂(x1_i))^β / [(1/N) Σ_m (exp(-E(x1_m)) / q̂(
 The relevant data flow is:
 
 ```
-populate_buffer (ksd_matcher.py)
+populate_buffer (sdr_matcher.py)
   → forward SDE → get x0, x1
   → compute adjoint1 = ∇E(x1) - h_ψ(x1)
-  → compute KSD correction Δ_i, add to adjoint1
-  → store (x0, x1, adjoint1) in buffer           ← DARW weights computed here
+  → compute SDR correction Δ_i, add to adjoint1
+  → store (x0, x1, adjoint1) in buffer           ← SDR-DARW weights computed here
 
 prepare_target (matcher.py)
   → read from buffer
@@ -34,34 +34,34 @@ train_one_epoch (train_loop.py)
 
 ## Implementation Steps
 
-### Step 1: Add DARW weight computation to `ksd_matcher.py`
+### Step 1: Add SDR-DARW weight computation to `sdr_matcher.py`
 
-In `KSDAdjointVEMatcher`, add a method `_compute_darw_weights` and call it from `populate_buffer`. The weights should be computed from the **same x1 batch** and reuse the base kernel evaluations.
+In `SDRAdjointVEMatcher`, add a method `_compute_darw_weights` and call it from `populate_buffer`. The weights should be computed from the **same x1 batch** and reuse the base kernel evaluations.
 
 **Add these constructor parameters to `__init__`:**
 ```python
-darw_beta: float = 0.0,        # 0 = disabled (uniform weights), 1 = full reweighting
+sdr_beta: float = 0.0,        # 0 = disabled (uniform weights), 1 = full reweighting
 darw_weight_clip: float = 10.0, # max allowed weight (for stability)
 ```
 
-When `darw_beta == 0`, DARW is disabled and all weights are 1.0.
+When `sdr_beta == 0`, SDR-DARW is disabled and all weights are 1.0.
 
 **Add this method:**
 ```python
 @torch.no_grad()
 def _compute_darw_weights(self, x1: torch.Tensor) -> torch.Tensor:
-    """Compute DARW importance weights for the terminal batch.
+    """Compute SDR-DARW importance weights for the terminal batch.
     
     ŵ_i = (exp(-E(x1_i)) / q̂(x1_i))^β, self-normalized
     
     where q̂(x1_i) = (1/N) Σ_j k(x1_i, x1_j) is the KDE using the
-    base kernel (same bandwidth as KSD).
+    base kernel (same bandwidth as SDR).
     """
     N, D = x1.shape
     device = x1.device
     
     # 1. Compute base kernel matrix k(x1_i, x1_j)
-    #    Use the same bandwidth as KSD (median heuristic or fixed)
+    #    Use the same bandwidth as SDR (median heuristic or fixed)
     if self.ksd_bandwidth is not None:
         ell = torch.tensor(self.ksd_bandwidth, device=device, dtype=x1.dtype)
     else:
@@ -93,7 +93,7 @@ def _compute_darw_weights(self, x1: torch.Tensor) -> torch.Tensor:
     ratios = p_tilde / q_hat                       # (N,)
     
     # 5. Soft power clipping with β
-    ratios_beta = ratios ** self.darw_beta          # (N,)
+    ratios_beta = ratios ** self.sdr_beta          # (N,)
     
     # 6. Hard clip for stability
     ratios_beta = ratios_beta.clamp(max=self.darw_weight_clip)
@@ -106,12 +106,12 @@ def _compute_darw_weights(self, x1: torch.Tensor) -> torch.Tensor:
 
 **IMPORTANT NOTES:**
 - For large N, the `(N, N, D)` tensor for `diffs` may OOM. Add chunked computation if `N > ksd_efficient_threshold`, similar to the existing `compute_stein_kernel_gradient_efficient`. The simplest approach: compute `K.mean(dim=1)` row by row in chunks.
-- The energy call `self.grad_term_cost.energy(x1_req)` already exists in `_apply_ksd_correction` for computing scores. You may want to cache the energy values to avoid redundant computation. Or compute both KSD and DARW in a single pass.
+- The energy call `self.grad_term_cost.energy(x1_req)` already exists in `_apply_ksd_correction` for computing scores. You may want to cache the energy values to avoid redundant computation. Or compute both SDR and SDR-DARW in a single pass.
 - The `energy_out["energy"]` field must exist for all energy functions. Check each energy class in `adjoint_samplers/energies/` to verify they return an `"energy"` key. If not, add it. Most return `"forces"` (the gradient); you may need to also return the scalar energy.
 
-### Step 2: Modify `populate_buffer` in `KSDAdjointVEMatcher`
+### Step 2: Modify `populate_buffer` in `SDRAdjointVEMatcher`
 
-Change `populate_buffer` to compute and store DARW weights:
+Change `populate_buffer` to compute and store SDR-DARW weights:
 
 ```python
 def populate_buffer(self, x0, timesteps, is_asbs_init_stage, epoch=-1):
@@ -121,14 +121,14 @@ def populate_buffer(self, x0, timesteps, is_asbs_init_stage, epoch=-1):
     # Step 2: Standard adjoint (unchanged)
     adjoint1 = self._compute_adjoint1(x1, is_asbs_init_stage).clone()
 
-    # Step 3: KSD correction (unchanged)
+    # Step 3: SDR correction (unchanged)
     in_warmup = (self.ksd_warmup_epochs > 0 and epoch >= 0
                  and epoch < self.ksd_warmup_epochs)
-    if self.ksd_lambda > 0 and not is_asbs_init_stage and not in_warmup:
+    if self.sdr_lambda > 0 and not is_asbs_init_stage and not in_warmup:
         adjoint1 = self._apply_ksd_correction(x1, adjoint1)
 
-    # Step 4: DARW weights (NEW)
-    if self.darw_beta > 0 and not is_asbs_init_stage and not in_warmup:
+    # Step 4: SDR-DARW weights (NEW)
+    if self.sdr_beta > 0 and not is_asbs_init_stage and not in_warmup:
         darw_weights = self._compute_darw_weights(x1)
     else:
         darw_weights = torch.ones(x1.shape[0], device=x1.device)
@@ -143,11 +143,11 @@ def populate_buffer(self, x0, timesteps, is_asbs_init_stage, epoch=-1):
     })
 ```
 
-Do the same for `KSDAdjointVPMatcher`.
+Do the same for `SDRAdjointVPMatcher`.
 
 ### Step 3: Modify `prepare_target` in `AdjointVEMatcher`
 
-The base `prepare_target` in `matcher.py` needs to pass weights through. The cleanest approach: **override `prepare_target` in `KSDAdjointVEMatcher`**.
+The base `prepare_target` in `matcher.py` needs to pass weights through. The cleanest approach: **override `prepare_target` in `SDRAdjointVEMatcher`**.
 
 ```python
 def prepare_target(self, data, device):
@@ -208,16 +208,16 @@ The `sum(dim=-1)` reduces over the D dimension to get a per-sample scalar loss, 
 
 **Create `configs/matcher/ksd_darw_adjoint_ve.yaml`:**
 ```yaml
-_target_: adjoint_samplers.components.ksd_matcher.KSDAdjointVEMatcher
+_target_: adjoint_samplers.components.sdr_matcher.SDRAdjointVEMatcher
 
-ksd_lambda: ${ksd_lambda}
+sdr_lambda: ${sdr_lambda}
 ksd_bandwidth: null
 ksd_max_particles: 2048
 ksd_efficient_threshold: 1024
 ksd_score_beta: 1.0
 ksd_warmup_epochs: 0
 
-darw_beta: ${darw_beta}
+sdr_beta: ${sdr_beta}
 darw_weight_clip: 10.0
 
 grad_state_cost:
@@ -228,15 +228,15 @@ buffer:
   buffer_size: ${adjoint_matcher.buffer_size}
 ```
 
-**Create experiment configs** that set `darw_beta`. For example, in the experiment YAML:
+**Create experiment configs** that set `sdr_beta`. For example, in the experiment YAML:
 ```yaml
-ksd_lambda: 1.0
-darw_beta: 0.5   # moderate reweighting
+sdr_lambda: 1.0
+sdr_beta: 0.5   # moderate reweighting
 ```
 
 ### Step 6: Logging
 
-Add DARW-related logging to the training loop. In `ksd_matcher.py`, add fields:
+Add SDR-DARW-related logging to the training loop. In `sdr_matcher.py`, add fields:
 ```python
 self._last_darw_weight_max = 0.0
 self._last_darw_weight_min = 0.0
@@ -250,9 +250,9 @@ self._last_darw_weight_min = weights.min().item()
 self._last_darw_weight_std = weights.std().item()
 ```
 
-Log these in `train.py` alongside the existing KSD logging (search for `_last_ksd` to find where).
+Log these in `train.py` alongside the existing SDR logging (search for `_last_ksd` to find where).
 
-### Step 7: Apply the same changes to `KSDAdjointVPMatcher`
+### Step 7: Apply the same changes to `SDRAdjointVPMatcher`
 
 Mirror all changes for the VP variant.
 
@@ -266,7 +266,7 @@ The `_compute_darw_weights` method needs `energy_out["energy"]` (the scalar ener
 
 ## Memory Considerations
 
-For large batches (N > 1024), the `(N, N)` kernel matrix may be large. The KSD computation already handles this via chunking (`compute_stein_kernel_gradient_efficient`). For DARW, you only need `K.mean(dim=1)` (the row sums), which can be computed in chunks:
+For large batches (N > 1024), the `(N, N)` kernel matrix may be large. The SDR computation already handles this via chunking (`compute_stein_kernel_gradient_efficient`). For SDR-DARW, you only need `K.mean(dim=1)` (the row sums), which can be computed in chunks:
 
 ```python
 def _compute_kde_chunked(self, x1, ell, chunk_size=256):
@@ -282,21 +282,21 @@ def _compute_kde_chunked(self, x1, ell, chunk_size=256):
 
 ## Testing Checklist
 
-1. **Backward compatibility:** With `darw_beta: 0`, behavior must be identical to current KSD-ASBS. Run a short training on MoG25 and verify the loss curve matches.
+1. **Backward compatibility:** With `sdr_beta: 0`, behavior must be identical to current SDR-ASBS. Run a short training on MoG25 and verify the loss curve matches.
 
-2. **Weight sanity:** With `darw_beta: 0.5` on MoG25 (which has 25 equal modes), log the DARW weights. Early in training when mode concentration hasn't set in, weights should be close to uniform. As concentration develops, weights for minority-mode particles should increase.
+2. **Weight sanity:** With `sdr_beta: 0.5` on MoG25 (which has 25 equal modes), log the SDR-DARW weights. Early in training when mode concentration hasn't set in, weights should be close to uniform. As concentration develops, weights for minority-mode particles should increase.
 
 3. **Gradient check:** Run one step, verify that gradients flow correctly through the weighted loss. The weights are detached (computed in `populate_buffer` with `@torch.no_grad()`), so they should not appear in the computational graph.
 
-4. **Full run:** Train on MoG25 and DW4 with `darw_beta ∈ {0, 0.3, 0.5, 0.7, 1.0}` and compare mode coverage metrics.
+4. **Full run:** Train on MoG25 and DW4 with `sdr_beta ∈ {0, 0.3, 0.5, 0.7, 1.0}` and compare mode coverage metrics.
 
 ## File Changes Summary
 
 | File | Change |
 |------|--------|
-| `adjoint_samplers/components/ksd_matcher.py` | Add `darw_beta`, `darw_weight_clip` params; add `_compute_darw_weights` method; modify `populate_buffer` to store weights |
-| `adjoint_samplers/components/matcher.py` | No changes to base classes needed if you override `prepare_target` in the KSD matcher |
+| `adjoint_samplers/components/sdr_matcher.py` | Add `sdr_beta`, `darw_weight_clip` params; add `_compute_darw_weights` method; modify `populate_buffer` to store weights |
+| `adjoint_samplers/components/matcher.py` | No changes to base classes needed if you override `prepare_target` in the SDR matcher |
 | `adjoint_samplers/train_loop.py` | Handle 3-value return from `prepare_target`; apply weights in loss |
 | `configs/matcher/ksd_darw_adjoint_ve.yaml` | New config file |
-| Various experiment configs | Add `darw_beta` parameter |
-| `train.py` | Add DARW weight logging |
+| Various experiment configs | Add `sdr_beta` parameter |
+| `train.py` | Add SDR-DARW weight logging |

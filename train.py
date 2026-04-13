@@ -172,11 +172,11 @@ def main(cfg):
                 f"{stage}_buffer_size": len(matcher.buffer),
             }
 
-            # DARW weight logging (if matcher has DARW enabled)
-            if hasattr(matcher, '_last_darw_weight_max') and hasattr(matcher, 'darw_beta') and matcher.darw_beta > 0:
-                log_dict["darw_weight_max"] = matcher._last_darw_weight_max
-                log_dict["darw_weight_min"] = matcher._last_darw_weight_min
-                log_dict["darw_weight_std"] = matcher._last_darw_weight_std
+            # SDR weight logging (if matcher has SDR DARW enabled)
+            if hasattr(matcher, '_last_sdr_weight_max') and hasattr(matcher, 'sdr_beta') and matcher.sdr_beta > 0:
+                log_dict["sdr_weight_max"] = matcher._last_sdr_weight_max
+                log_dict["sdr_weight_min"] = matcher._last_sdr_weight_min
+                log_dict["sdr_weight_std"] = matcher._last_sdr_weight_std
 
             writer.log(log_dict, step=epoch)
 

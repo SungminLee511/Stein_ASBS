@@ -1,32 +1,32 @@
 # @package _global_
 
 defaults:
-  - /problem: mw5
+  - /problem: grid25
   - /source: gauss
   - /sde@ref_sde: ve
   - /model@controller: fouriermlp
   - /state_cost: zero
   - /term_cost: score_term_cost
-  - /matcher@adjoint_matcher: ksd_darw_adjoint_ve
+  - /matcher@adjoint_matcher: sdr_adjoint_ve
 
-exp_name: mw5_darw_asbs
+exp_name: grid25_sdr_asbs
 
 # === source ===
-scale: 2
+scale: 0.5
 
 # === sde ===
-nfe: 200
-sigma_max: 3
-sigma_min: 0.001
+nfe: 100
+sigma_max: 6
+sigma_min: 0.01
 rescale_t: null
 
-# === KSD parameters ===
-ksd_lambda: 1.0
-darw_beta: 0.5
+# === SDR parameters ===
+sdr_lambda: 1.0
+sdr_beta: 0.5
 
 # === training ===
-num_epochs: 5000
-max_grad_E_norm: 100
+num_epochs: 3000
+max_grad_E_norm: 50
 
 adjoint_matcher:
   buffer_size: 10000
@@ -39,4 +39,5 @@ adjoint_matcher:
 
 # === eval & logging ===
 use_wandb: false
+skip_eval: true
 eval_freq: 200

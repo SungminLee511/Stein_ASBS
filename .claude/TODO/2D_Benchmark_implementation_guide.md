@@ -8,8 +8,8 @@
 
 Add three 2D energy functions to produce publication-quality figures showing:
 
-- **Terminal distribution**: samples overlaid on density contours (4-panel: Reference, Baseline, KSD-ASBS, overlay)
-- **Trajectory visualization**: SDE paths from source to target, colored by terminal mode (3-panel: Reference, Baseline trajectories, KSD trajectories)
+- **Terminal distribution**: samples overlaid on density contours (4-panel: Reference, Baseline, SDR-ASBS, overlay)
+- **Trajectory visualization**: SDE paths from source to target, colored by terminal mode (3-panel: Reference, Baseline trajectories, SDR trajectories)
 
 These figures directly visualize the mode coverage mechanism of SDR. The trajectory plot is unique to SOC-based methods and is the strongest visual in the paper.
 
@@ -246,15 +246,15 @@ use_wandb: false
 eval_freq: 200
 ```
 
-`configs/experiment/gmm9_ksd_asbs.yaml`: Same but change matcher to `ksd_adjoint_ve` and add `ksd_lambda: 1.0`.
+`configs/experiment/gmm9_ksd_asbs.yaml`: Same but change matcher to `ksd_adjoint_ve` and add `sdr_lambda: 1.0`.
 
 `configs/experiment/ring8_asbs.yaml`: Same as gmm9_asbs but `exp_name: ring8_asbs` and problem `ring8`.
 
-`configs/experiment/ring8_ksd_asbs.yaml`: Same with KSD matcher and `ksd_lambda: 1.0`.
+`configs/experiment/ring8_ksd_asbs.yaml`: Same with SDR matcher and `sdr_lambda: 1.0`.
 
 `configs/experiment/banana_asbs.yaml`: Same as gmm9_asbs but `exp_name: banana_asbs`, problem `banana`, and `sigma_max: 3` (banana modes are closer together).
 
-`configs/experiment/banana_ksd_asbs.yaml`: Same with KSD matcher and `ksd_lambda: 0.5` (start lower — banana has sharper gradients than GMM).
+`configs/experiment/banana_ksd_asbs.yaml`: Same with SDR matcher and `sdr_lambda: 0.5` (start lower — banana has sharper gradients than GMM).
 
 -----
 
@@ -447,7 +447,7 @@ def plot_terminal_distribution(
     centers, base_modes, ksd_modes,
     benchmark_name, output_path, xlim, ylim,
 ):
-    """4-panel figure: Reference density, Baseline samples, KSD samples, Overlay."""
+    """4-panel figure: Reference density, Baseline samples, SDR samples, Overlay."""
 
     fig, axes = plt.subplots(1, 4, figsize=(22, 5))
 
@@ -478,7 +478,7 @@ def plot_terminal_distribution(
     b = samples_base.cpu().numpy()
     axes[1].scatter(b[:, 0], b[:, 1], s=4, c='#d62728', alpha=0.5, zorder=5)
 
-    # Panel 2: KSD samples
+    # Panel 2: SDR samples
     k = samples_ksd.cpu().numpy()
     axes[2].scatter(k[:, 0], k[:, 1], s=4, c='#ff7f0e', alpha=0.5, zorder=5)
 
@@ -508,7 +508,7 @@ def plot_trajectories(
     centers, std, benchmark_name, output_path, xlim, ylim,
     n_show=80, stride=5,
 ):
-    """3-panel figure: Density, Baseline trajectories, KSD trajectories.
+    """3-panel figure: Density, Baseline trajectories, SDR trajectories.
 
     Each trajectory is a thin line colored by its terminal mode assignment.
     stride: plot every stride-th timestep for cleaner lines.
@@ -552,7 +552,7 @@ def plot_trajectories(
     # Panel 1: baseline trajectories
     draw_trajectories(axes[1], traj_base, assign_base, n_show)
 
-    # Panel 2: KSD trajectories
+    # Panel 2: SDR trajectories
     draw_trajectories(axes[2], traj_ksd, assign_ksd, n_show)
 
     fig.suptitle(f'{benchmark_name}: SDE Trajectories', fontsize=15, y=1.02)
@@ -618,7 +618,7 @@ def main():
     # Load models
     print("Loading baseline...")
     sde_base, src_base, energy, ts_base = load_model(args.baseline_dir, device)
-    print("Loading KSD-ASBS...")
+    print("Loading SDR-ASBS...")
     sde_ksd, src_ksd, _, ts_ksd = load_model(args.ksd_dir, device)
 
     centers = energy.get_centers().to(device)
@@ -640,10 +640,10 @@ def main():
 
     print(f"  Baseline: {m_base['n_modes_covered']}/{K} modes, "
           f"mean_E={m_base['mean_energy']:.3f}")
-    print(f"  KSD-ASBS: {m_ksd['n_modes_covered']}/{K} modes, "
+    print(f"  SDR-ASBS: {m_ksd['n_modes_covered']}/{K} modes, "
           f"mean_E={m_ksd['mean_energy']:.3f}")
     print(f"  Baseline per-mode: {m_base['per_mode_counts']}")
-    print(f"  KSD-ASBS per-mode: {m_ksd['per_mode_counts']}")
+    print(f"  SDR-ASBS per-mode: {m_ksd['per_mode_counts']}")
 
     # --- Figure A: Terminal distribution ---
     print("Generating terminal distribution figure...")
@@ -751,8 +751,8 @@ done
 
 ```
 results/figures_2d/
-├── gmm9_terminal.png       # 4-panel: density, baseline, KSD, overlay
-├── gmm9_trajectories.png   # 3-panel: density, baseline trajs, KSD trajs
+├── gmm9_terminal.png       # 4-panel: density, baseline, SDR, overlay
+├── gmm9_trajectories.png   # 3-panel: density, baseline trajs, SDR trajs
 ├── ring8_terminal.png
 ├── ring8_trajectories.png
 ├── banana_terminal.png
@@ -764,24 +764,24 @@ results/figures_2d/
 **GMM9 (3×3 grid):**
 
 - Baseline: samples cluster at 3-5 central modes, corners missing
-- KSD-ASBS: samples cover 7-9 modes including corners
-- Trajectories: baseline paths converge to center of grid; KSD paths fan out to corners
+- SDR-ASBS: samples cover 7-9 modes including corners
+- Trajectories: baseline paths converge to center of grid; SDR paths fan out to corners
 
 **Ring8 (ring):**
 
 - Baseline: samples collapse to 1-2 adjacent modes on the ring
-- KSD-ASBS: samples spread across 4-8 modes around the ring
+- SDR-ASBS: samples spread across 4-8 modes around the ring
 - Trajectories: this is the 2D version of your RotGMM d=10 result — directly comparable
 
 **Banana (70/30 split):**
 
 - Baseline: all samples in the 70% banana (right), minority banana (left) empty
-- KSD-ASBS: samples in both bananas, roughly 70/30 split matching the true weights
-- Trajectories: baseline paths all curve right; KSD paths split left and right
+- SDR-ASBS: samples in both bananas, roughly 70/30 split matching the true weights
+- Trajectories: baseline paths all curve right; SDR paths split left and right
 
 ### What to Expect in Metrics
 
-|Benchmark|Baseline modes|KSD modes (expected)|
+|Benchmark|Baseline modes|SDR modes (expected)|
 |---------|--------------|--------------------|
 |GMM9     |3–5 of 9      |7–9 of 9            |
 |Ring8    |1–2 of 8      |3–6 of 8            |
@@ -791,11 +791,11 @@ results/figures_2d/
 
 ## 10. Additional 2D Benchmarks (Phase 2)
 
-These benchmarks go beyond separated Gaussians to test KSD on harder geometry.
+These benchmarks go beyond separated Gaussians to test SDR on harder geometry.
 
 ### 10.1 Two Moons
 
-Two crescent-shaped modes that wrap around each other. Unlike Gaussians, the modes are non-convex and interleaved. Tests whether KSD can handle non-Gaussian geometry, not just "find separated blobs."
+Two crescent-shaped modes that wrap around each other. Unlike Gaussians, the modes are non-convex and interleaved. Tests whether SDR can handle non-Gaussian geometry, not just "find separated blobs."
 
 - **Modes**: 2 crescent-shaped (non-convex)
 - **Challenge**: Interleaved non-convex geometry — modes are not separable by any hyperplane
@@ -825,7 +825,7 @@ Two crescent-shaped modes that wrap around each other. Unlike Gaussians, the mod
 Two concentric rings at different radii (e.g., r=2 and r=5) with different weights (80/20). The inner ring is hard to find because the outer ring surrounds it.
 
 - **Modes**: 2 (inner ring, outer ring)
-- **Challenge**: Inner mode is geometrically surrounded/shielded by outer mode. Tests whether KSD can push samples inward, not just outward.
+- **Challenge**: Inner mode is geometrically surrounded/shielded by outer mode. Tests whether SDR can push samples inward, not just outward.
 - **sigma_max**: 8 (outer ring at r=5)
 - **Mode coverage metric**: Fraction of samples within radius threshold of each ring
 
@@ -854,10 +854,10 @@ A single continuous spiral-shaped density. Not multimodal, but tests whether the
 ## 9. Notes for Claude Code
 
 1. **`sdeint` with `only_boundary=False`** returns a list of tensors, one per timestep. Stack with `torch.stack(states, dim=1)` to get `(B, T, D)`.
-1. **Same seed for baseline and KSD** when generating trajectories (`torch.manual_seed(42)`). This means both models start from the same initial positions — the difference in trajectories is purely due to the controller, making the comparison fair and visually striking.
+1. **Same seed for baseline and SDR** when generating trajectories (`torch.manual_seed(42)`). This means both models start from the same initial positions — the difference in trajectories is purely due to the controller, making the comparison fair and visually striking.
 1. **`energy.get_centers()` and `energy.get_std()`** are custom methods on each energy class. Make sure they return CPU tensors.
 1. **The `☆` marker** in matplotlib requires unicode support. If it fails, replace with `'*'` (star marker).
 1. **Banana energy** — the mode centers from `get_centers()` are approximate (the banana peak is not exactly at (1,1) and (-1,1)). Use nearest-mode assignment with a generous threshold (e.g., `threshold_factor=5.0`).
-1. **Do NOT modify** `sde.py`, `matcher.py`, `ksd_matcher.py`, `stein_kernel.py`, `train.py`, `train_loop.py`, or any existing config files. All new code goes in new files.
+1. **Do NOT modify** `sde.py`, `matcher.py`, `sdr_matcher.py`, `stein_kernel.py`, `train.py`, `train_loop.py`, or any existing config files. All new code goes in new files.
 1. **Figure resolution**: `dpi=200` for paper quality. The trajectory figure with 80 paths and stride=5 should render cleanly. If paths are too dense, reduce `n_traj_show` to 50.
 1. **sigma_max for GMM9 and Ring8**: Set to 8 (modes are at distance 5–7 from origin). For Banana: set to 3 (modes are at distance ~1–2 from origin). Too-small sigma_max means the noise can’t reach the modes; too-large makes training harder.

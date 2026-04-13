@@ -364,7 +364,7 @@ Higher ESS → more uniform importance weights → better partition function est
 - **ESS (baseline):** Low, especially on multimodal targets. If the sampler mode-collapses, a few trajectories that accidentally reach underrepresented modes get enormous weight, collapsing ESS.
 - **ESS (SDR-ASBS):** Higher, because SDR forces mode coverage. More modes covered → weights more uniform → higher ESS.
 - **log W standard deviation:** This is the key diagnostic. If `std(log W)` is large (say >10), ESS will be near 1 regardless of N. SDR should reduce this variance.
-- **Control cost:** Should be similar between baseline and SDR (the KSD correction modifies the adjoint target, not the control cost directly). If SDR’s control cost is much higher, the controller is working harder to spread particles.
+- **Control cost:** Should be similar between baseline and SDR (the SDR correction modifies the adjoint target, not the control cost directly). If SDR’s control cost is much higher, the controller is working harder to spread particles.
 
 -----
 

@@ -1,0 +1,19 @@
+_target_: adjoint_samplers.components.sdr_matcher.SDRAdjointVEMatcher
+
+sdr_lambda: ${sdr_lambda}
+sdr_bandwidth: null  # null = median heuristic
+sdr_max_particles: 2048
+sdr_efficient_threshold: 1024
+sdr_kernel: imq
+sdr_score_beta: 1.0
+sdr_imq_c: null  # IMQ scale parameter c. null = use bandwidth (median heuristic)
+
+sdr_beta: ${sdr_beta}
+sdr_weight_clip: 10.0
+
+grad_state_cost:
+  _target_: adjoint_samplers.components.state_cost.ZeroGradStateCost
+
+buffer:
+  _target_: adjoint_samplers.components.buffer.BatchBuffer
+  buffer_size: ${adjoint_matcher.buffer_size}

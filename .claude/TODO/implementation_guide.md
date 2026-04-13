@@ -1,4 +1,4 @@
-# Comprehensive Experimental Guide: KSD-Augmented ASBS
+# Comprehensive Experimental Guide: SDR-Augmented ASBS
 
 ## Full Implementation, Training, Evaluation, and Results Pipeline
 
@@ -6,7 +6,7 @@
 
 ## 0. Overview
 
-This guide covers **every experiment** needed to evaluate KSD-Augmented ASBS comprehensively. The experiments are organized into 6 phases, designed to be executed sequentially. Each phase produces artifacts (checkpoints, metrics, figures) consumed by later phases.
+This guide covers **every experiment** needed to evaluate SDR-Augmented ASBS comprehensively. The experiments are organized into 6 phases, designed to be executed sequentially. Each phase produces artifacts (checkpoints, metrics, figures) consumed by later phases.
 
 ### Experiment Matrix
 
@@ -14,7 +14,7 @@ This guide covers **every experiment** needed to evaluate KSD-Augmented ASBS com
 |-----|------------------------|-------------------------|----------------------------------------------|
 |1    |Infrastructure          |—                        |Setup only                                    |
 |2    |Baseline ASBS           |DW4, LJ13, LJ55          |3 seeds × 3 benchmarks = 9                    |
-|3    |KSD-ASBS + ablation     |DW4, LJ13, LJ55          |5 λ × 3 seeds × 3 benchmarks = 45             |
+|3    |SDR-ASBS + ablation     |DW4, LJ13, LJ55          |5 λ × 3 seeds × 3 benchmarks = 45             |
 |4    |Synthetic CV-unknown    |RotGMM (d=10,30,50,100)  |3 seeds × 4 dims × 2 methods = 24             |
 |4b   |Real CV-unknown         |Müller-Brown              |Phase 4b (Müller)                              |
 |4c   |Non-molecular           |Bayesian LogReg (d=15,25)|3 seeds × 2 datasets × 2 methods = 12         |
@@ -30,26 +30,26 @@ This guide covers **every experiment** needed to evaluate KSD-Augmented ASBS com
 | Experiment | Method | Seed | Epochs | Status | Notes |
 |------------|--------|------|--------|--------|-------|
 | DW4 | Baseline ASBS | 0 | 5000 | COMPLETED | Pre-existing |
-| DW4 | KSD-ASBS | 0 | 5000 | COMPLETED | ep=4999, loss=4.81 |
+| DW4 | SDR-ASBS | 0 | 5000 | COMPLETED | ep=4999, loss=4.81 |
 | LJ13 | Baseline ASBS | 0 | 5000 | COMPLETED | Pre-existing |
-| LJ13 | KSD-ASBS | 0 | 5000 | RUNNING | ep~810/5000 |
+| LJ13 | SDR-ASBS | 0 | 5000 | RUNNING | ep~810/5000 |
 | Muller | Baseline ASBS | 0 | 2000 | COMPLETED | ep=1999, loss=0.30 |
-| Muller | KSD-ASBS | 1 | 2000 | COMPLETED | ep=1999, loss=0.31 |
+| Muller | SDR-ASBS | 1 | 2000 | COMPLETED | ep=1999, loss=0.31 |
 | RotGMM10 | Baseline ASBS | 0 | 3000 | COMPLETED | ep~2600/3000, converged & killed |
-| RotGMM10 | KSD-ASBS | 0 | 3000 | COMPLETED | ep~2580/3000, converged & killed |
+| RotGMM10 | SDR-ASBS | 0 | 3000 | COMPLETED | ep~2580/3000, converged & killed |
 | RotGMM30 | Baseline ASBS | 0 | 3000 | RUNNING | PID 3225487, just launched |
-| RotGMM30 | KSD-ASBS | 0 | 3000 | RUNNING | PID 3225605, just launched |
+| RotGMM30 | SDR-ASBS | 0 | 3000 | RUNNING | PID 3225605, just launched |
 | RotGMM50 | Baseline ASBS | 0 | 3000 | PENDING | |
-| RotGMM50 | KSD-ASBS | 0 | 3000 | PENDING | |
+| RotGMM50 | SDR-ASBS | 0 | 3000 | PENDING | |
 | RotGMM100 | Baseline ASBS | 0 | 3000 | PENDING | |
-| RotGMM100 | KSD-ASBS | 0 | 3000 | PENDING | |
+| RotGMM100 | SDR-ASBS | 0 | 3000 | PENDING | |
 | LJ38 | Baseline ASBS | 0 | — | PENDING | |
-| LJ38 | KSD-ASBS | 0 | — | PENDING | |
-| LJ55 | KSD-ASBS | 0 | — | PENDING | |
+| LJ38 | SDR-ASBS | 0 | — | PENDING | |
+| LJ55 | SDR-ASBS | 0 | — | PENDING | |
 | BLogReg-AU | Baseline ASBS | 0 | — | PENDING | |
-| BLogReg-AU | KSD-ASBS | 0 | — | PENDING | |
+| BLogReg-AU | SDR-ASBS | 0 | — | PENDING | |
 | BLogReg-GE | Baseline ASBS | 0 | — | PENDING | |
-| BLogReg-GE | KSD-ASBS | 0 | — | PENDING | |
+| BLogReg-GE | SDR-ASBS | 0 | — | PENDING | |
 
 ### Benchmark Summary
 
@@ -70,7 +70,7 @@ adjoint_samplers/                         # EXISTING REPO
 ├── adjoint_samplers/
 │   ├── components/
 │   │   ├── stein_kernel.py               # NEW (Phase 1)
-│   │   ├── ksd_matcher.py                # NEW (Phase 1)
+│   │   ├── sdr_matcher.py                # NEW (Phase 1)
 │   │   └── ...existing...
 │   ├── energies/
 │   │   ├── rotated_gmm_energy.py         # NEW (Phase 1) — synthetic benchmark
@@ -124,7 +124,7 @@ adjoint_samplers/                         # EXISTING REPO
 ├── generate_results.py                   # NEW (Phase 6)
 └── docs/
     ├── STEIN_VARIATIONAL_ASBS.md         # Math spec (already written)
-    ├── KSD_ASBS_IMPLEMENTATION.md        # Previous impl guide
+    ├── SDR_ASBS_IMPLEMENTATION.md        # Previous impl guide
     └── RESULTS.md                        # AUTO-GENERATED (Phase 6)
 ```
 
@@ -134,7 +134,7 @@ adjoint_samplers/                         # EXISTING REPO
 
 ### 1.1 Stein Kernel Module (`adjoint_samplers/components/stein_kernel.py`)
 
-See `KSD_ASBS_IMPLEMENTATION.md` Task 1 for the complete implementation. This module provides:
+See `SDR_ASBS_IMPLEMENTATION.md` Task 1 for the complete implementation. This module provides:
 
 - `median_bandwidth(samples)` → scalar
 - `compute_stein_kernel_matrix(samples, scores, ell)` → (N, N)
@@ -144,12 +144,12 @@ See `KSD_ASBS_IMPLEMENTATION.md` Task 1 for the complete implementation. This mo
 
 **Test:** `python -m adjoint_samplers.components.stein_kernel` should print “All tests passed.”
 
-### 1.2 KSD Matcher (`adjoint_samplers/components/ksd_matcher.py`)
+### 1.2 SDR Matcher (`adjoint_samplers/components/sdr_matcher.py`)
 
-See `KSD_ASBS_IMPLEMENTATION.md` Task 2 for the complete implementation. Provides:
+See `SDR_ASBS_IMPLEMENTATION.md` Task 2 for the complete implementation. Provides:
 
-- `KSDAdjointVEMatcher` — inherits from `AdjointVEMatcher`, overrides `populate_buffer`
-- `KSDAdjointVPMatcher` — same for VP-SDE
+- `SDRAdjointVEMatcher` — inherits from `AdjointVEMatcher`, overrides `populate_buffer`
+- `SDRAdjointVPMatcher` — same for VP-SDE
 
 ### 1.3 Rotated Gaussian Mixture Energy (`adjoint_samplers/energies/rotated_gmm_energy.py`)
 
@@ -165,7 +165,7 @@ After a random rotation R, no axis-aligned projection separates the modes.
 This makes CV-based methods (like WT-ASBS) fail — they cannot find the
 right projection without oracle knowledge of R.
 
-Our KSD method operates in the full space and doesn't need CVs.
+Our SDR method operates in the full space and doesn't need CVs.
 """
 
 import torch
@@ -367,8 +367,8 @@ class RotatedGMMEvaluator:
 **Matcher config** (`configs/matcher/ksd_adjoint_ve.yaml`):
 
 ```yaml
-_target_: adjoint_samplers.components.ksd_matcher.KSDAdjointVEMatcher
-ksd_lambda: ${ksd_lambda}
+_target_: adjoint_samplers.components.sdr_matcher.SDRAdjointVEMatcher
+sdr_lambda: ${sdr_lambda}
 ksd_bandwidth: null
 ksd_max_particles: 2048
 ksd_efficient_threshold: 1024
@@ -379,7 +379,7 @@ buffer:
   buffer_size: ${adjoint_matcher.buffer_size}
 ```
 
-**DW4 KSD config** (`configs/experiment/dw4_ksd_asbs.yaml`):
+**DW4 SDR config** (`configs/experiment/dw4_ksd_asbs.yaml`):
 
 ```yaml
 # @package _global_
@@ -400,7 +400,7 @@ nfe: 200
 sigma_max: 1
 sigma_min: 0.001
 rescale_t: null
-ksd_lambda: 1.0
+sdr_lambda: 1.0
 num_epochs: 5000
 max_grad_E_norm: 100
 adj_num_epochs_per_stage: 200
@@ -427,9 +427,9 @@ corrector_matcher:
 use_wandb: false
 ```
 
-**LJ13 KSD config** (`configs/experiment/lj13_ksd_asbs.yaml`): Same structure, copy from `lj13_asbs.yaml` but change matcher to `ksd_adjoint_ve` and add `ksd_lambda: 1.0`.
+**LJ13 SDR config** (`configs/experiment/lj13_ksd_asbs.yaml`): Same structure, copy from `lj13_asbs.yaml` but change matcher to `ksd_adjoint_ve` and add `sdr_lambda: 1.0`.
 
-**LJ55 KSD config** (`configs/experiment/lj55_ksd_asbs.yaml`): Same structure, copy from `lj55_asbs.yaml` but change matcher to `ksd_adjoint_ve` and add `ksd_lambda: 1.0`.
+**LJ55 SDR config** (`configs/experiment/lj55_ksd_asbs.yaml`): Same structure, copy from `lj55_asbs.yaml` but change matcher to `ksd_adjoint_ve` and add `sdr_lambda: 1.0`.
 
 **Rotated GMM configs** — create problem configs for each dimension:
 
@@ -454,7 +454,7 @@ evaluator:
 
 Create `rotgmm30.yaml`, `rotgmm50.yaml`, `rotgmm100.yaml` with `dim: 30`, `dim: 50`, `dim: 100` respectively. Adjust `n_modes` if desired (8 is fine for all).
 
-For each dimension, create baseline and KSD experiment configs:
+For each dimension, create baseline and SDR experiment configs:
 
 `configs/experiment/rotgmm10_asbs.yaml`:
 
@@ -489,7 +489,7 @@ use_wandb: false
 eval_freq: 200
 ```
 
-`configs/experiment/rotgmm10_ksd_asbs.yaml`: Same but with `ksd_adjoint_ve` matcher and `ksd_lambda: 1.0`.
+`configs/experiment/rotgmm10_ksd_asbs.yaml`: Same but with `ksd_adjoint_ve` matcher and `sdr_lambda: 1.0`.
 
 Repeat for `rotgmm30`, `rotgmm50`, `rotgmm100`. For higher dimensions, adjust:
 
@@ -583,9 +583,9 @@ use_wandb: false
 eval_freq: 200
 ```
 
-`configs/experiment/lj38_ksd_asbs.yaml`: Same as above but change matcher to `ksd_adjoint_ve` and add `ksd_lambda: 1.0`.
+`configs/experiment/lj38_ksd_asbs.yaml`: Same as above but change matcher to `ksd_adjoint_ve` and add `sdr_lambda: 1.0`.
 
-**Key evaluation for LJ38:** Beyond the standard W2 metrics, compute the energy of each generated sample and classify it as “icosahedral funnel” (energy < -170 and icosahedral structure) or “FCC funnel” (truncated octahedron structure). Count how many samples fall in each funnel. If baseline ASBS finds only one funnel but KSD-ASBS finds both, that’s the headline result.
+**Key evaluation for LJ38:** Beyond the standard W2 metrics, compute the energy of each generated sample and classify it as “icosahedral funnel” (energy < -170 and icosahedral structure) or “FCC funnel” (truncated octahedron structure). Count how many samples fall in each funnel. If baseline ASBS finds only one funnel but SDR-ASBS finds both, that’s the headline result.
 
 ### 1.7 Müller-Brown Potential — 2D Visualization Benchmark
 
@@ -698,7 +698,7 @@ class MullerBrownEnergy(BaseEnergy):
             axes[1].scatter(s[:, 0], s[:, 1], s=3, c='red', alpha=0.6)
 
         if samples_ksd is not None:
-            axes[2].set_title('KSD-ASBS')
+            axes[2].set_title('SDR-ASBS')
             s = samples_ksd[:500].cpu()
             axes[2].scatter(s[:, 0], s[:, 1], s=3, c='orange', alpha=0.6)
 
@@ -760,9 +760,9 @@ use_wandb: false
 eval_freq: 200
 ```
 
-`configs/experiment/muller_ksd_asbs.yaml`: Same but with `ksd_adjoint_ve` matcher and `ksd_lambda: 1.0`.
+`configs/experiment/muller_ksd_asbs.yaml`: Same but with `ksd_adjoint_ve` matcher and `sdr_lambda: 1.0`.
 
-**Key output:** The `plot_landscape` method produces a side-by-side contour plot showing reference samples, baseline samples, and KSD samples on the 2D energy surface. This is the most visually compelling figure in the paper — if KSD-ASBS covers all three minima while baseline covers only the deepest one, it’s immediately obvious.
+**Key output:** The `plot_landscape` method produces a side-by-side contour plot showing reference samples, baseline samples, and SDR samples on the 2D energy surface. This is the most visually compelling figure in the paper — if SDR-ASBS covers all three minima while baseline covers only the deepest one, it’s immediately obvious.
 
 ### 1.8 Bayesian Logistic Regression — Non-Molecular Benchmark
 
@@ -979,7 +979,7 @@ use_wandb: false
 eval_freq: 200
 ```
 
-`configs/experiment/blogreg_au_ksd_asbs.yaml`: Same with `ksd_adjoint_ve` and `ksd_lambda: 1.0`.
+`configs/experiment/blogreg_au_ksd_asbs.yaml`: Same with `ksd_adjoint_ve` and `sdr_lambda: 1.0`.
 
 Repeat for `blogreg_ge_asbs.yaml` and `blogreg_ge_ksd_asbs.yaml`.
 
@@ -1010,30 +1010,30 @@ for DATASET in au ge; do
 done
 ```
 
-Add to Phase 3 KSD script:
+Add to Phase 3 SDR script:
 
 ```bash
-# LJ38 KSD (3 λ × 3 seeds)
-echo "--- LJ38 KSD ---"
+# LJ38 SDR (3 λ × 3 seeds)
+echo "--- LJ38 SDR ---"
 for LAMBDA in 0.5 1.0 5.0; do
   for SEED in 0 1 2; do
-    python train.py experiment=lj38_ksd_asbs seed=${SEED} ksd_lambda=${LAMBDA} \
+    python train.py experiment=lj38_ksd_asbs seed=${SEED} sdr_lambda=${LAMBDA} \
       use_wandb=false exp_name=lj38_ksd_l${LAMBDA}_s${SEED}
   done
 done
 
-# Müller-Brown KSD (3 seeds)
-echo "--- Müller-Brown KSD ---"
+# Müller-Brown SDR (3 seeds)
+echo "--- Müller-Brown SDR ---"
 for SEED in 0 1 2; do
-  python train.py experiment=muller_ksd_asbs seed=${SEED} ksd_lambda=1.0 \
+  python train.py experiment=muller_ksd_asbs seed=${SEED} sdr_lambda=1.0 \
     use_wandb=false exp_name=muller_ksd_s${SEED}
 done
 
-# Bayesian LogReg KSD (2 datasets × 3 seeds)
-echo "--- Bayesian LogReg KSD ---"
+# Bayesian LogReg SDR (2 datasets × 3 seeds)
+echo "--- Bayesian LogReg SDR ---"
 for DATASET in au ge; do
   for SEED in 0 1 2; do
-    python train.py experiment=blogreg_${DATASET}_ksd_asbs seed=${SEED} ksd_lambda=1.0 \
+    python train.py experiment=blogreg_${DATASET}_ksd_asbs seed=${SEED} sdr_lambda=1.0 \
       use_wandb=false exp_name=blogreg_${DATASET}_ksd_s${SEED}
   done
 done
@@ -1043,15 +1043,15 @@ done
 
 If compute is limited, prioritize:
 
-1. **DW4 baseline + KSD** (3 hrs) — proves the concept
-1. **Müller-Brown baseline + KSD** (30 min) — produces the best visualization figure
+1. **DW4 baseline + SDR** (3 hrs) — proves the concept
+1. **Müller-Brown baseline + SDR** (30 min) — produces the best visualization figure
 1. **Rotated GMM d=10,30** (2 hrs) — proves synthetic CV-unknown advantage
 1. **DW4 λ ablation** (5 hrs) — finds optimal hyperparameter
-1. **LJ38 baseline + KSD** (24 hrs) — the headline real-system result (double funnel)
+1. **LJ38 baseline + SDR** (24 hrs) — the headline real-system result (double funnel)
 1. **Bayesian LogReg** (2 hrs) — proves it works beyond molecular systems
-1. **LJ13 baseline + KSD** (24 hrs) — medium-scale molecular
+1. **LJ13 baseline + SDR** (24 hrs) — medium-scale molecular
 1. **Rotated GMM d=50,100** (2 hrs) — dimension scaling
-1. **LJ55 baseline + KSD** (72 hrs) — only if LJ38 works
+1. **LJ55 baseline + SDR** (72 hrs) — only if LJ38 works
 
 -----
 
@@ -1094,51 +1094,51 @@ echo "=== Phase 2 Complete ==="
 
 -----
 
-## Phase 3: KSD-ASBS Training
+## Phase 3: SDR-ASBS Training
 
 ### 3.1 λ Ablation on DW4 (`scripts/run_phase3_ksd.sh`)
 
 ```bash
 #!/bin/bash
-# Phase 3: KSD-augmented ASBS training with λ ablation
+# Phase 3: SDR-augmented ASBS training with λ ablation
 set -e
 
-echo "=== Phase 3: KSD-ASBS Training ==="
+echo "=== Phase 3: SDR-ASBS Training ==="
 
 # --- DW4 λ ablation (5 λ × 3 seeds = 15 runs) ---
-echo "--- DW4 KSD λ Ablation ---"
+echo "--- DW4 SDR λ Ablation ---"
 for LAMBDA in 0.1 0.5 1.0 5.0 10.0; do
   for SEED in 0 1 2; do
     echo "DW4: λ=${LAMBDA}, seed=${SEED}"
     python train.py experiment=dw4_ksd_asbs \
       seed=${SEED} \
-      ksd_lambda=${LAMBDA} \
+      sdr_lambda=${LAMBDA} \
       use_wandb=false \
       exp_name=dw4_ksd_l${LAMBDA}_s${SEED}
   done
 done
 
 # --- LJ13 (best λ from DW4 ablation + neighbors, 3 λ × 3 seeds = 9 runs) ---
-echo "--- LJ13 KSD ---"
+echo "--- LJ13 SDR ---"
 for LAMBDA in 0.5 1.0 5.0; do
   for SEED in 0 1 2; do
     echo "LJ13: λ=${LAMBDA}, seed=${SEED}"
     python train.py experiment=lj13_ksd_asbs \
       seed=${SEED} \
-      ksd_lambda=${LAMBDA} \
+      sdr_lambda=${LAMBDA} \
       use_wandb=false \
       exp_name=lj13_ksd_l${LAMBDA}_s${SEED}
   done
 done
 
 # --- LJ55 (best λ only, 1 λ × 3 seeds = 3 runs) ---
-echo "--- LJ55 KSD ---"
+echo "--- LJ55 SDR ---"
 BEST_LAMBDA=1.0  # Update after DW4/LJ13 ablation
 for SEED in 0 1 2; do
   echo "LJ55: λ=${BEST_LAMBDA}, seed=${SEED}"
   python train.py experiment=lj55_ksd_asbs \
     seed=${SEED} \
-    ksd_lambda=${BEST_LAMBDA} \
+    sdr_lambda=${BEST_LAMBDA} \
     use_wandb=false \
     exp_name=lj55_ksd_l${BEST_LAMBDA}_s${SEED}
 done
@@ -1155,12 +1155,12 @@ To test whether chunking affects results (it shouldn’t) and measure wall-clock
 # Vary ksd_efficient_threshold to force chunking or full computation
 
 # Full computation (no chunking)
-python train.py experiment=dw4_ksd_asbs seed=0 ksd_lambda=1.0 \
+python train.py experiment=dw4_ksd_asbs seed=0 sdr_lambda=1.0 \
   use_wandb=false exp_name=dw4_ksd_chunk_full \
   adjoint_matcher.ksd_efficient_threshold=99999
 
 # Chunked (chunk_size=128)
-python train.py experiment=dw4_ksd_asbs seed=0 ksd_lambda=1.0 \
+python train.py experiment=dw4_ksd_asbs seed=0 sdr_lambda=1.0 \
   use_wandb=false exp_name=dw4_ksd_chunk_128 \
   adjoint_matcher.ksd_efficient_threshold=0
 
@@ -1170,12 +1170,12 @@ python train.py experiment=dw4_ksd_asbs seed=0 ksd_lambda=1.0 \
 
 ### 3.3 Batch Size Ablation
 
-To test how batch size (N particles per buffer refresh) affects KSD correction quality:
+To test how batch size (N particles per buffer refresh) affects SDR correction quality:
 
 ```bash
 # Batch size comparison on DW4 (fixed λ=1.0, seed=0)
 for BSIZE in 64 128 256 512 1024; do
-  python train.py experiment=dw4_ksd_asbs seed=0 ksd_lambda=1.0 \
+  python train.py experiment=dw4_ksd_asbs seed=0 sdr_lambda=1.0 \
     resample_batch_size=${BSIZE} \
     use_wandb=false exp_name=dw4_ksd_bsize${BSIZE}
 done
@@ -1194,7 +1194,7 @@ set -e
 
 echo "=== Phase 4: Synthetic CV-Unknown Experiments ==="
 
-# For each dimension: train baseline ASBS and KSD-ASBS
+# For each dimension: train baseline ASBS and SDR-ASBS
 for DIM in 10 30 50 100; do
   for SEED in 0 1 2; do
     echo "RotGMM d=${DIM}: Baseline, seed=${SEED}"
@@ -1202,9 +1202,9 @@ for DIM in 10 30 50 100; do
       seed=${SEED} use_wandb=false \
       exp_name=rotgmm${DIM}_asbs_s${SEED}
 
-    echo "RotGMM d=${DIM}: KSD, seed=${SEED}"
+    echo "RotGMM d=${DIM}: SDR, seed=${SEED}"
     python train.py experiment=rotgmm${DIM}_ksd_asbs \
-      seed=${SEED} ksd_lambda=1.0 use_wandb=false \
+      seed=${SEED} sdr_lambda=1.0 use_wandb=false \
       exp_name=rotgmm${DIM}_ksd_s${SEED}
   done
 done
@@ -1282,7 +1282,7 @@ def compute_all_metrics(
     metrics['min_energy'] = gen_E.min().item()
     metrics['max_energy'] = gen_E.max().item()
 
-    # --- KSD ---
+    # --- SDR ---
     scores = energy.score(samples)
     ell = median_bandwidth(samples)
     N_ksd = min(N, 2000)
@@ -1618,7 +1618,7 @@ This script reads all JSON results files and produces `RESULTS.md` with every ta
 generate_results.py
 
 Reads results/ directory and generates docs/RESULTS.md with:
-- Per-benchmark comparison tables (baseline vs KSD-ASBS)
+- Per-benchmark comparison tables (baseline vs SDR-ASBS)
 - λ ablation tables and plots
 - Batch size ablation
 - Chunking timing table
@@ -1675,12 +1675,12 @@ def make_benchmark_table(group_data, benchmark, metrics, fig_dir):
     lines.append(f"### {benchmark.upper()}")
     lines.append("")
 
-    # Find baseline and KSD experiments
+    # Find baseline and SDR experiments
     baseline_exps = {k: v for k, v in group_data.items() if 'ksd' not in k}
     ksd_exps = {k: v for k, v in group_data.items() if 'ksd' in k}
 
     if not baseline_exps or not ksd_exps:
-        lines.append("_Incomplete data — missing baseline or KSD experiments._")
+        lines.append("_Incomplete data — missing baseline or SDR experiments._")
         return "\n".join(lines)
 
     # Aggregate across seeds for baseline
@@ -1699,7 +1699,7 @@ def make_benchmark_table(group_data, benchmark, metrics, fig_dir):
     ksd_agg = aggregate_seeds(ksd_exps)
 
     # Table
-    lines.append("| Metric | Baseline ASBS | KSD-ASBS | Δ (%) |")
+    lines.append("| Metric | Baseline ASBS | SDR-ASBS | Δ (%) |")
     lines.append("|---|---|---|---|")
     for metric in metrics:
         if metric not in base_agg or metric not in ksd_agg:
@@ -1730,7 +1730,7 @@ def make_benchmark_table(group_data, benchmark, metrics, fig_dir):
             E = exp_data['_energy_values']
             if isinstance(E, list) and len(E) > 0:
                 ax.hist(E, bins=50, alpha=0.5, density=True,
-                        label='KSD-ASBS', color='#ff7f0e')
+                        label='SDR-ASBS', color='#ff7f0e')
             break
 
     ax.set_xlabel('Energy')
@@ -1802,7 +1802,7 @@ def make_lambda_ablation(group_data, benchmark, fig_dir):
         means = [np.mean(lambda_data[l][metric]) for l in lambdas]
         stds = [np.std(lambda_data[l][metric]) for l in lambdas]
         ax.errorbar(lambdas, means, yerr=stds, marker='o', capsize=3, linewidth=2)
-        ax.set_xlabel('λ (KSD weight)')
+        ax.set_xlabel('λ (SDR weight)')
         ax.set_ylabel(metric)
         ax.set_xscale('log')
         ax.grid(alpha=0.3)
@@ -1851,7 +1851,7 @@ def make_mode_coverage_table(all_data, fig_dir):
                     coverage_data['baseline'][dim_num] = val
 
     # Table
-    lines.append("| Dimension | Baseline Coverage | KSD Coverage | Δ |")
+    lines.append("| Dimension | Baseline Coverage | SDR Coverage | Δ |")
     lines.append("|---|---|---|---|")
     dim_nums = sorted(set(list(coverage_data['baseline'].keys()) +
                           list(coverage_data['ksd'].keys())),
@@ -1871,7 +1871,7 @@ def make_mode_coverage_table(all_data, fig_dir):
     w = 0.35
     x = np.arange(len(x_dims))
     ax.bar(x - w/2, bc_vals, w, label='Baseline ASBS', color='#1f77b4')
-    ax.bar(x + w/2, kc_vals, w, label='KSD-ASBS', color='#ff7f0e')
+    ax.bar(x + w/2, kc_vals, w, label='SDR-ASBS', color='#ff7f0e')
     ax.set_xticks(x)
     ax.set_xticklabels([f'd={d}' for d in x_dims])
     ax.set_ylabel('Mode Coverage Fraction')
@@ -1920,7 +1920,7 @@ def generate_results_md(args):
     all_data = load_all_results(results_dir)
 
     lines = []
-    lines.append("# Results: KSD-Augmented ASBS — Comprehensive Evaluation")
+    lines.append("# Results: SDR-Augmented ASBS — Comprehensive Evaluation")
     lines.append("")
     lines.append("*Auto-generated by `generate_results.py`*")
     lines.append("")
@@ -1928,7 +1928,7 @@ def generate_results_md(args):
     # --- Summary ---
     lines.append("## Method")
     lines.append("")
-    lines.append("KSD-Augmented ASBS modifies the adjoint terminal condition:")
+    lines.append("SDR-Augmented ASBS modifies the adjoint terminal condition:")
     lines.append("")
     lines.append("$$Y_1^i = -\\frac{1}{N}\\nabla\\Phi_0(X_1^i) - "
                  "\\frac{\\lambda}{N^2}\\sum_j \\nabla_x k_p(X_1^i, X_1^j)$$")
@@ -1970,10 +1970,10 @@ def generate_results_md(args):
     lines.append("")
     lines.append("Key questions answered:")
     lines.append("")
-    lines.append("1. Does KSD-ASBS reduce mode collapse compared to baseline ASBS?")
+    lines.append("1. Does SDR-ASBS reduce mode collapse compared to baseline ASBS?")
     lines.append("2. What is the optimal λ?")
     lines.append("3. Does the advantage persist in high dimensions?")
-    lines.append("4. Does KSD-ASBS work where CVs are unknown (rotated GMM)?")
+    lines.append("4. Does SDR-ASBS work where CVs are unknown (rotated GMM)?")
     lines.append("5. What is the computational overhead?")
     lines.append("6. Is chunking mathematically equivalent and practically efficient?")
 
@@ -1983,7 +1983,7 @@ def generate_results_md(args):
     lines.append("")
     lines.append("```bash")
     lines.append("bash scripts/run_phase2_baselines.sh  # Train baselines")
-    lines.append("bash scripts/run_phase3_ksd.sh        # Train KSD-ASBS")
+    lines.append("bash scripts/run_phase3_ksd.sh        # Train SDR-ASBS")
     lines.append("bash scripts/run_phase4_synthetic.sh   # Train on rotated GMM")
     lines.append("bash scripts/run_phase5_evaluate.sh    # Evaluate everything")
     lines.append("python generate_results.py             # Generate this report")
@@ -2014,7 +2014,7 @@ if __name__ == '__main__':
 ```
 1. Create all source files (Phase 1)
    - stein_kernel.py → test it
-   - ksd_matcher.py
+   - sdr_matcher.py
    - rotated_gmm_energy.py
    - All config YAMLs
    - Verify: python -m adjoint_samplers.components.stein_kernel
@@ -2022,21 +2022,21 @@ if __name__ == '__main__':
 2. Train DW4 baselines (fastest, ~1 hr each)
    - 3 seeds of dw4_asbs
 
-3. Train DW4 KSD with λ ablation (fast iteration)
+3. Train DW4 SDR with λ ablation (fast iteration)
    - 5 λ values × 3 seeds
    - Check: does training converge? If loss diverges for λ=10, remove it
 
 4. Quick evaluation of DW4 results
    - Run evaluate_all.py on DW4 experiments only
-   - Check energy histograms: does KSD-ASBS show broader coverage?
+   - Check energy histograms: does SDR-ASBS show broader coverage?
    - Determine best λ for DW4
 
 5. Train LJ13 (medium, ~4 hrs each)
-   - 3 seeds baseline + 3 λ values × 3 seeds KSD
+   - 3 seeds baseline + 3 λ values × 3 seeds SDR
    - Use best λ from DW4 ± neighbors
 
 6. Train synthetic rotated GMM (fast, ~20 min each)
-   - d=10, 30, 50, 100 × baseline + KSD × 3 seeds
+   - d=10, 30, 50, 100 × baseline + SDR × 3 seeds
    - This is the "CV-unknown" advantage experiment
 
 7. Train LJ55 (slow, ~12 hrs each)
@@ -2053,12 +2053,12 @@ if __name__ == '__main__':
 
 ### Priority order if compute is limited:
 
-1. **DW4 baseline + KSD** (3 hrs) — proves the method works
+1. **DW4 baseline + SDR** (3 hrs) — proves the method works
 1. **Rotated GMM d=10,30** (2 hrs) — proves the CV-unknown advantage
 1. **DW4 λ ablation** (5 hrs) — finds optimal hyperparameter
-1. **LJ13 baseline + KSD** (24 hrs) — tests scaling to 39D
+1. **LJ13 baseline + SDR** (24 hrs) — tests scaling to 39D
 1. **Rotated GMM d=50,100** (2 hrs) — tests scaling for synthetics
-1. **LJ55 baseline + KSD** (72 hrs) — tests scaling to 165D (only if prior results positive)
+1. **LJ55 baseline + SDR** (72 hrs) — tests scaling to 165D (only if prior results positive)
 
 -----
 
@@ -2068,7 +2068,7 @@ if __name__ == '__main__':
 1. **Non-graph models for RotGMM**: The rotated GMM is NOT a particle system. It uses `FourierMLP` (not `EGNN`), standard `VESDE` (not `GraphVESDE`), standard `Gauss` source (not `harmonic`), and `GradEnergy` terminal cost (not `GraphCorrectorGradTermCost`). Create appropriate non-graph configs. Check if `configs/sde/ve.yaml` exists; if not, create it pointing to `adjoint_samplers.components.sde.VESDE`.
 1. **RotGMM has n_particles=1**: The RotGMM energy pretends to be a 1-particle system with `spatial_dim=dim`. This sidesteps the graph machinery. Alternatively, implement it without the particle abstraction — but the evaluator/training pipeline expects `n_particles` and `spatial_dim` fields.
 1. **Memory on LJ55**: With `resample_batch_size=200` (LJ55 default) and `dim=165`, the Stein kernel gradient tensor is `200×200×165×4 bytes ≈ 26 MB` — well within GPU memory. The efficient chunked version is not needed at this batch size.
-1. **Training time logging**: To compare training costs, wrap the training loop timing. Add `time.time()` before and after `train_one_epoch` in `train.py` (or measure externally). The overhead of the KSD correction should be small relative to total epoch time.
+1. **Training time logging**: To compare training costs, wrap the training loop timing. Add `time.time()` before and after `train_one_epoch` in `train.py` (or measure externally). The overhead of the SDR correction should be small relative to total epoch time.
 1. **Seeding**: Use different seeds for training (seed=0,1,2) and evaluation (eval_seed in evaluate_all.py). Training seeds control the SDE noise and initialization. Evaluation seeds control which samples are generated for metrics.
 1. **Failing gracefully**: If a checkpoint is missing (training crashed or was skipped), `evaluate_all.py` skips it and continues. The results tables will show gaps.
 1. **The RotGMM energy must handle device transfer**: The rotation matrix and centers are torch tensors that need to be on the same device as the input. The `_to_device` method handles this. Make sure it’s called before `eval()`.

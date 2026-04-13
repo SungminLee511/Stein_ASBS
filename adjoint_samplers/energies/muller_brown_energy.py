@@ -76,7 +76,7 @@ class MullerBrownEnergy(BaseEnergy):
     def get_ref_samples(self):
         return self._ref_samples
 
-    def plot_landscape(self, samples=None, samples_ksd=None, save_path=None):
+    def plot_landscape(self, samples=None, samples_sdr=None, save_path=None):
         """Plot the 2D energy landscape with optional sample overlays."""
         import matplotlib
         matplotlib.use('Agg')
@@ -88,7 +88,7 @@ class MullerBrownEnergy(BaseEnergy):
         grid = torch.stack([xx.flatten(), yy.flatten()], dim=1)
         E = self._eval_raw(grid).reshape(300, 300)
 
-        n_panels = 1 + (samples is not None) + (samples_ksd is not None)
+        n_panels = 1 + (samples is not None) + (samples_sdr is not None)
         fig, axes = plt.subplots(1, n_panels, figsize=(6 * n_panels, 5))
         if n_panels == 1:
             axes = [axes]
@@ -111,9 +111,9 @@ class MullerBrownEnergy(BaseEnergy):
             axes[idx].scatter(s[:, 0], s[:, 1], s=3, c='red', alpha=0.6)
             idx += 1
 
-        if samples_ksd is not None:
-            axes[idx].set_title('KSD-ASBS')
-            s = samples_ksd[:500].cpu()
+        if samples_sdr is not None:
+            axes[idx].set_title('SDR-ASBS')
+            s = samples_sdr[:500].cpu()
             axes[idx].scatter(s[:, 0], s[:, 1], s=3, c='orange', alpha=0.6)
 
         fig.tight_layout()

@@ -7,7 +7,7 @@ After a random rotation R, no axis-aligned projection separates the modes.
 This makes CV-based methods (like WT-ASBS) fail — they cannot find the
 right projection without oracle knowledge of R.
 
-Our KSD method operates in the full space and doesn't need CVs.
+Our SDR method operates in the full space and doesn't need CVs.
 """
 
 import torch

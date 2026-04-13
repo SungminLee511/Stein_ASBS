@@ -21,7 +21,7 @@ class UnequalGMMEnergy(BaseEnergy):
     sigma = 0.5 per mode.
 
     The 3% mode should vanish under AM mode concentration.
-    KSD should preserve it.
+    SDR should preserve it.
     """
     def __init__(self, dim=2, device="cpu"):
         super().__init__("unequal_gmm", dim)

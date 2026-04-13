@@ -6,7 +6,7 @@ Three new benchmarks to implement, train, and evaluate. All use FourierMLP contr
 
 |Benchmark         |dim|Modes |Key demonstration                               |
 |------------------|---|------|------------------------------------------------|
-|Unequal-Weight GMM|2  |5     |Minority mode death under AM, survival under KSD|
+|Unequal-Weight GMM|2  |5     |Minority mode death under AM, survival under SDR|
 |Many-Well MW5     |5  |32    |Combinatorial mode coverage in low-d            |
 |32D Many-Well     |32 |65,536|Standard benchmark from PIS/DDS/DGFS literature |
 
@@ -38,7 +38,7 @@ class UnequalGMMEnergy(BaseEnergy):
     σ = 0.5 per mode.
 
     The 3% mode should vanish under AM mode concentration.
-    KSD should preserve it.
+    SDR should preserve it.
     """
     def __init__(self, dim=2, device="cpu"):
         super().__init__("unequal_gmm", dim)
@@ -362,7 +362,7 @@ use_wandb: false
 eval_freq: 200
 ```
 
-`configs/experiment/unequal_gmm_ksd_asbs.yaml`: Same but change matcher to KSD matcher and add `ksd_lambda: 1.0`.
+`configs/experiment/unequal_gmm_ksd_asbs.yaml`: Same but change matcher to SDR matcher and add `sdr_lambda: 1.0`.
 
 **MW5** — `configs/experiment/mw5_asbs.yaml`:
 
@@ -399,7 +399,7 @@ use_wandb: false
 eval_freq: 200
 ```
 
-`configs/experiment/mw5_ksd_asbs.yaml`: Same with KSD matcher, `ksd_lambda: 1.0`.
+`configs/experiment/mw5_ksd_asbs.yaml`: Same with SDR matcher, `sdr_lambda: 1.0`.
 
 **32D Many-Well** — `configs/experiment/manywell32_asbs.yaml`:
 
@@ -436,7 +436,7 @@ use_wandb: false
 eval_freq: 200
 ```
 
-`configs/experiment/manywell32_ksd_asbs.yaml`: Same with KSD matcher, `ksd_lambda: 1.0`.
+`configs/experiment/manywell32_ksd_asbs.yaml`: Same with SDR matcher, `sdr_lambda: 1.0`.
 
 **NOTE on term_cost:** These are NOT particle systems and do NOT use the corrector. Use `score_term_cost` (AS-style memoryless condition), not `graph_corrector_term_cost`. If `score_term_cost` doesn’t exist or doesn’t work, try `term_cost` with appropriate settings. The terminal cost should be $\Phi_0(x) = E(x) + \log p_1^{\text{ref}}(x)$ where $p_1^{\text{ref}}$ is the Gaussian reference marginal.
 
@@ -508,7 +508,7 @@ def evaluate_unequal_gmm(samples, energy):
     return results
 ```
 
-**Key result to report:** Baseline minority mode weight (should be ~0 or very small) vs KSD minority mode weight (should be ~0.03).
+**Key result to report:** Baseline minority mode weight (should be ~0 or very small) vs SDR minority mode weight (should be ~0.03).
 
 ### 5.2 MW5 (5D, 32 modes)
 
@@ -656,10 +656,10 @@ def evaluate_manywell32_marginals(samples, ref_samples):
 
 ```python
 def plot_unequal_gmm_weights(results_base, results_ksd, output_path):
-    """Bar chart: true weights vs baseline vs KSD-ASBS per mode.
+    """Bar chart: true weights vs baseline vs SDR-ASBS per mode.
 
     This is THE figure for this benchmark. It should show:
-    - Mode 5 (3%) has ~0% weight under baseline, ~3% under KSD
+    - Mode 5 (3%) has ~0% weight under baseline, ~3% under SDR
     """
     fig, ax = plt.subplots(figsize=(8, 5))
 
@@ -697,9 +697,9 @@ Also generate the standard terminal distribution + trajectory plots using the sa
 ```python
 def plot_mw5_marginals(samples_base, samples_ksd, ref_samples, output_path):
     """5-panel figure: one per dimension.
-    Each panel shows overlaid histograms of reference, baseline, KSD.
+    Each panel shows overlaid histograms of reference, baseline, SDR.
     Key visual: baseline may collapse to one well in some dimensions,
-    KSD should have both wells populated in all dimensions.
+    SDR should have both wells populated in all dimensions.
     """
     fig, axes = plt.subplots(1, 5, figsize=(20, 4))
 
@@ -734,7 +734,7 @@ def plot_manywell32_marginals(samples_base, samples_ksd, ref_samples, output_pat
     Standard visualization from DGFS (Figure 4): project onto (dim 0, dim 2)
     i.e., the a-dimensions of pair 0 and pair 1.
 
-    3-panel: Reference, Baseline, KSD-ASBS.
+    3-panel: Reference, Baseline, SDR-ASBS.
     """
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
 
@@ -760,7 +760,7 @@ def plot_manywell32_marginals(samples_base, samples_ksd, ref_samples, output_pat
     plt.close(fig)
 ```
 
-**This figure should show 4 clusters** (2 wells × 2 wells = 4 combinations). If baseline shows only 2 clusters (one dimension collapsed to single well), KSD shows all 4 — this is the visual proof.
+**This figure should show 4 clusters** (2 wells × 2 wells = 4 combinations). If baseline shows only 2 clusters (one dimension collapsed to single well), SDR shows all 4 — this is the visual proof.
 
 ### 6.4 32D Many-Well — log Z Bias Comparison Table
 
@@ -827,6 +827,6 @@ After evaluation, append all results to RESULTS.md:
 1. **Term cost:** Use AS-style (memoryless, no corrector) since these are non-molecular with Gaussian source. The terminal cost should be $\Phi_0(x) = E(x) + \log p_1^{\text{ref}}(x)$ where $p_1^{\text{ref}}$ is the Gaussian reference marginal. Check which `term_cost` config achieves this — likely `score_term_cost`. If training diverges, try adding the corrector (ASBS-style with `corrector_term_cost`).
 1. **Verify the 32D energy definition.** The sign convention on the Many-Well potential varies between papers. Cross-check against DGFS (Zhang et al., ICLR 2024) Section 5.1 and PIS (Zhang & Chen, 2022). The key property: each 2D pair should have exactly 2 energy minima when projected onto the a-axis.
 1. **sigma_max matters.** For Unequal GMM (modes at radius 5): sigma_max=8. For MW5 and ManyWell32 (wells at ~±1.7): sigma_max=3. Too small: SDE can’t reach the modes. Too large: training is unstable.
-1. **KSD lambda may need tuning.** Start with lambda=1.0 for all three. If MW5 or ManyWell32 diverge, try lambda=0.5 or 0.1. If Unequal GMM is too weak, try lambda=2.0.
+1. **SDR lambda may need tuning.** Start with lambda=1.0 for all three. If MW5 or ManyWell32 diverge, try lambda=0.5 or 0.1. If Unequal GMM is too weak, try lambda=2.0.
 1. **32D Many-Well log Z requires trajectory IS infrastructure.** Use the `sdeint_with_noise` and `compute_girsanov_log_weights` functions from `ESS_EVALUATION_GUIDE.md`. If these haven’t been implemented yet, implement them first.
 1. **Run 5 eval seeds** (0-4) with 2000 samples each, same as all other benchmarks. Report mean ± std.
