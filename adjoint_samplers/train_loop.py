@@ -57,8 +57,11 @@ def train_one_epoch(
             input, target = result
             weights = None
 
-        # Sanitize targets: replace NaN/Inf, then clip per-sample norms
-        target = torch.nan_to_num(target, nan=0.0, posinf=0.0, neginf=0.0)
+        # Skip batch if target contains NaN/Inf (do NOT zero-fill — causes silent collapse)
+        if torch.isnan(target).any() or torch.isinf(target).any():
+            optimizer.zero_grad()
+            epoch_loss.update(float('nan'))
+            continue
         if cfg.get("clip_target_norm", None):
             t_norms = torch.linalg.vector_norm(target, dim=-1, keepdim=True)
             t_clip = torch.clamp(
@@ -67,7 +70,10 @@ def train_one_epoch(
             target = target * t_clip
 
         output = model(*input)
-        output = torch.nan_to_num(output, nan=0.0, posinf=0.0, neginf=0.0)
+        if torch.isnan(output).any() or torch.isinf(output).any():
+            optimizer.zero_grad()
+            epoch_loss.update(float('nan'))
+            continue
 
         per_sample_loss = ((output - target) ** 2).mean(dim=-1)  # (B,)
         if weights is not None:

@@ -28,6 +28,7 @@ sdr_beta: 0.5
 
 # === training ===
 num_epochs: 5000
+clip_grad_norm: 1.0
 max_grad_E_norm: 100
 adj_num_epochs_per_stage: 200
 ctr_num_epochs_per_stage: 20
