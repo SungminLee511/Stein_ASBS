@@ -12,6 +12,11 @@ import json
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
 
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+
 from omegaconf import OmegaConf
 import hydra
 import ot
@@ -26,6 +31,42 @@ import adjoint_samplers.utils.train_utils as train_utils
 
 RESULTS_DIR = Path('/home/sky/SML/Stein_ASBS/results')
 EVAL_DIR = Path('/home/sky/SML/Stein_ASBS/evaluation')
+FIG_DIR = EVAL_DIR / 'figures_2d'
+
+C_ASBS = '#c0392b'
+C_SDR05 = '#2980b9'
+C_SDR07 = '#27ae60'
+C_SDR10 = '#8e44ad'
+C_BG = '#fafafa'
+
+
+# ====================================================================
+# NeurIPS style
+# ====================================================================
+
+def set_neurips_style():
+    plt.rcParams.update({
+        'font.family': 'serif',
+        'font.serif': ['STIXGeneral', 'DejaVu Serif', 'Times New Roman'],
+        'mathtext.fontset': 'stix',
+        'font.size': 9,
+        'axes.titlesize': 10,
+        'axes.labelsize': 9,
+        'xtick.labelsize': 8,
+        'ytick.labelsize': 8,
+        'legend.fontsize': 8,
+        'lines.linewidth': 0.8,
+        'axes.linewidth': 0.6,
+        'axes.grid': False,
+        'axes.spines.top': True,
+        'axes.spines.right': True,
+        'xtick.direction': 'in',
+        'ytick.direction': 'in',
+        'figure.dpi': 200,
+        'savefig.dpi': 200,
+        'savefig.bbox': 'tight',
+        'savefig.pad_inches': 0.02,
+    })
 
 
 # ====================================================================
@@ -69,6 +110,14 @@ def generate_samples(sde, source, ts_cfg, n_samples, device):
     ts = train_utils.get_timesteps(**ts_cfg).to(device)
     _, x1 = sdeint(sde, x0, ts, only_boundary=True)
     return x1
+
+
+@torch.no_grad()
+def generate_full_states(sde, source, ts_cfg, n_samples, device):
+    x0 = source.sample([n_samples]).to(device)
+    ts = train_utils.get_timesteps(**ts_cfg).to(device)
+    states = sdeint(sde, x0, ts, only_boundary=False)
+    return states, ts
 
 
 # ====================================================================
@@ -257,6 +306,99 @@ def main():
                 row += f"{mean_val:>12.4f}±{std_val:<8.4f}"
         print(row)
     print("=" * 100)
+
+    # ---- Generate PCA marginal evolution figure ----
+    print("\n  Generating PCA marginal evolution trajectories...")
+    FIG_DIR.mkdir(parents=True, exist_ok=True)
+
+    # Fit PCA on reference samples
+    ref_np = ref_samples.cpu().numpy()
+    pca = PCA(n_components=2)
+    pca.fit(ref_np)
+    ref_2d = pca.transform(ref_np)
+    centers_2d = pca.transform(centers.cpu().numpy())
+
+    method_colors = {
+        'ASBS': C_ASBS,
+        r'SDR $\beta$=0.5': C_SDR05,
+        r'SDR $\beta$=0.7': C_SDR07,
+        r'SDR $\beta$=1.0': C_SDR10,
+    }
+
+    n_snapshots = 6
+    all_states_list = []
+    all_ts_list = []
+    fig_method_names = []
+    fig_method_colors = []
+
+    for method_name, method_info in methods.items():
+        seed_dir = method_info['seeds'][0]  # seed 0
+        print(f"    Generating trajectories for {method_name} (seed 0)...")
+        sde, source, _, ts_cfg = load_model(seed_dir, device)
+        torch.manual_seed(42)
+        states, ts = generate_full_states(sde, source, ts_cfg, n_samples, device)
+        all_states_list.append(states)
+        all_ts_list.append(ts)
+        fig_method_names.append(method_name)
+        fig_method_colors.append(method_colors[method_name])
+        del sde, source
+        torch.cuda.empty_cache()
+
+    # Plot
+    set_neurips_style()
+    n_methods = len(fig_method_names)
+    panel_size = 1.3
+    fig_w = n_snapshots * panel_size + 1.0
+    fig_h = n_methods * panel_size
+    fig, axes = plt.subplots(n_methods, n_snapshots, figsize=(fig_w, fig_h))
+    if n_methods == 1:
+        axes = axes[np.newaxis, :]
+
+    # Compute axis limits from reference samples
+    pad = 0.5
+    xlim = (ref_2d[:, 0].min() - pad, ref_2d[:, 0].max() + pad)
+    ylim = (ref_2d[:, 1].min() - pad, ref_2d[:, 1].max() + pad)
+
+    for row_idx in range(n_methods):
+        states = all_states_list[row_idx]
+        ts = all_ts_list[row_idx]
+        color = fig_method_colors[row_idx]
+        name = fig_method_names[row_idx]
+        T = len(states)
+        indices = np.linspace(0, T - 1, n_snapshots, dtype=int)
+
+        for col_idx, state_idx in enumerate(indices):
+            ax = axes[row_idx, col_idx]
+            t_val = ts[state_idx].item()
+            samples_5d = states[state_idx].cpu().numpy()
+            samples_2d = pca.transform(samples_5d)
+
+            ax.set_facecolor(C_BG)
+            ax.scatter(centers_2d[:, 0], centers_2d[:, 1], marker='+', s=10,
+                       c='black', linewidths=0.3, zorder=10)
+            ax.scatter(samples_2d[:, 0], samples_2d[:, 1], s=1.0, c=color,
+                       alpha=0.35, zorder=5, edgecolors='none', rasterized=True)
+            ax.set_xlim(xlim)
+            ax.set_ylim(ylim)
+            ax.set_aspect('equal')
+
+            if row_idx == 0:
+                ax.set_title(f'$t = {t_val:.2f}$', fontsize=8, pad=3)
+            ax.tick_params(length=2, width=0.4, labelsize=6)
+            if col_idx == 0:
+                ax.set_ylabel(name, fontsize=9, fontweight='bold')
+            else:
+                ax.set_yticklabels([])
+            if row_idx < n_methods - 1:
+                ax.set_xticklabels([])
+
+    fig.suptitle('MW5 Marginal Evolution (PCA 2D projection)', fontsize=10, y=1.02)
+    fig.subplots_adjust(wspace=0.08, hspace=0.12)
+    output_path = FIG_DIR / 'mw5_sdr_marginal_pca.png'
+    fig.savefig(output_path, dpi=200, bbox_inches='tight')
+    fig.savefig(output_path.with_suffix('.pdf'), bbox_inches='tight')
+    plt.close(fig)
+    print(f"  Saved: {output_path} + .pdf")
 
     # ---- Save metrics JSON ----
     json_path = EVAL_DIR / 'mw5_sdr_results.json'
