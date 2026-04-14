@@ -56,12 +56,12 @@ Stein_ASBS/
 │   ├── experiment/               # Active experiment configs:
 │   │   ├── dw4_as.yaml           # DW4 AS baseline
 │   │   ├── dw4_asbs.yaml         # DW4 ASBS baseline
-│   │   ├── dw4_sdr_asbs.yaml    # DW4 SDR
 │   │   ├── grid25_as.yaml        # Grid25 AS baseline
 │   │   ├── grid25_asbs.yaml      # Grid25 ASBS baseline
 │   │   ├── grid25_sdr_asbs.yaml # Grid25 SDR
 │   │   ├── mw5_asbs.yaml         # MW5 ASBS baseline
-│   │   ├── mw5_sdr_asbs.yaml    # MW5 SDR
+│   │   ├── mw32_asbs.yaml        # MW32 ASBS baseline
+│   │   ├── mw32_sdr_asbs.yaml   # MW32 SDR
 │   │   ├── lj13_as.yaml          # LJ13 AS baseline
 │   │   ├── lj13_asbs.yaml        # LJ13 ASBS baseline
 │   │   ├── lj13_sdr_asbs.yaml   # LJ13 SDR
@@ -70,7 +70,7 @@ Stein_ASBS/
 │   │   ├── lj55_as.yaml          # LJ55 AS baseline
 │   │   ├── lj55_asbs.yaml        # LJ55 ASBS baseline
 │   │   └── lj55_sdr_asbs.yaml   # LJ55 SDR
-│   ├── problem/                  # dw4, grid25, mw5, lj13, lj38, lj55
+│   ├── problem/                  # dw4, grid25, mw5, mw32, lj13, lj38, lj55
 │   ├── matcher/                  # adjoint_ve/vp, sdr_adjoint_ve, sdr_adjoint_ve, imq variants
 │   ├── sde/                      # ve, vp, brownian_motion, graph_ve, graph_vp
 │   ├── source/                   # gauss, harmonic, delta, meanfree

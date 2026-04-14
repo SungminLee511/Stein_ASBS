@@ -1,15 +1,15 @@
 # @package _global_
 
 defaults:
-  - /problem: mw5
+  - /problem: mw32
   - /source: gauss
   - /sde@ref_sde: ve
   - /model@controller: fouriermlp
   - /state_cost: zero
   - /term_cost: score_term_cost
-  - /matcher@adjoint_matcher: sdr_adjoint_ve
+  - /matcher@adjoint_matcher: adjoint_ve
 
-exp_name: mw5_sdr_asbs
+exp_name: mw32_asbs
 
 # === source ===
 scale: 2
@@ -20,14 +20,9 @@ sigma_max: 3
 sigma_min: 0.001
 rescale_t: null
 
-# === SDR parameters ===
-sdr_lambda: 1.0
-sdr_beta: 0.5
-
 # === training ===
 num_epochs: 5000
-clip_grad_norm: 1.0
-max_grad_E_norm: 50
+max_grad_E_norm: 100
 
 adjoint_matcher:
   buffer_size: 10000
@@ -40,5 +35,4 @@ adjoint_matcher:
 
 # === eval & logging ===
 use_wandb: false
-skip_eval: true
 eval_freq: 200
