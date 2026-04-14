@@ -17,7 +17,7 @@ scale: 2
 # === sde ===
 nfe: 200
 sigma_max: 3
-sigma_min: 0.01
+sigma_min: 0.001
 rescale_t: null
 
 # === SDR parameters ===
