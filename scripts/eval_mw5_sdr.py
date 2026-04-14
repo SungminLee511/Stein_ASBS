@@ -159,15 +159,19 @@ def compute_w2_distance(samples, ref_samples):
     return float(np.sqrt(max(w2_sq, 0)))
 
 
-def compute_sinkhorn_divergence(samples, ref_samples, reg=0.1):
+def compute_sinkhorn_divergence(samples, ref_samples, reg=1.0):
     a = samples.cpu().numpy()
     b = ref_samples.cpu().numpy()
     n, m = len(a), len(b)
     wa = np.ones(n) / n
     wb = np.ones(m) / m
-    M = ot.dist(a, b, metric='sqeuclidean')
-    sinkhorn = ot.sinkhorn2(wa, wb, M, reg=reg)
-    return float(sinkhorn)
+    M_pq = ot.dist(a, b, metric='sqeuclidean')
+    ot_pq = ot.sinkhorn2(wa, wb, M_pq, reg=reg)
+    M_pp = ot.dist(a, a, metric='sqeuclidean')
+    ot_pp = ot.sinkhorn2(wa, wa, M_pp, reg=reg)
+    M_qq = ot.dist(b, b, metric='sqeuclidean')
+    ot_qq = ot.sinkhorn2(wb, wb, M_qq, reg=reg)
+    return float(max(ot_pq - 0.5 * ot_pp - 0.5 * ot_qq, 0.0))
 
 
 def compute_energy_w2(samples, ref_samples, energy):

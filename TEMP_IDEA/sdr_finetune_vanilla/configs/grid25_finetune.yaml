@@ -1,0 +1,49 @@
+# @package _global_
+#
+# Grid25: Fine-tune SDR checkpoint with sdr_lambda=0 (vanilla ASBS loss)
+# Usage: python train.py --config-path=TEMP_IDEA/sdr_finetune_vanilla/configs \
+#            --config-name=grid25_finetune \
+#            checkpoint=<path_to_sdr_checkpoint>
+
+defaults:
+  - /problem: grid25
+  - /source: gauss
+  - /sde@ref_sde: ve
+  - /model@controller: fouriermlp
+  - /state_cost: zero
+  - /term_cost: score_term_cost
+  - /matcher@adjoint_matcher: sdr_adjoint_ve
+
+exp_name: grid25_finetune
+
+# === source ===
+scale: 0.5
+
+# === sde (same as SDR training) ===
+nfe: 100
+sigma_max: 6
+sigma_min: 0.01
+rescale_t: null
+
+# === SDR parameters: lambda=0 disables KSD correction ===
+sdr_lambda: 0.0
+sdr_beta: 0.0
+
+# === training ===
+num_epochs: 3500      # SDR trained 3000, fine-tune 500 more
+max_grad_E_norm: 50
+
+adjoint_matcher:
+  buffer_size: 10000
+  duplicates: 10
+  resample_size: 1000
+  num_epochs_per_stage: ${num_epochs}
+  optim:
+    lr: 5e-4          # half of original 1e-3 for stability
+    weight_decay: 0
+
+# === eval & logging ===
+use_wandb: false
+skip_eval: true
+eval_freq: 200
+save_freq: 50         # frequent saves to eval externally

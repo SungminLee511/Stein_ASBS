@@ -2,7 +2,7 @@
 scripts/eval_grid25_sdr.py
 
 Evaluate Grid25: Vanilla ASBS vs SDR β={0.5, 0.7, 1.0}
-Metrics: Mode Weight TV, Energy W2, Sinkhorn, W2, KL, Std Energy, ESS
+Metrics: Mode Weight TV, Energy W2, Sinkhorn, W2, KL, Std Energy
 Figure: Single stacked marginal evolution (NeurIPS style)
 """
 
@@ -205,15 +205,19 @@ def compute_w2_distance(samples, ref_samples):
     return float(np.sqrt(max(w2_sq, 0)))
 
 
-def compute_sinkhorn_divergence(samples, ref_samples, reg=0.1):
+def compute_sinkhorn_divergence(samples, ref_samples, reg=1.0):
     a = samples.cpu().numpy()
     b = ref_samples.cpu().numpy()
     n, m = len(a), len(b)
     wa = np.ones(n) / n
     wb = np.ones(m) / m
-    M = ot.dist(a, b, metric='sqeuclidean')
-    sinkhorn = ot.sinkhorn2(wa, wb, M, reg=reg)
-    return float(sinkhorn)
+    M_pq = ot.dist(a, b, metric='sqeuclidean')
+    ot_pq = ot.sinkhorn2(wa, wb, M_pq, reg=reg)
+    M_pp = ot.dist(a, a, metric='sqeuclidean')
+    ot_pp = ot.sinkhorn2(wa, wa, M_pp, reg=reg)
+    M_qq = ot.dist(b, b, metric='sqeuclidean')
+    ot_qq = ot.sinkhorn2(wb, wb, M_qq, reg=reg)
+    return float(max(ot_pq - 0.5 * ot_pp - 0.5 * ot_qq, 0.0))
 
 
 def compute_energy_w2(samples, ref_samples, energy):
@@ -227,28 +231,7 @@ def compute_energy_w2(samples, ref_samples, energy):
     return float(w2)
 
 
-def compute_ess(log_weights):
-    log_w = log_weights - torch.logsumexp(log_weights, dim=0)
-    ess = torch.exp(-torch.logsumexp(2 * log_w, dim=0))
-    return ess.item()
-
-
-def compute_ess_from_samples(samples, energy, source):
-    with torch.no_grad():
-        log_p_target = -energy.eval(samples)
-        scale = float(source.scale) if hasattr(source, 'scale') else 1.0
-        loc = float(source.loc) if hasattr(source, 'loc') else 0.0
-        d = samples.shape[-1]
-        log_p_source = (
-            -0.5 * d * np.log(2 * np.pi)
-            - d * np.log(scale)
-            - 0.5 * ((samples - loc) ** 2).sum(dim=-1) / (scale ** 2)
-        )
-    log_w = log_p_target - log_p_source
-    return compute_ess(log_w)
-
-
-def compute_all_metrics(samples, energy, centers, std, ref_samples, source):
+def compute_all_metrics(samples, energy, centers, std, ref_samples):
     assignments, counts = assign_modes(samples, centers.to(samples.device), std=std)
     E_gen = energy.eval(samples)
     counts_list = counts.cpu().tolist()
@@ -263,15 +246,6 @@ def compute_all_metrics(samples, energy, centers, std, ref_samples, source):
 
     print("    Computing KL divergence...")
     metrics['kl'] = compute_kl_divergence(samples, energy)
-
-    print("    Computing ESS...")
-    try:
-        metrics['ess'] = compute_ess_from_samples(samples, energy, source)
-        metrics['ess_pct'] = metrics['ess'] / len(samples) * 100
-    except Exception as e:
-        print(f"    ESS failed: {e}")
-        metrics['ess'] = float('nan')
-        metrics['ess_pct'] = float('nan')
 
     return metrics
 
@@ -442,7 +416,7 @@ def main():
 
             torch.manual_seed(0)
             samples = generate_samples(sde, source, ts_cfg, n_samples, device)
-            m = compute_all_metrics(samples, energy, centers, std, ref_samples, source)
+            m = compute_all_metrics(samples, energy, centers, std, ref_samples)
             seed_metrics.append(m)
 
             # Free GPU memory
