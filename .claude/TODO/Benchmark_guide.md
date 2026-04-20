@@ -18,16 +18,6 @@
 
 **Caution:** ALTP is less commonly benchmarked. The ASBS paper doesn’t include it. WT-ASBS may include it (they mention “peptide conformational sampling benchmarks” in plural). If you include ALTP, you’d be providing a new benchmark result, which is good, but you won’t have ASBS baseline numbers to compare against. **Recommendation:** Include ALTP only if you can generate your own ASBS baseline alongside SDR-ASBS. Otherwise, stick to ALDP where you have Table 3 to compare against.
 
-### 1.3 Grid25 (MoG25)
-
-**What it is:** 25 Gaussian modes on a 5×5 grid in 2D. Equal weights. The textbook mode concentration benchmark — any initial imbalance is arbitrary and permanent under AM.
-
-**Why it matters for your paper:** This is where your theorem directly predicts the largest effect, and where SDR already works. Keep this as Benchmark 1.
-
-### 1.4 Other problems where SDR helps
-
-Run your existing benchmarks and identify which ones show improvement. Include those. Be honest about DW4/LJ13 — report them in an appendix or a sentence: “On problems where ASBS already achieves good mode coverage, SDR provides no additional benefit.”
-
 -----
 
 ## 2. Evaluation Metrics
@@ -170,13 +160,7 @@ ax.contourf(xcenters, ycenters, F.T, levels=np.linspace(0, 8*kT, 20), cmap='RdYl
 
 **This figure directly illustrates Theorem 1 and its resolution.** It’s the most important new visualization in your paper.
 
-### 3.4 Grid25 mode coverage (keep from existing work)
-
-**What:** 2D scatter plot showing which of the 25 modes are populated. Bar chart of mode weights vs. reference (uniform).
-
-**Layout:** Same side-by-side comparison: [ASBS] [SDR-ASBS].
-
-### 3.5 DARW weight distribution (supplementary)
+### 3.4 DARW weight distribution (supplementary)
 
 **What:** Histogram of the importance weights ŵ_i during training at various epochs (early, mid, late).
 
@@ -202,10 +186,6 @@ ax.contourf(xcenters, ycenters, F.T, levels=np.linspace(0, 8*kT, 20), cmap='RdYl
 - The original ASBS paper’s reference is likely from the `adjoint_samplers` repo. Check if there’s a reference dataset included.
 - Many papers use the Amber03 / ff99SB reference FES for ALDP in vacuum, which is well-characterized in the literature.
 
-### 4.2 For Grid25
-
-Analytical — the target is a known mixture of Gaussians. No reference data needed.
-
 -----
 
 ## 5. What Your Paper Should Present (Recommendation)
@@ -214,7 +194,6 @@ Analytical — the target is a known mixture of Gaussians. No reference data nee
 
 1. **Ramachandran plots** (ALDP): Reference vs. ASBS vs. SDR-ASBS (3 panels)
 1. **Mode weight evolution** (ALDP): α_k over training epochs, ASBS vs. SDR-ASBS (2 panels) — this is your star figure
-1. **Grid25 mode coverage**: scatter + mode weight bar chart, ASBS vs. SDR-ASBS
 1. **Free energy surfaces** (ALDP): contour plots, Reference vs. ASBS vs. SDR-ASBS
 
 ### Main paper tables:
@@ -228,8 +207,6 @@ Analytical — the target is a known mixture of Gaussians. No reference data nee
 - β ablation (β ∈ {0, 0.3, 0.5, 0.7, 1.0})
 - λ ablation for KSD (if you keep KSD as a component)
 - Per-seed results for all metrics
-- DW4/LJ13 results with a note: “SDR provides no additional benefit on problems where ASBS already achieves good mode coverage”
-
 -----
 
 ## 6. Open Questions / Things to Verify

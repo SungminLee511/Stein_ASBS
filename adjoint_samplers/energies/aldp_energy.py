@@ -69,8 +69,8 @@ class AlanineDipeptideEnergy(BaseEnergy):
         pdb = app.PDBFile(pdb_path)
         os.unlink(pdb_path)
 
-        # Force field
-        forcefield = app.ForceField('amber14-all.xml')
+        # Force field — Amber ff99SB-ILDN to match original ASBS paper (Table 3)
+        forcefield = app.ForceField('amber99sbildn.xml')
 
         # Create system (vacuum, no cutoff, no constraints)
         system = forcefield.createSystem(

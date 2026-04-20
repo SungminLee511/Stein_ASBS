@@ -7,3 +7,4 @@ from adjoint_samplers.energies.lennard_jones_energy import LennardJonesEnergy
 from adjoint_samplers.energies.rotated_gmm_energy import RotatedGMMEnergy
 from adjoint_samplers.energies.muller_brown_energy import MullerBrownEnergy
 from adjoint_samplers.energies.bayesian_logreg_energy import BayesianLogRegEnergy
+from adjoint_samplers.energies.aldp_energy import AlanineDipeptideEnergy

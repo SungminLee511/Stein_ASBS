@@ -43,6 +43,7 @@ Stein_ASBS/
 │   │   ├── rotated_gmm_energy.py # RotatedGMMEnergy
 │   │   ├── muller_brown_energy.py # MullerBrownEnergy (2D)
 │   │   ├── bayesian_logreg_energy.py # BayesianLogRegEnergy
+│   │   ├── aldp_energy.py        # AlanineDipeptideEnergy (22 atoms, 66D, OpenMM+Amber14)
 │   │   ├── viz_energies.py       # GMM9Energy, Grid25Energy, Ring8Energy, BananaEnergy
 │   │   └── new_benchmarks.py     # UnequalGMMEnergy, ManyWell5DEnergy, ManyWell32DEnergy
 │   └── utils/
@@ -69,8 +70,10 @@ Stein_ASBS/
 │   │   ├── lj38_sdr_asbs.yaml   # LJ38 SDR
 │   │   ├── lj55_as.yaml          # LJ55 AS baseline
 │   │   ├── lj55_asbs.yaml        # LJ55 ASBS baseline
-│   │   └── lj55_sdr_asbs.yaml   # LJ55 SDR
-│   ├── problem/                  # dw4, grid25, mw5, mw32, lj13, lj38, lj55
+│   │   ├── lj55_sdr_asbs.yaml   # LJ55 SDR
+│   │   ├── aldp_asbs.yaml        # ALDP ASBS baseline (skip_eval until ref data ready)
+│   │   └── aldp_sdr_asbs.yaml   # ALDP SDR (skip_eval until ref data ready)
+│   ├── problem/                  # dw4, grid25, mw5, mw32, lj13, lj38, lj55, aldp
 │   ├── matcher/                  # adjoint_ve/vp, sdr_adjoint_ve, sdr_adjoint_ve, imq variants
 │   ├── sde/                      # ve, vp, brownian_motion, graph_ve, graph_vp
 │   ├── source/                   # gauss, harmonic, delta, meanfree
@@ -92,7 +95,7 @@ Stein_ASBS/
 │   └── lj13_asbs/                # LJ13 ASBS baseline results
 ├── PORTAL/                       # (empty — reserved for publication artifacts)
 ├── results/                      # Training outputs (gitignored)
-├── data/                         # Reference test splits (test_split_*.npy)
+├── data/                         # Reference test splits (test_split_*.npy), alanine-dipeptide.pdb
 ├── PLAN.md                       # Experiment execution plan
 ├── environment.yml               # Conda environment spec
 ├── README.md, LICENSE.md, CONTRIBUTING.md, CODE_OF_CONDUCT.md
